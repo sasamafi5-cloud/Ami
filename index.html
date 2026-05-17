@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ami • AI Sekretarica</title>
+  <meta name="theme-color" content="#00ffcc">
+  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Ami%20AI%20Sekretarica%22,%22short_name%22:%22Ami%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23000%22,%22theme_color%22:%22%2300ffcc%22}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a1f2f;
+      --panel: rgba(10, 35, 55, 0.95);
+      --accent: #00ffcc;
+    }
+    [data-theme="light"] {
+      --bg: #f0f4f8;
+      --panel: rgba(255,255,255,0.95);
+      --accent: #0066cc;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.5s;
+    }
+    [data-theme="light"] body { color: #000; }
+
+    .app { display: flex; height: 100vh; }
+    .sidebar {
+      width: 280px;
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      padding: 20px;
+      border-right: 1px solid rgba(0,255,204,0.3);
+      overflow-y: auto;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 3rem;
+      background: linear-gradient(90deg, var(--accent), #00aaff);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 30px var(--accent);
+    }
+
+    #mic-container {
+      width: 280px;
+      height: 280px;
+      margin: 20px;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 1.35rem;
+      text-align: center;
+      min-height: 80px;
+      text-shadow: 0 0 15px var(--accent);
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(0,255,204,0.25);
+      border-radius: 16px;
+      padding: 15px;
+      margin: 12px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .card { background: rgba(0,0,0,0.08); border-color: rgba(0,102,204,0.3); }
+
+    button {
+      background: rgba(0,255,204,0.2);
+      color: inherit;
+      border: 1px solid var(--accent);
+      padding: 10px 18px;
+      border-radius: 50px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div class="app">
+    <div class="sidebar">
+      <h2 style="color:var(--accent); text-align:center; margin-bottom:20px;">Ami</h2>
+      
+      <div class="card">
+        <strong>📅 Današnji termini</strong>
+        <div id="todayList">Još nema termina danas.</div>
+      </div>
+
+      <div class="card">
+        <strong>✅ Obaveze</strong>
+        <div id="tasksList"></div>
+        <input type="text" id="newTask" placeholder="Nova obaveza..." style="width:100%; padding:10px; margin-top:8px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:inherit;">
+        <button onclick="addTask()" style="width:100%;">+ Dodaj obavezu</button>
+      </div>
+
+      <button onclick="toggleTheme()" style="width:100%; margin-top:15px;">🌗 Promeni temu (Crna/Bela)</button>
+    </div>
+
+    <div class="main">
+      <h1>Ami Sluša</h1>
+      <div id="mic-container"></div>
+      <div class="status" id="status">Pritisni 3D mikrofon i govori...</div>
+
+      <div style="margin-top:20px;">
+        <button onclick="speak('Zdravo! Ja sam Ami, tvoja lična sekretarica.')">Pozdravi Ami</button>
+        <button onclick="showToday()">Šta imam danas?</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === LOCAL STORAGE ===
+    let tasks = JSON.parse(localStorage.getItem('ami_tasks')) || [];
+    let reminders = JSON.parse(localStorage.getItem('ami_reminders')) || [];
+
+    function saveData() {
+      localStorage.setItem('ami_tasks', JSON.stringify(tasks));
+      localStorage.setItem('ami_reminders', JSON.stringify(reminders));
+    }
+
+    function renderLists() {
+      document.getElementById('tasksList').innerHTML = tasks.map((t,i) => 
+        `<div style="padding:10px; background:rgba(255,255,255,0.1); margin:6px 0; border-radius:10px; display:flex; justify-content:space-between;">
+          <span>${t}</span>
+          <span onclick="deleteTask(${i})" style="color:#ff3366;cursor:pointer;">✕</span>
+        </div>`).join('');
+    }
+
+    function addTask() {
+      const val = document.getElementById('newTask').value.trim();
+      if (val) {
+        tasks.push(val);
+        saveData();
+        renderLists();
+        document.getElementById('newTask').value = '';
+        speak("Obaveza dodata uspešno.");
+      }
+    }
+
+    function deleteTask(i) {
+      tasks.splice(i,1);
+      saveData();
+      renderLists();
+    }
+
+    function showToday() {
+      speak(`Danas imaš ${tasks.length} obaveza.`);
+      document.getElementById('status').innerHTML = tasks.length ? tasks.join('<br>') : "Slobodan dan 🎉";
+    }
+
+    // === 3D MICROPHONE ===
+    let scene, camera, renderer, micGroup;
+    function init3D() {
+      const container = document.getElementById('mic-container');
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(280, 280);
+      container.appendChild(renderer.domElement);
+
+      const light = new THREE.PointLight(0x00ffcc, 2.5, 100);
+      light.position.set(5, 8, 10);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0xaaaaaa, 0.6));
+
+      // Mikrofon grupa
+      micGroup = new THREE.Group();
+
+      // Telo
+      const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.7, 0.9, 2.2, 32),
+        new THREE.MeshPhongMaterial({ color: 0x112233, shininess: 100, specular: 0x00ffff })
+      );
+      // Glava
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(1.1, 48, 48),
+        new THREE.MeshPhongMaterial({ color: 0x223344, shininess: 120 })
+      );
+      head.position.y = 1.4;
+
+      micGroup.add(body);
+      micGroup.add(head);
+      scene.add(micGroup);
+
+      camera.position.z = 6;
+      animate3D();
+    }
+
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      if (micGroup) micGroup.rotation.y += 0.012;
+      renderer.render(scene, camera);
+    }
+
+    // === VOICE & AI ===
+    const status = document.getElementById('status');
+    let recognition;
+
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SR();
+      recognition.lang = 'sr-RS';
+
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        status.innerHTML = `Čula sam: <b>${text}</b>`;
+
+        setTimeout(() => handleAIResponse(text), 600);
+      };
+    }
+
+    function handleAIResponse(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes("kako si") || lower.includes("zdravo")) {
+        speak("Odlično sam! Drago mi je što pričaš sa mnom.");
+      } else if (lower.includes("danas") || lower.includes("šta imam")) {
+        showToday();
+      } else if (lower.includes("hvala")) {
+        speak("Nema na čemu! Tu sam za tebe.");
+      } else {
+        speak("Razumela sam. Dodala sam u tvoje beleške.");
+        reminders.push(text);
+        saveData();
+      }
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'sr-RS';
+        speechSynthesis.speak(u);
+        status.textContent = text;
+      }
+    }
+
+    document.getElementById('mic-container').addEventListener('click', () => {
+      if (recognition) {
+        recognition.start();
+        status.textContent = "🎙️ Slušam te...";
+      }
+    });
+
+    function toggleTheme() {
+      const body = document.body;
+      if (body.getAttribute('data-theme') === 'light') {
+        body.setAttribute('data-theme', 'dark');
+      } else {
+        body.setAttribute('data-theme', 'light');
+      }
+    }
+
+    // Pokretanje
+    window.onload = () => {
+      init3D();
+      renderLists();
+      setTimeout(() => {
+        speak("Zdravo! Ja sam Ami, tvoja pametna AI sekretarica. Pritisni mikrofon da pričaš sa mnom.");
+      }, 1000);
+    };
+  </script>
+</body>
+</html>
