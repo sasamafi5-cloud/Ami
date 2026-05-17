@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Sii AI Sekretarica</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:
+radial-gradient(circle at top,#dff5ff 0%,#eef3ff 40%,#f7f8ff 100%);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+overflow-x:hidden;
+color:#111;
+}
+
+.phone{
+width:390px;
+min-height:820px;
+border-radius:45px;
+padding:22px;
+position:relative;
+
+background:rgba(255,255,255,0.28);
+
+backdrop-filter:blur(22px);
+-webkit-backdrop-filter:blur(22px);
+
+border:1px solid rgba(255,255,255,0.7);
+
+box-shadow:
+0 25px 50px rgba(0,0,0,0.08),
+inset 0 1px 1px rgba(255,255,255,0.7),
+inset 0 -5px 15px rgba(255,255,255,0.35);
+}
+
+.glow{
+position:absolute;
+width:250px;
+height:250px;
+background:linear-gradient(45deg,#6be7ff,#9f7bff);
+filter:blur(90px);
+opacity:0.35;
+z-index:-1;
+border-radius:50%;
+}
+
+.glow1{
+top:-50px;
+left:-60px;
+}
+
+.glow2{
+bottom:-80px;
+right:-60px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.profile{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.avatar{
+width:58px;
+height:58px;
+border-radius:50%;
+background:
+url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop')
+center/cover;
+
+border:3px solid rgba(255,255,255,0.8);
+
+box-shadow:
+0 0 15px rgba(90,200,255,0.5);
+}
+
+.profile-text h2{
+font-size:24px;
+font-weight:700;
+}
+
+.profile-text span{
+font-size:13px;
+color:#4d4d4d;
+}
+
+.time{
+text-align:right;
+}
+
+.time h1{
+font-size:54px;
+font-weight:600;
+line-height:1;
+background:linear-gradient(45deg,#4ecfff,#7d7cff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.time span{
+font-size:13px;
+color:#666;
+}
+
+.weather{
+margin-top:15px;
+
+background:rgba(255,255,255,0.4);
+
+border-radius:28px;
+padding:16px;
+
+backdrop-filter:blur(15px);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.06),
+inset 0 1px 1px rgba(255,255,255,0.7);
+}
+
+.weather h3{
+font-size:42px;
+font-weight:600;
+}
+
+.weather p{
+font-size:14px;
+color:#666;
+}
+
+.mic-section{
+margin-top:35px;
+text-align:center;
+position:relative;
+}
+
+.wave{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+width:320px;
+height:220px;
+background:
+radial-gradient(circle,#7ef9ff33 0%,transparent 70%);
+filter:blur(15px);
+z-index:0;
+animation:pulse 4s infinite;
+}
+
+@keyframes pulse{
+0%{transform:translate(-50%,-50%) scale(0.9);}
+50%{transform:translate(-50%,-50%) scale(1.08);}
+100%{transform:translate(-50%,-50%) scale(0.9);}
+}
+
+.mic{
+position:relative;
+z-index:2;
+width:170px;
+height:170px;
+margin:auto;
+border-radius:50%;
+
+background:
+linear-gradient(145deg,#ffffff,#dbe8ff);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+font-size:72px;
+
+box-shadow:
+0 25px 40px rgba(0,0,0,0.12),
+inset 8px 8px 15px rgba(255,255,255,0.9),
+inset -10px -10px 18px rgba(100,130,255,0.15),
+0 0 35px rgba(80,200,255,0.4);
+
+animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(0px);}
+50%{transform:translateY(-12px);}
+100%{transform:translateY(0px);}
+}
+
+.listen{
+margin-top:20px;
+font-size:50px;
+font-weight:700;
+
+background:linear-gradient(45deg,#4fdfff,#7b74ff);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.active-btn{
+margin-top:18px;
+border:none;
+padding:16px 40px;
+border-radius:50px;
+font-size:18px;
+font-weight:600;
+color:white;
+cursor:pointer;
+
+background:
+linear-gradient(45deg,#6ae7ff,#8b74ff);
+
+box-shadow:
+0 10px 30px rgba(120,120,255,0.4),
+0 0 20px rgba(120,220,255,0.5);
+
+animation:glowPulse 2s infinite;
+}
+
+@keyframes glowPulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.03);}
+100%{transform:scale(1);}
+}
+
+.cards{
+margin-top:30px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.card{
+padding:18px;
+border-radius:26px;
+
+background:rgba(255,255,255,0.35);
+
+backdrop-filter:blur(18px);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.06),
+inset 0 1px 1px rgba(255,255,255,0.8);
+
+min-height:120px;
+}
+
+.card h4{
+margin-bottom:10px;
+font-size:16px;
+}
+
+.card p{
+font-size:13px;
+color:#555;
+line-height:1.6;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+width:360px;
+padding:14px 24px;
+
+border-radius:35px;
+
+background:rgba(255,255,255,0.35);
+
+backdrop-filter:blur(18px);
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+box-shadow:
+0 15px 40px rgba(0,0,0,0.08);
+}
+
+.nav-btn{
+width:56px;
+height:56px;
+border-radius:50%;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+font-size:26px;
+
+background:
+linear-gradient(145deg,#ffffff,#dce7ff);
+
+box-shadow:
+0 8px 20px rgba(0,0,0,0.08),
+inset 2px 2px 5px rgba(255,255,255,0.9);
+}
+
+.center-btn{
+width:72px;
+height:72px;
+font-size:34px;
+
+background:
+linear-gradient(45deg,#5ee9ff,#8b78ff);
+
+color:white;
+
+box-shadow:
+0 0 35px rgba(100,220,255,0.8);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<div class="header">
+
+<div class="profile">
+<div class="avatar"></div>
+
+<div class="profile-text">
+<h2>Sii</h2>
+<span>AI Sekretarica ● Online</span>
+</div>
+</div>
+
+<div class="time">
+<h1>10:45</h1>
+<span>Petak, 24. Maj</span>
+</div>
+
+</div>
+
+<div class="weather">
+<h3>22°</h3>
+<p>Delimično oblačno • Padavine 10%</p>
+</div>
+
+<div class="mic-section">
+
+<div class="wave"></div>
+
+<div class="mic">
+🎤
+</div>
+
+<div class="listen">
+Sii Sluša
+</div>
+
+<button class="active-btn">
+AKTIVNO
+</button>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h4>📅 Današnje obaveze</h4>
+<p>
+08:30 Briefing<br>
+11:00 Projekat<br>
+15:30 Sastanak
+</p>
+</div>
+
+<div class="card">
+<h4>📝 Beleške</h4>
+<p>
+• Kupiti namirnice<br>
+• Završiti izveštaj<br>
+• Pozvati tim
+</p>
+</div>
+
+<div class="card">
+<h4>⏰ Alarmi</h4>
+<p>
+07:00 Buđenje<br>
+10:30 Lekovi<br>
+14:00 Ručak
+</p>
+</div>
+
+<div class="card">
+<h4>💙 Motivacija</h4>
+<p>
+Disciplina danas,<br>
+sloboda sutra.
+</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="bottom-nav">
+
+<div class="nav-btn">🏠</div>
+
+<div class="nav-btn">📋</div>
+
+<div class="nav-btn center-btn">✨</div>
+
+<div class="nav-btn">📊</div>
+
+<div class="nav-btn">⚙️</div>
+
+</div>
+
+<script>
+
+const button = document.querySelector('.active-btn');
+
+button.addEventListener('click',()=>{
+
+if(button.innerText === 'AKTIVNO'){
+
+button.innerText = 'SLUŠAM...';
+
+}else{
+
+button.innerText = 'AKTIVNO';
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
