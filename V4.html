@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ami • AI Sekretarica</title>
+  <meta name="theme-color" content="#f8f9fa">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      color: #1c1c1e;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+    .header {
+      padding: 15px 20px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.05rem;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+    .tabs {
+      display: flex;
+      background: #eaecef;
+      margin: 10px 16px;
+      border-radius: 50px;
+      padding: 5px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .tab {
+      flex: 1;
+      padding: 11px;
+      text-align: center;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+    .tab.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 165px);
+    }
+    .sidebar {
+      width: 310px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    }
+    .item {
+      padding: 16px 20px;
+      margin: 6px 12px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+    .item:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .badge {
+      margin-left: auto;
+      background: #ff2d55;
+      color: white;
+      font-size: 0.85rem;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .main-area {
+      flex: 1;
+      padding: 25px 20px;
+      overflow-y: auto;
+      position: relative;
+    }
+    .mic-button {
+      position: fixed;
+      bottom: 30px;
+      right: 25px;
+      width: 130px;
+      height: 130px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 15px 35px rgba(0,122,255,0.25),
+                  inset 0 8px 20px rgba(255,255,255,0.9),
+                  0 4px 15px rgba(0,0,0,0.2);
+      border: 12px solid #e0f0ff;
+      cursor: pointer;
+      z-index: 100;
+    }
+    .status {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.25rem;
+      color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div><strong>Ami</strong></div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div style="width:9px;height:9px;background:#34c759;border-radius:50%;"></div>
+      Online
+    </div>
+    <div id="time">10:45</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">Quick Notes</div>
+    <div class="tab">Alarmi</div>
+  </div>
+
+  <div class="container">
+    <!-- Leva strana -->
+    <div class="sidebar">
+      <div class="item active" onclick="showSection(0)"><span style="font-size:1.5rem;margin-right:14px;">💡</span> Ideas <span class="badge">3</span></div>
+      <div class="item" onclick="showSection(1)"><span style="font-size:1.5rem;margin-right:14px;">✅</span> To-Do <span class="badge">5</span></div>
+      <div class="item" onclick="showSection(2)"><span style="font-size:1.5rem;margin-right:14px;">📋</span> Meeting Notes <span class="badge">8</span></div>
+      <div class="item" onclick="showSection(3)"><span style="font-size:1.5rem;margin-right:14px;">📝</span> Random Drafts</div>
+
+      <div style="margin:25px 15px 10px; font-size:0.95rem; color:#666;">Današnji alarmi</div>
+      <div class="item" onclick="showAlarm(0)">⏰ Morning Workout — 8:00 AM</div>
+      <div class="item" onclick="showAlarm(1)">📞 Client Call — 14:30</div>
+    </div>
+
+    <!-- Desna strana -->
+    <div class="main-area" id="mainArea">
+      <h2 id="title">Dobrodošao nazad!</h2>
+      <p id="subtitle" style="color:#555; margin:15px 0;">Pritisni mikrofon ili neku kategoriju sa leve strane.</p>
+      <div id="content"></div>
+    </div>
+  </div>
+
+  <!-- Premium 3D Mikrofon -->
+  <div class="mic-button" id="micBtn">
+    <span style="font-size:65px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">🎤</span>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <script>
+    let currentMode = "manual";
+
+    // Vreme
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('time').textContent = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+    }
+    setInterval(updateTime, 30000);
+    updateTime();
+
+    // Pozdrav pri pokretanju
+    window.onload = () => {
+      setTimeout(() => {
+        speak("Zdravo! Ja sam Ami, tvoja lična AI sekretarica. Kako mogu da ti pomognem danas?");
+        document.getElementById('title').textContent = "Dobro jutro!";
+        document.getElementById('subtitle').innerHTML = "Danas imaš <strong>3 obaveze</strong> i <strong>2 termina</strong>.";
+      }, 1200);
+    };
+
+    // 3D Mikrofon (jednostavan ali lep)
+    let scene, camera, renderer, micGroup;
+    function initMic() {
+      const container = document.getElementById('micBtn');
+      // Za sada koristimo emoji, ali možemo kasnije dodati canvas
+    }
+    initMic();
+
+    // Glasovno
+    let recognition;
+    const statusEl = document.getElementById('status');
+
+    function startListening() {
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'sr-RS';
+        recognition.start();
+
+        recognition.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          statusEl.textContent = "Ti: " + text;
+          setTimeout(() => respondTo(text), 800);
+        };
+      } else {
+        statusEl.textContent = "Glasovno prepoznavanje nije dostupno.";
+      }
+    }
+
+    function respondTo(text) {
+      const lower = text.toLowerCase();
+      if (lower.includes("kako si") || lower.includes("zdravo")) {
+        speak("Odlično sam, hvala! Šta želiš da uradimo danas?");
+      } else if (lower.includes("danas") || lower.includes("obaveze") || lower.includes("termin")) {
+        speak("Danas imaš tri obaveze i dva termina. Želiš li da ti ih pročitam?");
+      } else {
+        speak("Razumela sam. Zabeležila sam tvoju poruku.");
+      }
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'sr-RS';
+        speechSynthesis.speak(u);
+        statusEl.textContent = "Ami: " + text;
+      }
+    }
+
+    document.getElementById('micBtn').addEventListener('click', startListening);
+
+    function showSection(n) {
+      const titles = ["Ideas", "To-Do lista", "Meeting Notes", "Random Drafts"];
+      document.getElementById('title').textContent = titles[n];
+      document.getElementById('subtitle').textContent = "Ovde će se pojaviti tvoj sadržaj.";
+      speak("Otvorila sam " + titles[n]);
+    }
+
+    function showAlarm(n) {
+      speak(n === 0 ? "Morning Workout u 8 sati." : "Client Call u 14:30.");
+    }
+
+    // Demo interakcija
+    document.getElementById('micBtn').addEventListener('dblclick', () => {
+      speak("Slušam te u automatskom modu. Reci mi šta treba.");
+    });
+  </script>
+</body>
+</html>
