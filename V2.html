@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ami • AI Sekretarica</title>
+  <meta name="theme-color" content="#00ffcc">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(#0a1625, #000);
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+    .header {
+      text-align: center;
+      padding: 15px;
+      background: rgba(0,0,0,0.6);
+      border-bottom: 1px solid #00ffcc33;
+    }
+    h1 {
+      font-size: 2.6rem;
+      color: #00ffcc;
+      text-shadow: 0 0 25px #00ffcc;
+    }
+    .main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 180px);
+      padding: 10px;
+    }
+    #mic-container {
+      width: 280px;
+      height: 280px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .status {
+      font-size: 1.35rem;
+      text-align: center;
+      min-height: 70px;
+      padding: 0 20px;
+      color: #aaffff;
+      text-shadow: 0 0 15px #00ffcc;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 15px;
+    }
+    button {
+      background: rgba(0,255,204,0.15);
+      border: 2px solid #00ffcc;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 50px;
+      font-size: 1.05rem;
+    }
+    .bottom-panel {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(10,20,40,0.95);
+      padding: 12px;
+      border-top: 1px solid #00ffcc33;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Ami</h1>
+    <div style="color:#00ffcc; font-size:1.1rem;">AI Sekretarica</div>
+  </div>
+
+  <div class="main">
+    <h1 style="font-size:2.2rem; margin-bottom:8px;">Ami Sluša</h1>
+    <div id="mic-container"></div>
+    <div class="status" id="status">Pritisni mikrofon i govori...</div>
+  </div>
+
+  <div class="bottom-panel">
+    <div class="controls">
+      <button onclick="speak('Zdravo! Drago mi je što si tu.')">👋 Pozdravi Ami</button>
+      <button onclick="showToday()">📅 Šta imam danas?</button>
+    </div>
+
+    <div style="margin-top:10px; padding:0 10px;">
+      <strong style="color:#00ffcc;">✅ Obaveze</strong>
+      <div id="tasksList" style="max-height:120px; overflow-y:auto; margin-top:8px;"></div>
+      <input type="text" id="newTask" placeholder="Dodaj novu obavezu..." 
+             style="width:100%; margin-top:8px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.1); border:none; color:white;">
+      <button onclick="addTask()" style="width:100%; margin-top:6px;">+ Dodaj obavezu</button>
+    </div>
+  </div>
+
+  <script>
+    // Local Storage & Obaveze
+    let tasks = JSON.parse(localStorage.getItem('ami_tasks')) || [];
+    function saveData() { localStorage.setItem('ami_tasks', JSON.stringify(tasks)); }
+    
+    function renderTasks() {
+      document.getElementById('tasksList').innerHTML = tasks.map((t,i) => 
+        `<div style="padding:8px; background:rgba(255,255,255,0.1); margin:4px 0; border-radius:8px; display:flex; justify-content:space-between;">
+          \( {t} <span onclick="deleteTask( \){i})" style="color:#ff3366; font-weight:bold; cursor:pointer;">✕</span>
+        </div>`).join('');
+    }
+    function addTask() {
+      const val = document.getElementById('newTask').value.trim();
+      if (val) {
+        tasks.push(val);
+        saveData();
+        renderTasks();
+        document.getElementById('newTask').value = '';
+        speak("Obaveza dodata.");
+      }
+    }
+    function deleteTask(i) {
+      tasks.splice(i, 1);
+      saveData();
+      renderTasks();
+    }
+    function showToday() {
+      const msg = tasks.length ? tasks.join(", ") : "Nemaš obaveza danas.";
+      speak("Danas imaš " + tasks.length + " obaveza.");
+      document.getElementById('status').innerHTML = msg;
+    }
+
+    // 3D Mikrofon (bolji izgled)
+    let scene, camera, renderer, micGroup;
+    function init3D() {
+      const container = document.getElementById('mic-container');
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(280, 280);
+      container.appendChild(renderer.domElement);
+
+      const light = new THREE.PointLight(0x00ffff, 3, 100);
+      light.position.set(5, 10, 12);
+      scene.add(light);
+      scene.add(new THREE.AmbientLight(0x77aaff, 0.8));
+
+      micGroup = new THREE.Group();
+
+      // Telo mikrofona
+      const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.65, 0.85, 2.4, 32),
+        new THREE.MeshPhongMaterial({ color: 0x112233, shininess: 90 })
+      );
+      micGroup.add(body);
+
+      // Glava
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.95, 48, 48),
+        new THREE.MeshPhongMaterial({ color: 0x1a2533, shininess: 120 })
+      );
+      head.position.y = 1.6;
+      micGroup.add(head);
+
+      // Mreža
+      const grille = new THREE.Mesh(
+        new THREE.SphereGeometry(0.8, 48, 48),
+        new THREE.MeshPhongMaterial({ color: 0xaaaaaa, shininess: 200 })
+      );
+      grille.scale.set(1, 0.65, 1);
+      grille.position.y = 1.6;
+      micGroup.add(grille);
+
+      scene.add(micGroup);
+      camera.position.z = 5.5;
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (micGroup) micGroup.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+
+    // Glasovno
+    let recognition;
+    const status = document.getElementById('status');
+
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'sr-RS';
+
+      recognition.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        status.innerHTML = `Čula sam:<br><b>${text}</b>`;
+        setTimeout(() => {
+          if (text.toLowerCase().includes("danas")) showToday();
+          else speak("Razumela sam te.");
+        }, 600);
+      };
+    }
+
+    document.getElementById('mic-container').addEventListener('click', () => {
+      if (recognition) {
+        recognition.start();
+        status.textContent = "🎙️ Slušam te...";
+      }
+    });
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'sr-RS';
+        speechSynthesis.speak(utterance);
+        status.textContent = text;
+      }
+    }
+
+    // Pokretanje
+    window.onload = () => {
+      init3D();
+      renderTasks();
+      setTimeout(() => {
+        speak("Zdravo! Ja sam Ami. Pritisni veliki mikrofon da pričaš sa mnom.");
+      }, 900);
+    };
+  </script>
+</body>
+</html>
