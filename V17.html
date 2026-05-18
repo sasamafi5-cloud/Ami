@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moja Sekretarica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+    }
+    
+    .dark .glass {
+      background: rgba(30, 30, 30, 0.85);
+    }
+    
+    .mic-3d {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .note-card {
+      transition: all 0.2s ease;
+    }
+    
+    .note-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+  </style>
+</head>
+<body class="bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen">
+  <div class="flex h-screen">
+    <!-- LEVA STRANA - Beleške -->
+    <div class="w-96 border-r border-zinc-200 dark:border-zinc-800 flex flex-col glass">
+      <!-- Header -->
+      <div class="p-4 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl">S</div>
+            <div>
+              <h1 class="text-2xl font-semibold">Sekretarica</h1>
+              <p class="text-xs text-zinc-500">AI lični asistent</p>
+            </div>
+          </div>
+          <button onclick="toggleTheme()" class="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl">
+            <i id="theme-icon" class="fa-solid fa-moon text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-zinc-200 dark:border-zinc-800">
+        <button onclick="switchTab(0)" id="tab0" class="flex-1 py-4 text-center font-medium border-b-2 border-violet-500 text-violet-600 dark:text-violet-400">Beleške</button>
+        <button onclick="switchTab(1)" id="tab1" class="flex-1 py-4 text-center font-medium text-zinc-500">Alarmi</button>
+      </div>
+
+      <!-- Beleške lista -->
+      <div id="notes-panel" class="flex-1 overflow-auto p-4 space-y-3">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-lg">Brze beleške</h2>
+          <button onclick="newNote()" class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-2xl text-sm font-medium flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nova
+          </button>
+        </div>
+        
+        <div id="notes-list" class="space-y-2"></div>
+      </div>
+
+      <!-- Alarmi panel -->
+      <div id="alarms-panel" class="flex-1 overflow-auto p-4 space-y-3 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-semibold text-lg">Alarmi i podsetnici</h2>
+          <button onclick="newAlarm()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-2xl text-sm font-medium flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Novi
+          </button>
+        </div>
+        
+        <div id="alarms-list" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- DESNA STRANA - Sekretarica -->
+    <div class="flex-1 flex flex-col">
+      <!-- Sekretarica header -->
+      <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 glass flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div id="avatar-container" class="relative w-16 h-16">
+            <!-- 3D avatar će biti ubačen ovde preko canvas-a -->
+            <img id="user-avatar" src="https://randomuser.me/api/portraits/women/44.jpg" class="w-16 h-16 rounded-3xl object-cover ring-4 ring-white dark:ring-zinc-900 shadow-2xl">
+            <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-2xl border-2 border-white dark:border-zinc-900"></div>
+          </div>
+          <div>
+            <h2 class="text-2xl font-semibold">Sara K.</h2>
+            <p class="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 text-sm">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+              Online • Pametna
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="speakTodaySummary()" class="px-5 py-2.5 bg-zinc-800 dark:bg-zinc-700 hover:bg-zinc-900 rounded-3xl text-white text-sm font-medium flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn"></i>
+            Danas
+          </button>
+          <button onclick="openSettings()" class="p-3 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-3xl">
+            <i class="fa-solid fa-cog text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat / Interakcija -->
+      <div id="chat-area" class="flex-1 overflow-auto p-6 space-y-6 bg-[radial-gradient(#e5e5e5_1px,transparent_1px)] dark:bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:30px_30px]">
+        <!-- Poruke će se dodavati dinamički -->
+      </div>
+
+      <!-- Mikrofon 3D -->
+      <div class="p-8 flex justify-center items-center border-t border-zinc-200 dark:border-zinc-800 glass">
+        <div onclick="startVoiceInput()" id="mic-button"
+             class="mic-3d w-32 h-32 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-rose-500 rounded-full flex items-center justify-center cursor-pointer shadow-2xl hover:scale-110 active:scale-95 relative">
+          <div class="absolute inset-0 bg-white/20 rounded-full animate-ping"></div>
+          <i class="fa-solid fa-microphone text-white text-6xl relative z-10"></i>
+        </div>
+      </div>
+
+      <div class="text-center text-xs text-zinc-500 pb-6">
+        Pritisni mikrofon da pričaš • <span id="mode-text" class="text-violet-600">Automatski režim</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="glass rounded-3xl w-full max-w-lg mx-4 p-8">
+      <h2 class="text-2xl font-bold mb-6">Podešavanja Sekretarice</h2>
+      
+      <div class="space-y-8">
+        <!-- 3D Podešavanja -->
+        <div>
+          <h3 class="font-medium mb-3">3D Izgled Sekretarice</h3>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <label>Senke</label>
+              <input type="range" min="0" max="100" value="60" class="w-full accent-violet-600">
+            </div>
+            <div>
+              <label>Dubina</label>
+              <input type="range" min="0" max="100" value="70" class="w-full accent-violet-600">
+            </div>
+            <div>
+              <label>Visina</label>
+              <input type="range" min="0" max="100" value="50" class="w-full accent-violet-600">
+            </div>
+            <div>
+              <label>Širina</label>
+              <input type="range" min="0" max="100" value="65" class="w-full accent-violet-600">
+            </div>
+          </div>
+        </div>
+
+        <!-- Boje -->
+        <div>
+          <h3 class="font-medium mb-3">Boje</h3>
+          <div class="flex gap-4">
+            <button onclick="changeAccentColor('#8b5cf6')" class="w-10 h-10 rounded-2xl bg-violet-500"></button>
+            <button onclick="changeAccentColor('#ec4899')" class="w-10 h-10 rounded-2xl bg-pink-500"></button>
+            <button onclick="changeAccentColor('#14b8a6')" class="w-10 h-10 rounded-2xl bg-teal-500"></button>
+          </div>
+        </div>
+
+        <!-- Mikrofon avatar -->
+        <div>
+          <h3 class="font-medium mb-3">Slika za mikrofon</h3>
+          <input type="file" id="avatar-upload" accept="image/*" class="block w-full text-sm text-zinc-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:bg-violet-600 file:text-white hover:file:bg-violet-700">
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-end gap-3">
+        <button onclick="closeSettings()" class="px-6 py-3 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-3xl">Zatvori</button>
+        <button onclick="saveSettings()" class="px-8 py-3 bg-violet-600 text-white rounded-3xl">Sačuvaj</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === PODACI ===
+    let notes = [
+      { id: 1, title: "Ideje za projekat", content: "Novi dizajn sajta...", time: "10:12" },
+      { id: 2, title: "To-Do", content: "Pozvati klijenta", time: "09:45" }
+    ];
+
+    let alarms = [
+      { id: 1, title: "Jutarnji trening", time: "08:00", active: true },
+      { id: 2, title: "Poziv sa klijentom", time: "14:30", active: true }
+    ];
+
+    let messages = [];
+    let currentMode = 0; // 0-auto, 1-semi, 2-manual
+    let isDark = false;
+
+    // Render beleške
+    function renderNotes() {
+      const container = document.getElementById('notes-list');
+      container.innerHTML = notes.map(note => `
+        <div class="note-card bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800">
+          <div class="flex justify-between">
+            <div class="font-medium">${note.title}</div>
+            <div class="text-xs text-zinc-400">${note.time}</div>
+          </div>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1 line-clamp-2">${note.content}</p>
+        </div>
+      `).join('');
+    }
+
+    // Render alarmi
+    function renderAlarms() {
+      const container = document.getElementById('alarms-list');
+      container.innerHTML = alarms.map(alarm => `
+        <div class="flex items-center justify-between bg-white dark:bg-zinc-900 p-4 rounded-3xl">
+          <div>
+            <div class="font-medium">${alarm.title}</div>
+            <div class="text-sm text-emerald-600">${alarm.time}</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" ${alarm.active ? 'checked' : ''} class="sr-only peer">
+            <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-violet-300 dark:peer-focus:ring-violet-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
+        </div>
+      `).join('');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('notes-panel').classList.toggle('hidden', tab !== 0);
+      document.getElementById('alarms-panel').classList.toggle('hidden', tab === 0);
+      
+      document.getElementById('tab0').classList.toggle('border-b-2', tab === 0);
+      document.getElementById('tab0').classList.toggle('border-violet-500', tab === 0);
+      document.getElementById('tab1').classList.toggle('border-b-2', tab === 1);
+    }
+
+    // Glasovni unos (Web Speech API)
+    let recognition;
+    function initVoice() {
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'sr-RS';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          addMessage('user', transcript);
+          processAIResponse(transcript);
+        };
+      }
+    }
+
+    function startVoiceInput() {
+      if (!recognition) {
+        alert("Tvoj pregledač ne podržava glasovni unos.");
+        return;
+      }
+      recognition.start();
+      document.getElementById('mic-button').classList.add('scale-125', 'shadow-violet-500/50', 'shadow-2xl');
+      setTimeout(() => {
+        document.getElementById('mic-button').classList.remove('scale-125', 'shadow-violet-500/50', 'shadow-2xl');
+      }, 800);
+    }
+
+    function addMessage(sender, text) {
+      const chat = document.getElementById('chat-area');
+      const msg = document.createElement('div');
+      msg.className = sender === 'user' ? 
+        'flex justify-end' : 'flex justify-start';
+      
+      msg.innerHTML = `
+        <div class="\( {sender === 'user' ? 'bg-violet-600 text-white' : 'bg-white dark:bg-zinc-800'} max-w-[75%] px-5 py-3 rounded-3xl rounded- \){sender === 'user' ? 'br' : 'bl'}-none">
+          ${text}
+        </div>
+      `;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Simulacija AI odgovora
+    function processAIResponse(userText) {
+      setTimeout(() => {
+        let response = "Razumela sam. Dodala sam u beleške.";
+        
+        if (userText.toLowerCase().includes("danas") || userText.toLowerCase().includes("obaveze")) {
+          response = "Danas imaš trening u 8:00 i poziv sa klijentom u 14:30. Želiš li da dodam još nešto?";
+        } else if (userText.toLowerCase().includes("pozdr")) {
+          response = "Zdravo! Kako mogu da ti pomognem danas?";
+        }
+        
+        addMessage('ai', response);
+      }, 1200);
+    }
+
+    function speakTodaySummary() {
+      const text = "Dobro jutro! Danas imaš jutarnji trening u 8 sati i klijentski poziv u 14:30. Sve je spremno.";
+      addMessage('ai', text);
+      
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'sr-RS';
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      document.documentElement.classList.toggle('dark', isDark);
+      document.getElementById('theme-icon').classList.toggle('fa-moon', !isDark);
+      document.getElementById('theme-icon').classList.toggle('fa-sun', isDark);
+    }
+
+    function openSettings() {
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function saveSettings() {
+      alert("Podešavanja sačuvana! (3D parametri i boje će biti primenjeni u punoj verziji)");
+      closeSettings();
+    }
+
+    function changeAccentColor(color) {
+      alert("Boja promenjena u: " + color + " (u punoj verziji bi se primenila globalno)");
+    }
+
+    function newNote() {
+      const title = prompt("Naziv beleške:");
+      if (title) {
+        notes.unshift({
+          id: Date.now(),
+          title: title,
+          content: "Nova beleška...",
+          time: new Date().toLocaleTimeString('sr-RS', {hour:'2-digit', minute:'2-digit'})
+        });
+        renderNotes();
+      }
+    }
+
+    function newAlarm() {
+      const title = prompt("Naziv alarma:");
+      const time = prompt("Vreme (HH:MM):", "09:00");
+      if (title && time) {
+        alarms.unshift({id: Date.now(), title, time, active: true});
+        renderAlarms();
+      }
+    }
+
+    // Inicijalizacija
+    window.onload = () => {
+      renderNotes();
+      renderAlarms();
+      initVoice();
+      
+      // Pozdravna poruka
+      setTimeout(() => {
+        addMessage('ai', 'Zdravo! Ja sam tvoja lična AI sekretarica. Kako mogu da ti pomognem danas?');
+      }, 800);
+
+      // Demo automatski režim
+      console.log("%cAplikacija pokrenuta - puna verzija bi koristila TensorFlow.js / Transformers.js za offline LLM", "color: #8b5cf6; font-size: 12px");
+    };
+  </script>
+</body>
+</html>
