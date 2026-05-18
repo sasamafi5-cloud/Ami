@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Sekretarica PWA</title>
+
+<link rel="manifest" id="manifest-placeholder">
+
+<style>
+:root{
+  --bg:#0b0f1a;
+  --card:#121a2a;
+  --glass:rgba(255,255,255,0.08);
+  --text:#e8f0ff;
+  --accent:#6ea8ff;
+  --glow:10px;
+  --radius:18px;
+  --icon:28px;
+}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:radial-gradient(circle at top, #18233a, var(--bg));
+  color:var(--text);
+  overflow:hidden;
+}
+
+/* layout */
+.app{
+  display:flex;
+  height:100vh;
+}
+
+/* left panel */
+.left{
+  width:40%;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.card{
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border-radius:var(--radius);
+  padding:10px;
+  box-shadow:0 0 var(--glow) rgba(110,168,255,0.3);
+}
+
+/* right panel */
+.right{
+  flex:1;
+  padding:10px;
+}
+
+.big-display{
+  height:100%;
+  background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2));
+  border-radius:var(--radius);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+}
+
+/* buttons */
+button{
+  background:var(--accent);
+  border:none;
+  padding:10px;
+  border-radius:12px;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* mic floating */
+.mic{
+  position:absolute;
+  bottom:20px;
+  right:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  box-shadow:0 0 20px var(--accent);
+  cursor:pointer;
+}
+
+/* settings */
+.settings{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:250px;
+}
+
+/* input */
+input[type=range]{
+  width:100%;
+}
+
+.small{
+  font-size:12px;
+  opacity:0.7;
+}
+
+/* notes */
+.note{
+  padding:5px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="left">
+
+    <div class="card">
+      <b>📋 Beleške</b>
+      <input id="noteInput" placeholder="upiši..." style="width:100%;margin-top:5px;padding:8px;border-radius:8px;border:none;">
+      <button onclick="addNote()">Dodaj</button>
+      <div id="notes"></div>
+    </div>
+
+    <div class="card">
+      <b>⏰ Alarm</b>
+      <input type="time" id="alarmTime">
+      <button onclick="setAlarm()">Postavi</button>
+      <div class="small">radi dok je app otvorena</div>
+    </div>
+
+    <div class="card">
+      <b>⚙️ Settings</b>
+
+      <label>Icon size</label>
+      <input type="range" min="20" max="60" value="28" oninput="setVar('--icon',this.value+'px')">
+
+      <label>Glow</label>
+      <input type="range" min="0" max="30" value="10" oninput="setVar('--glow',this.value+'px')">
+
+      <label>Radius</label>
+      <input type="range" min="5" max="40" value="18" oninput="setVar('--radius',this.value+'px')">
+
+      <button onclick="toggleTheme()">Theme</button>
+    </div>
+
+  </div>
+
+  <div class="right">
+    <div class="big-display">
+      <h1>AI Sekretarica</h1>
+      <p id="aiText">Spremna sam 👋</p>
+      <button onclick="speak('Zdravo, kako mogu da pomognem')">Test glas</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="mic" onclick="startVoice()">🎤</div>
+
+<script>
+/* ---------------- PWA ---------------- */
+const manifest = {
+  name:"AI Sekretarica",
+  short_name:"Sekretarica",
+  start_url:".",
+  display:"standalone",
+  background_color:"#0b0f1a",
+  theme_color:"#6ea8ff",
+  icons:[]
+};
+const blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById("manifest-placeholder").href = URL.createObjectURL(blob);
+
+if('serviceWorker' in navigator){
+  const swCode = `
+  self.addEventListener('install', e=>{
+    self.skipWaiting();
+  });
+  self.addEventListener('fetch', e=>{
+    e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
+  });
+  `;
+  const swBlob = new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+}
+
+/* ---------------- NOTES (IndexedDB simple) ---------------- */
+let notes = JSON.parse(localStorage.getItem("notes")||"[]");
+
+function renderNotes(){
+  document.getElementById("notes").innerHTML =
+    notes.map(n=>`<div class="note">${n}</div>`).join("");
+}
+
+function addNote(){
+  let val = document.getElementById("noteInput").value;
+  if(!val) return;
+  notes.push(val);
+  localStorage.setItem("notes",JSON.stringify(notes));
+  renderNotes();
+}
+
+renderNotes();
+
+/* ---------------- ALARM ---------------- */
+let alarmTimer;
+
+function setAlarm(){
+  let time = document.getElementById("alarmTime").value;
+  if(!time) return;
+
+  let [h,m] = time.split(":");
+  let now = new Date();
+  let alarm = new Date();
+  alarm.setHours(h,m,0,0);
+
+  let diff = alarm - now;
+  if(diff < 0) diff += 86400000;
+
+  clearTimeout(alarmTimer);
+
+  alarmTimer = setTimeout(()=>{
+    speak("⏰ Alarm! Vreme je!");
+    alert("Alarm!");
+  }, diff);
+}
+
+/* ---------------- VOICE ---------------- */
+function speak(text){
+  let u = new SpeechSynthesisUtterance(text);
+  u.lang = "sr-RS";
+  speechSynthesis.speak(u);
+  document.getElementById("aiText").innerText = text;
+}
+
+function startVoice(){
+  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    alert("Nije podržan mikrofon");
+    return;
+  }
+  let rec = new SR();
+  rec.lang="sr-RS";
+  rec.start();
+
+  rec.onresult = (e)=>{
+    let txt = e.results[0][0].transcript;
+    document.getElementById("aiText").innerText = txt;
+
+    // simple AI logic
+    if(txt.includes("vreme")) speak("Ne znam tačno vreme, ali sam tu za tebe");
+    else if(txt.includes("zdravo")) speak("Zdravo 😊");
+    else speak("Rekla si: " + txt);
+  }
+}
+
+/* ---------------- SETTINGS ---------------- */
+function setVar(name,val){
+  document.documentElement.style.setProperty(name,val);
+}
+
+function toggleTheme(){
+  if(document.body.style.background.includes("255")){
+    location.reload();
+  } else {
+    document.body.style.background = "#f5f7ff";
+    document.body.style.color = "#000";
+  }
+}
+
+/* ---------------- PERMISSION ---------------- */
+if('Notification' in window){
+  Notification.requestPermission();
+}
+</script>
+
+</body>
+</html>
