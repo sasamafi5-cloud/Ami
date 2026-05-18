@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUNA AI Ultra</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:#020617;
+overflow:hidden;
+}
+
+.app{
+width:100%;
+height:100vh;
+background:
+radial-gradient(circle at top,#172554 0%,#020617 55%,#01030a 100%);
+position:relative;
+overflow:hidden;
+}
+
+.glow1,.glow2{
+position:absolute;
+border-radius:50%;
+filter:blur(80px);
+opacity:.25;
+}
+
+.glow1{
+width:220px;
+height:220px;
+background:#2563eb;
+top:-60px;
+left:-60px;
+}
+
+.glow2{
+width:200px;
+height:200px;
+background:#7c3aed;
+bottom:-80px;
+right:-50px;
+}
+
+.header{
+height:72px;
+padding:14px 18px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:relative;
+z-index:5;
+}
+
+.logo-wrap{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo{
+width:46px;
+height:46px;
+border-radius:16px;
+background:linear-gradient(145deg,#2563eb,#7c3aed);
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+0 0 25px rgba(59,130,246,.55),
+0 0 45px rgba(124,58,237,.35);
+}
+
+.logo i{
+font-size:18px;
+color:white;
+}
+
+.header h1{
+font-size:20px;
+font-weight:800;
+color:white;
+line-height:1;
+}
+
+.header p{
+font-size:11px;
+color:#94a3b8;
+margin-top:2px;
+}
+
+.badge{
+padding:10px 16px;
+border-radius:999px;
+background:linear-gradient(145deg,#2563eb,#7c3aed);
+font-size:11px;
+font-weight:700;
+color:white;
+box-shadow:0 0 25px rgba(124,58,237,.45);
+}
+
+.main{
+padding:0 14px 90px;
+height:calc(100vh - 72px);
+overflow:hidden;
+position:relative;
+z-index:2;
+}
+
+.top-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+height:235px;
+}
+
+.panel{
+background:rgba(15,23,42,.68);
+border:1px solid rgba(255,255,255,.05);
+border-radius:26px;
+padding:12px;
+backdrop-filter:blur(18px);
+box-shadow:
+0 10px 40px rgba(0,0,0,.45),
+inset 0 1px 1px rgba(255,255,255,.04);
+overflow:hidden;
+}
+
+.panel-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.panel-head h2{
+font-size:11px;
+font-weight:800;
+letter-spacing:1px;
+color:#cbd5e1;
+}
+
+.counter{
+width:22px;
+height:22px;
+border-radius:50%;
+background:linear-gradient(145deg,#ff006e,#ff4d6d);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:10px;
+font-weight:800;
+color:white;
+box-shadow:0 0 20px rgba(255,0,110,.45);
+}
+
+.scroll{
+height:175px;
+overflow:auto;
+padding-right:3px;
+}
+
+.scroll::-webkit-scrollbar{
+width:3px;
+}
+
+.scroll::-webkit-scrollbar-thumb{
+background:#334155;
+border-radius:20px;
+}
+
+.note,.alarm{
+background:rgba(30,41,59,.75);
+border:1px solid rgba(255,255,255,.05);
+border-radius:20px;
+padding:12px;
+margin-bottom:10px;
+box-shadow:
+0 5px 25px rgba(0,0,0,.3),
+inset 0 1px 1px rgba(255,255,255,.03);
+}
+
+.note h3,.alarm h3{
+font-size:13px;
+line-height:1.45;
+font-weight:700;
+color:white;
+}
+
+.note p,.alarm p{
+font-size:10px;
+margin-top:4px;
+color:#60a5fa;
+}
+
+.assistant-box{
+margin-top:12px;
+background:rgba(15,23,42,.72);
+border-radius:28px;
+border:1px solid rgba(255,255,255,.05);
+padding:16px 14px 20px;
+backdrop-filter:blur(20px);
+box-shadow:
+0 10px 40px rgba(0,0,0,.45),
+0 0 35px rgba(37,99,235,.12);
+height:calc(100vh - 420px);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:space-between;
+}
+
+.response{
+width:100%;
+min-height:58px;
+border-radius:18px;
+background:rgba(30,41,59,.65);
+border:1px solid rgba(255,255,255,.04);
+display:flex;
+align-items:center;
+justify-content:center;
+padding:12px;
+text-align:center;
+font-size:13px;
+font-weight:600;
+line-height:1.5;
+color:#e2e8f0;
+box-shadow:inset 0 1px 1px rgba(255,255,255,.03);
+}
+
+.mic-wrap{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+margin-top:8px;
+}
+
+.mic{
+width:165px;
+height:165px;
+border-radius:50%;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle,#111827,#020617);
+box-shadow:
+0 0 60px rgba(124,58,237,.35),
+0 0 120px rgba(37,99,235,.12);
+cursor:pointer;
+}
+
+.mic::before{
+content:'';
+position:absolute;
+inset:-7px;
+border-radius:50%;
+background:conic-gradient(#00d4ff,#7c3aed,#ff00ff,#00d4ff);
+filter:blur(12px);
+animation:spin 6s linear infinite;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.mic-inner{
+width:132px;
+height:132px;
+border-radius:50%;
+position:relative;
+z-index:2;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(145deg,#1e293b,#0f172a);
+box-shadow:
+inset 0 0 25px rgba(255,255,255,.05),
+0 0 25px rgba(0,212,255,.15);
+}
+
+.mic-inner i{
+font-size:44px;
+color:white;
+text-shadow:0 0 25px rgba(255,255,255,.5);
+}
+
+.listening .mic-inner{
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+}
+
+.status{
+margin-top:14px;
+font-size:10px;
+font-weight:700;
+letter-spacing:3px;
+text-transform:uppercase;
+color:#94a3b8;
+}
+
+.bottom-nav{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:72px;
+background:rgba(15,23,42,.82);
+border-top:1px solid rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+display:flex;
+align-items:center;
+justify-content:space-around;
+box-shadow:0 -10px 30px rgba(0,0,0,.4);
+z-index:20;
+}
+
+.bottom-nav i{
+font-size:24px;
+color:#94a3b8;
+}
+
+.active{
+color:#00d4ff !important;
+text-shadow:0 0 20px rgba(0,212,255,.9);
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="glow1"></div>
+<div class="glow2"></div>
+
+<div class="header">
+
+<div class="logo-wrap">
+<div class="logo">
+<i class="fa-solid fa-brain"></i>
+</div>
+
+<div>
+<h1>LUNA AI</h1>
+<p>Ultra Premium Assistant</p>
+</div>
+</div>
+
+<div class="badge">PREMIUM</div>
+</div>
+
+<div class="main">
+
+<div class="top-grid">
+
+<div class="panel">
+<div class="panel-head">
+<h2>BELEŠKE</h2>
+<div class="counter" id="notes-count">0</div>
+</div>
+
+<div class="scroll" id="notes-container"></div>
+</div>
+
+<div class="panel">
+<div class="panel-head">
+<h2>ALARMI</h2>
+<div class="counter" id="alarms-count">0</div>
+</div>
+
+<div class="scroll" id="alarms-container"></div>
+</div>
+
+</div>
+
+<div class="assistant-box">
+
+<div class="response" id="response-box">
+Dodirni mikrofon za razgovor sa Lunom.
+</div>
+
+<div class="mic-wrap">
+<div class="mic" id="mic-button" onclick="toggleListening()">
+<div class="mic-inner">
+<i class="fa-solid fa-microphone"></i>
+</div>
+</div>
+
+<div class="status" id="status-text">
+Dodirni za razgovor
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="bottom-nav">
+<i class="fa-solid fa-comment-dots active"></i>
+<i class="fa-solid fa-gear"></i>
+</div>
+
+</div>
+
+<script>
+let notes = JSON.parse(localStorage.getItem('luna_notes')) || [];
+let alarms = JSON.parse(localStorage.getItem('luna_alarms')) || [];
+let recognition;
+let isListening = false;
+
+function saveData(){
+localStorage.setItem('luna_notes',JSON.stringify(notes));
+localStorage.setItem('luna_alarms',JSON.stringify(alarms));
+}
+
+function speak(text){
+document.getElementById('response-box').innerText = text;
+
+if('speechSynthesis' in window){
+window.speechSynthesis.cancel();
+const speech = new SpeechSynthesisUtterance(text);
+speech.lang = 'sr-RS';
+window.speechSynthesis.speak(speech);
+}
+}
+
+function renderNotes(){
+const container = document.getElementById('notes-container');
+document.getElementById('notes-count').innerText = notes.length;
+container.innerHTML='';
+
+if(notes.length===0){
+container.innerHTML=`
+<div class="note">
+<h3>Nema beleški</h3>
+<p>Lokalna memorija</p>
+</div>`;
+return;
+}
+
+notes.forEach((note,index)=>{
+container.innerHTML += `
+<div class="note">
+<h3>${note}</h3>
+<p>Sačuvano lokalno</p>
+</div>`;
+});
+}
+
+function renderAlarms(){
+const container = document.getElementById('alarms-container');
+document.getElementById('alarms-count').innerText = alarms.length;
+container.innerHTML='';
+
+if(alarms.length===0){
+container.innerHTML=`
+<div class="alarm">
+<h3>Nema alarma</h3>
+<p>Sistem spreman</p>
+</div>`;
+return;
+}
+
+alarms.forEach((alarm,index)=>{
+container.innerHTML += `
+<div class="alarm">
+<h3>${alarm}</h3>
+<p>Aktivan alarm</p>
+</div>`;
+});
+}
+
+function processCommand(text){
+const cmd = text.toLowerCase();
+
+if(cmd.includes('zapiši')){
+let clean = text.replace(/zapiši|belešku|beleške|zapamti/gi,'').trim();
+
+if(clean.length>1){
+notes.unshift(clean);
+saveData();
+renderNotes();
+speak('Zapisala sam: ' + clean);
+return;
+}
+}
+
+if(cmd.includes('alarm')){
+const match = cmd.match(/(\d{1,2})[:\s]?(\d{2})/);
+
+if(match){
+const time = `${match[1].padStart(2,'0')}:${match[2].padStart(2,'0')}`;
+alarms.push(time);
+saveData();
+renderAlarms();
+speak('Alarm je podešen za ' + time);
+return;
+}
+}
+
+if(cmd.includes('kako si')){
+speak('Odlično sam Saša. Tu sam i spremna da pomognem.');
+return;
+}
+
+if(cmd.includes('koliko je sati')){
+const now = new Date();
+const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+speak('Trenutno je ' + time);
+return;
+}
+
+speak('Razumela sam: ' + text);
+}
+
+if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+recognition = new SpeechRecognition();
+recognition.lang = 'sr-RS';
+recognition.continuous = false;
+recognition.interimResults = false;
+
+recognition.onstart = ()=>{
+isListening = true;
+document.getElementById('status-text').innerText = 'Luna sluša...';
+document.getElementById('mic-button').classList.add('listening');
+};
+
+recognition.onend = ()=>{
+isListening = false;
+document.getElementById('status-text').innerText = 'Dodirni za razgovor';
+document.getElementById('mic-button').classList.remove('listening');
+};
+
+recognition.onresult = (event)=>{
+const text = event.results[0][0].transcript;
+processCommand(text);
+};
+}
+
+function toggleListening(){
+if(!recognition){
+alert('Voice recognition nije podržan.');
+return;
+}
+
+if(isListening){
+recognition.stop();
+}else{
+recognition.start();
+}
+}
+
+setInterval(()=>{
+const now = new Date();
+const current = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+alarms.forEach((alarm,index)=>{
+if(alarm===current && now.getSeconds()===0){
+speak('Saša vreme je za alarm u ' + alarm);
+alarms.splice(index,1);
+saveData();
+renderAlarms();
+}
+});
+},1000);
+
+renderNotes();
+renderAlarms();
+
+setTimeout(()=>{
+speak('Dobrodošao Saša. Luna AI sistem je spreman.');
+},1200);
+</script>
+
+</body>
+</html>
