@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna 3D AI Sekretarica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- KONTROLA PREKO SLAJDERA --- */
+        :root {
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --elevation: 8px;
+            --blur: 16px;
+            --shadow-opacity: 0.1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- GLAVNI EKRAN (KREIRAN PREMA TVOJOJ SLICI) --- */
+        .app-screen {
+            width: 100%;
+            max-width: 380px;
+            height: 780px;
+            background: #f1f5f9;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            padding: 24px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-l {
+            width: 46px;
+            height: 46px;
+            background: #8b5cf6;
+            color: white;
+            font-weight: 800;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .header-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            line-height: 1.2;
+        }
+
+        .header-text p {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-trigger-settings {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .btn-sasa {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 700;
+            font-size: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4);
+        }
+
+        /* --- SREDNJI DEO (STRUKTURA SA TVOJE SLIKE) --- */
+        .main-content {
+            padding: 20px;
+            flex-1: 1;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- ORIGINALNE KARTICE SA POBOLJŠANIM KRUŽNIM IKONAMA --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            box-shadow: 
+                var(--elevation) var(--elevation) var(--blur) rgba(0, 0, 0, var(--shadow-opacity)),
+                calc(var(--elevation) * -1) calc(var(--elevation) * -1) var(--blur) rgba(255, 255, 255, 0.9);
+        }
+
+        /* Promenjeno u savršene kružiće za sličice */
+        .circle-icon-holder {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+        }
+
+        .circle-icon-holder i {
+            font-size: 18px;
+        }
+
+        .card-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Desna velika bela kartica sa tvoje slike */
+        .right-display-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 20px;
+            height: 240px;
+            box-shadow: 
+                var(--elevation) var(--elevation) var(--blur) rgba(0, 0, 0, var(--shadow-opacity)),
+                calc(var(--elevation) * -1) calc(var(--elevation) * -1) var(--blur) rgba(255, 255, 255, 0.9);
+        }
+
+        .display-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .display-content {
+            list-style: none;
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* --- POBOLJŠANI 3D MIKROFON SA SENKAMA --- */
+        .bottom-area {
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .mic-3d-button {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            /* Duboka spoljna i unutrašnja senka za jači 3D efekat */
+            box-shadow: 
+                0 12px 24px rgba(0,0,0,0.1), 
+                inset 0 4px 6px rgba(255,255,255,0.9),
+                inset 0 -4px 6px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .mic-neon-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, #3b82f6, #ec4899);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .mic-center-white {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Jača 3D senka ispod samog belog kruga */
+            box-shadow: 
+                0 6px 12px rgba(0,0,0,0.15), 
+                inset 0 2px 3px rgba(0,0,0,0.05);
+        }
+
+        .mic-center-white i {
+            font-size: 30px;
+            color: #3b82f6;
+            /* Senka na samoj ikonici mikrofona da ne izgleda ravno */
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
+        }
+
+        .bottom-action-text {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        /* --- STRANA ZA PODEŠAVANJA (SLAJDERI) --- */
+        .settings-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.97);
+            z-index: 20;
+            padding: 24px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .settings-overlay.open {
+            display: flex;
+        }
+
+        .settings-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .settings-top h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .btn-close {
+            background: #f1f5f9;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .slider-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .row-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .row-item label {
+            font-size: 12px;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .row-item input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            appearance: none;
+            outline: none;
+        }
+
+        .row-item input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        .color-row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-row-item input[type="color"] {
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-screen">
+        
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-l">L</div>
+                <div class="header-text">
+                    <h1>Luna</h1>
+                    <p>3D AI Sekretarica</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-trigger-settings" id="openBtn"><i class="fa-solid fa-sliders"></i></button>
+                <button class="btn-sasa">Saša</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div class="left-column">
+                <div class="card">
+                    <span class="notification-badge">3</span>
+                    <div class="circle-icon-holder">
+                        <i class="fa-solid fa-file-lines" style="color: #f59e0b;"></i>
+                    </div>
+                    <div class="card-name">Beleške</div>
+                </div>
+
+                <div class="card">
+                    <span class="notification-badge">2</span>
+                    <div class="circle-icon-holder">
+                        <i class="fa-solid fa-bell" style="color: #ec4899;"></i>
+                    </div>
+                    <div class="card-name">Alarmi</div>
+                </div>
+            </div>
+
+            <div class="right-display-card">
+                <div class="display-title">Beleške</div>
+                <ul class="display-content">
+                    <li>• Kupiti poklon</li>
+                    <li>• Završiti projekat</li>
+                </ul>
+            </div>
+
+            <div class="settings-overlay" id="settingsMenu">
+                <div class="settings-top">
+                    <h2>Podešavanje izgleda</h2>
+                    <button class="btn-close" id="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">Boje u dizajnu</div>
+                    <div class="row-item color-row-item">
+                        <label>Boja glavnog teksta / slova</label>
+                        <input type="color" id="colorText" value="#1e293b">
+                    </div>
+                    <div class="row-item color-row-item">
+                        <label>Pozadina samih kartica</label>
+                        <input type="color" id="colorCard" value="#ffffff">
+                    </div>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">3D Izgled i Senke</div>
+                    <div class="row-item">
+                        <label>Visina / Dubina senke: <span id="valElevation">8px</span></label>
+                        <input type="range" id="slElevation" min="0" max="16" value="8">
+                    </div>
+                    <div class="row-item">
+                        <label>Zamućenje senke (Blur): <span id="valBlur">16px</span></label>
+                        <input type="range" id="slBlur" min="4" max="32" value="16">
+                    </div>
+                    <div class="row-item">
+                        <label>Prozirnost senke (Opacity): <span id="valOpacity">10%</span></label>
+                        <input type="range" id="slOpacity" min="5" max="30" value="10">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-area">
+            <div class="mic-3d-button">
+                <div class="mic-neon-ring">
+                    <div class="mic-center-white">
+                        <i class="fa-solid fa-microphone"></i>
+                    </div>
+                </div>
+            </div>
+            <p class="bottom-action-text">Dodirni za razgovor sa Lunom</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Otvaranje i zatvaranje podešavanja na klik
+        const settingsMenu = document.getElementById('settingsMenu');
+        document.getElementById('openBtn').addEventListener('click', () => settingsMenu.classList.add('open'));
+        document.getElementById('closeBtn').addEventListener('click', () => settingsMenu.classList.remove('open'));
+
+        // Povezivanje slajdera sa CSS varijablama uživo
+        const root = document.documentElement;
+
+        // Slajderi za Boje
+        document.getElementById('colorText').addEventListener('input', (e) => {
+            root.style.setProperty('--text-color', e.target.value);
+        });
+        document.getElementById('colorCard').addEventListener('input', (e) => {
+            root.style.setProperty('--card-bg', e.target.value);
+        });
+
+        // Slajderi za 3D Senke
+        document.getElementById('slElevation').addEventListener('input', (e) => {
+            root.style.setProperty('--elevation', e.target.value + 'px');
+            document.getElementById('valElevation').innerText = e.target.value + 'px';
+        });
+        document.getElementById('slBlur').addEventListener('input', (e) => {
+            root.style.setProperty('--blur', e.target.value + 'px');
+            document.getElementById('valBlur').innerText = e.target.value + 'px';
+        });
+        document.getElementById('slOpacity').addEventListener('input', (e) => {
+            root.style.setProperty('--shadow-opacity', (e.target.value / 100));
+            document.getElementById('valOpacity').innerText = e.target.value + '%';
+        });
+    </script>
+</body>
+</html>
