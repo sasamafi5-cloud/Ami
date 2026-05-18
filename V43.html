@@ -1,0 +1,584 @@
+LUNA AI — Kompletan Premium Mobile Kod
+
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNA AI Premium</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#050816;
+  --card:#0f172acc;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --blue:#00d4ff;
+  --purple:#7c3aed;
+  --pink:#ff00ff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+  radial-gradient(circle at top,#111827 0%,#050816 70%);
+}
+
+.phone{
+  width:100%;
+  max-width:360px;
+  height:100vh;
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  background:var(--bg);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:
+  0 30px 80px rgba(0,0,0,.7),
+  0 0 60px rgba(124,58,237,.15);
+}
+
+.particle{
+  position:absolute;
+  width:3px;
+  height:3px;
+  background:white;
+  border-radius:50%;
+  opacity:.5;
+  animation:float 8s linear infinite;
+}
+
+.particle:nth-child(1){top:10%;left:15%;animation-delay:0s;}
+.particle:nth-child(2){top:30%;left:80%;animation-delay:2s;}
+.particle:nth-child(3){top:70%;left:20%;animation-delay:4s;}
+.particle:nth-child(4){top:60%;left:75%;animation-delay:1s;}
+.particle:nth-child(5){top:45%;left:45%;animation-delay:3s;}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-20px);}
+100%{transform:translateY(0);}
+}
+
+.header{
+height:64px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:16px;
+border-bottom:1px solid rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo-circle{
+width:38px;
+height:38px;
+border-radius:50%;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 0 25px rgba(0,212,255,.45);
+}
+
+.logo-circle i{
+color:white;
+font-size:15px;
+}
+
+.logo-text h1{
+color:white;
+font-size:14px;
+font-weight:700;
+letter-spacing:.5px;
+}
+
+.logo-text p{
+color:var(--muted);
+font-size:9px;
+}
+
+.premium{
+padding:8px 14px;
+border-radius:999px;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white;
+font-size:10px;
+font-weight:700;
+box-shadow:0 0 20px rgba(124,58,237,.4);
+}
+
+.content{
+padding:14px;
+height:calc(100% - 122px);
+overflow:auto;
+}
+
+.section{
+display:flex;
+gap:10px;
+}
+
+.column{
+width:50%;
+}
+
+.title-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:8px;
+}
+
+.title{
+color:#cbd5e1;
+font-size:10px;
+font-weight:700;
+letter-spacing:1px;
+text-transform:uppercase;
+}
+
+.badge{
+width:22px;
+height:22px;
+border-radius:50%;
+background:linear-gradient(135deg,#ff4d6d,#ff006e);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:9px;
+font-weight:800;
+box-shadow:0 0 18px rgba(255,0,110,.45);
+}
+
+.card{
+background:rgba(15,23,42,.72);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.06);
+border-radius:22px;
+padding:12px;
+margin-bottom:10px;
+box-shadow:
+0 0 0 1px rgba(255,255,255,.03),
+0 10px 30px rgba(0,0,0,.45),
+0 0 25px rgba(80,120,255,.12),
+inset 0 1px 1px rgba(255,255,255,.06);
+}
+
+.card h3{
+color:white;
+font-size:12px;
+line-height:1.5;
+font-weight:600;
+}
+
+.card small{
+color:#60a5fa;
+font-size:9px;
+}
+
+.alert{
+margin-top:6px;
+background:rgba(15,23,42,.7);
+border:1px solid rgba(255,255,255,.05);
+border-radius:18px;
+padding:12px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.alert-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.alert-icon{
+width:38px;
+height:38px;
+border-radius:50%;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 0 20px rgba(124,58,237,.35);
+}
+
+.alert h2{
+color:white;
+font-size:14px;
+margin-bottom:2px;
+}
+
+.alert p{
+color:#cbd5e1;
+font-size:11px;
+}
+
+.mic-wrap{
+margin-top:12px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+
+.mic{
+width:170px;
+height:170px;
+border-radius:50%;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle,#111827,#050816);
+box-shadow:0 0 60px rgba(124,58,237,.35);
+cursor:pointer;
+}
+
+.mic::before{
+content:"";
+position:absolute;
+inset:-8px;
+border-radius:50%;
+background:conic-gradient(from 0deg,#00d4ff,#7c3aed,#ff00ff,#00d4ff);
+filter:blur(16px);
+animation:rotateGlow 6s linear infinite;
+}
+
+@keyframes rotateGlow{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.mic-inner{
+width:135px;
+height:135px;
+border-radius:50%;
+position:relative;
+z-index:2;
+display:flex;
+align-items:center;
+justify-content:center;
+background:radial-gradient(circle,#1e293b,#0f172a);
+box-shadow:inset 0 0 25px rgba(255,255,255,.06),0 0 40px rgba(0,212,255,.15);
+}
+
+.mic-inner i{
+font-size:48px;
+color:white;
+text-shadow:0 0 25px rgba(255,255,255,.5);
+}
+
+.wave{
+width:170px;
+height:35px;
+margin-top:10px;
+opacity:.6;
+background:radial-gradient(circle,#00d4ff 2px,transparent 3px);
+background-size:20px 20px;
+animation:waveMove 4s linear infinite;
+}
+
+@keyframes waveMove{
+from{background-position:0 0;}
+to{background-position:100px 0;}
+}
+
+.mic-text{
+margin-top:4px;
+color:#cbd5e1;
+font-size:10px;
+letter-spacing:3px;
+text-transform:uppercase;
+text-shadow:0 0 10px rgba(0,212,255,.5);
+}
+
+.nav{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:58px;
+background:rgba(15,23,42,.75);
+backdrop-filter:blur(20px);
+border-top:1px solid rgba(255,255,255,.05);
+display:flex;
+align-items:center;
+justify-content:space-around;
+box-shadow:0 -10px 30px rgba(0,0,0,.4),0 0 20px rgba(124,58,237,.15);
+}
+
+.nav i{
+font-size:20px;
+color:#94a3b8;
+cursor:pointer;
+}
+
+.active{
+color:#00d4ff !important;
+text-shadow:0 0 15px rgba(0,212,255,.8);
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<div class="header">
+
+<div class="logo">
+<div class="logo-circle">
+<i class="fa-solid fa-brain"></i>
+</div>
+
+<div class="logo-text">
+<h1>LUNA AI</h1>
+<p>3D Premium Assistant</p>
+</div>
+</div>
+
+<div class="premium">Premium</div>
+</div>
+
+<div class="content">
+
+<div class="section">
+
+<div class="column">
+<div class="title-row">
+<div class="title">Beleške</div>
+<div class="badge" id="notes-badge">0</div>
+</div>
+<div id="notes-container"></div>
+</div>
+
+<div class="column">
+<div class="title-row">
+<div class="title">Alarmi</div>
+<div class="badge" id="alarm-badge">0</div>
+</div>
+<div id="alarm-container"></div>
+</div>
+
+</div>
+
+<div class="alert">
+<div class="alert-left">
+<div class="alert-icon">
+<i class="fa-solid fa-star text-white"></i>
+</div>
+<div>
+<h2>LUNA AI</h2>
+<p id="luna-response">Dodirni mikrofon za razgovor</p>
+</div>
+</div>
+</div>
+
+<div class="mic-wrap">
+<div class="mic" onclick="toggleListening()">
+<div class="mic-inner">
+<i class="fa-solid fa-microphone"></i>
+</div>
+</div>
+
+<div class="wave"></div>
+<div class="mic-text" id="mic-status">Dodirni za razgovor</div>
+</div>
+
+</div>
+
+<div class="nav">
+<i class="fa-solid fa-comment-dots active"></i>
+<i class="fa-solid fa-gear"></i>
+</div>
+
+</div>
+
+<script>
+let savedNotes = JSON.parse(localStorage.getItem('luna_notes')) || [];
+let activeAlarms = JSON.parse(localStorage.getItem('luna_alarms')) || [];
+let recognition;
+let isListening = false;
+
+function saveData(){
+localStorage.setItem('luna_notes',JSON.stringify(savedNotes));
+localStorage.setItem('luna_alarms',JSON.stringify(activeAlarms));
+}
+
+function renderNotes(){
+const container=document.getElementById('notes-container');
+document.getElementById('notes-badge').innerText=savedNotes.length;
+
+container.innerHTML='';
+
+if(savedNotes.length===0){
+container.innerHTML=`<div class="card"><h3>Nema beleški...</h3></div>`;
+return;
+}
+
+savedNotes.forEach(note=>{
+container.innerHTML+=`
+<div class="card">
+<h3>${note}</h3>
+<small>Sačuvano lokalno</small>
+</div>`;
+});
+}
+
+function renderAlarms(){
+const container=document.getElementById('alarm-container');
+document.getElementById('alarm-badge').innerText=activeAlarms.length;
+
+container.innerHTML='';
+
+if(activeAlarms.length===0){
+container.innerHTML=`<div class="card"><h3>Nema alarma...</h3></div>`;
+return;
+}
+
+activeAlarms.forEach(alarm=>{
+container.innerHTML+=`
+<div class="card">
+<h3>${alarm}</h3>
+<small>Aktivan alarm</small>
+</div>`;
+});
+}
+
+function speakResponse(text){
+document.getElementById('luna-response').innerText=text;
+
+if('speechSynthesis' in window){
+window.speechSynthesis.cancel();
+const utterance = new SpeechSynthesisUtterance(text);
+utterance.lang='sr-RS';
+window.speechSynthesis.speak(utterance);
+}
+}
+
+function processCommand(text){
+const cmd=text.toLowerCase();
+
+if(cmd.includes('zapiši')){
+let clean=text.replace(/zapiši/gi,'').trim();
+if(clean.length>1){
+savedNotes.unshift(clean);
+saveData();
+renderNotes();
+speakResponse('Zapisala sam: '+clean);
+return;
+}
+}
+
+if(cmd.includes('alarm')){
+const match = cmd.match(/(\d{1,2})[:\s]?(\d{2})/);
+
+if(match){
+let time=`${match[1].padStart(2,'0')}:${match[2].padStart(2,'0')}`;
+activeAlarms.push(time);
+saveData();
+renderAlarms();
+speakResponse('Alarm je podešen za '+time);
+return;
+}
+}
+
+if(cmd.includes('kako si')){
+speakResponse('Odlično sam Saša. Tu sam da pomognem.');
+return;
+}
+
+speakResponse('Razumela sam: '+text);
+}
+
+if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+recognition = new SpeechRecognition();
+recognition.lang='sr-RS';
+
+recognition.onstart=()=>{
+isListening=true;
+document.getElementById('mic-status').innerText='Luna sluša...';
+}
+
+recognition.onend=()=>{
+isListening=false;
+document.getElementById('mic-status').innerText='Dodirni za razgovor';
+}
+
+recognition.onresult=(event)=>{
+const text = event.results[0][0].transcript;
+processCommand(text);
+}
+}
+
+function toggleListening(){
+if(!recognition){
+alert('Speech recognition nije podržan');
+return;
+}
+
+if(isListening){
+recognition.stop();
+}else{
+recognition.start();
+}
+}
+
+setInterval(()=>{
+const now = new Date();
+const current = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+
+activeAlarms.forEach((alarm,index)=>{
+if(alarm===current && now.getSeconds()===0){
+speakResponse('Saša alarm za '+alarm);
+activeAlarms.splice(index,1);
+saveData();
+renderAlarms();
+}
+});
+},1000);
+
+renderNotes();
+renderAlarms();
+</script>
+
+</body>
+</html>
+
+
+
+
