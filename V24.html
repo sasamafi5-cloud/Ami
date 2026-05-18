@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA • S20 Ultra Pro Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    /* Glavni sistem dinamičkih 3D varijabli */
+    :root {
+      --bg-color: #f1f5f9;
+      --text-color: #1e2937;
+      --accent-color: #7c3aed;
+      
+      /* 5 Slajdera za senke */
+      --shadow-dist: 10px;
+      --shadow-blur: 20px;
+      --shadow-dark-opacity: rgba(209, 213, 219, 1);  /* #d1d5db */
+      --shadow-light-opacity: rgba(255, 255, 255, 1); /* #ffffff */
+      --mic-size: 140px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+    }
+
+    /* Dimenzije prilagođene za Samsung S20 Ultra (proporcije ekrana) */
+    .phone-frame {
+      width: 360px;
+      height: 690px;
+      background: var(--bg-color);
+      border: 10px solid #1e2937;
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+    }
+
+    /* Elementi sa dinamičkim tekstom i pozadinom */
+    .dynamic-bg { background-color: var(--bg-color) !important; }
+    .dynamic-text { color: var(--text-color) !important; }
+    .dynamic-accent { color: var(--accent-color) !important; }
+    .dynamic-accent-bg { background-color: var(--accent-color) !important; }
+
+    /* Napredni Neumorfizam sa 5 osa podešavanja */
+    .neumorph {
+      background: var(--bg-color);
+      box-shadow: 
+        var(--shadow-dist) var(--shadow-dist) var(--shadow-blur) var(--shadow-dark-opacity),
+        calc(var(--shadow-dist) * -1) calc(var(--shadow-dist) * -1) var(--shadow-blur) var(--shadow-light-opacity);
+      border-radius: 16px;
+      transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Efekat urezanog/utisnutog dugmeta */
+    .list-item.selected {
+      box-shadow: 
+        inset var(--shadow-dist) var(--shadow-dist) var(--shadow-blur) var(--shadow-dark-opacity),
+        inset calc(var(--shadow-dist) * -1) calc(var(--shadow-dist) * -1) var(--shadow-blur) var(--shadow-light-opacity);
+    }
+
+    /* 3D Mikrofon */
+    .mic-3d {
+      width: var(--mic-size);
+      height: var(--mic-size);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-color);
+      cursor: pointer;
+      box-shadow: 
+        var(--shadow-dist) var(--shadow-dist) var(--shadow-blur) var(--shadow-dark-opacity),
+        calc(var(--shadow-dist) * -1) calc(var(--shadow-dist) * -1) var(--shadow-blur) var(--shadow-light-opacity);
+      background-size: cover;
+      background-position: center;
+      transition: all 0.2s ease;
+    }
+    
+    .mic-3d:active {
+      transform: scale(0.95);
+      box-shadow: 
+        inset var(--shadow-dist) var(--shadow-dist) var(--shadow-blur) var(--shadow-dark-opacity),
+        inset calc(var(--shadow-dist) * -1) calc(var(--shadow-dist) * -1) var(--shadow-blur) var(--shadow-light-opacity);
+    }
+
+    .mic-inner {
+      width: 70%;
+      height: 70%;
+      background: linear-gradient(145deg, var(--accent-color), #db2777);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 3px 6px rgba(255,255,255,0.4);
+    }
+
+    .listening .mic-inner {
+      animation: pulse-listen 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-listen {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.8; }
+    }
+
+    .custom-scroll::-webkit-scrollbar { width: 3px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <div class="phone-frame dynamic-bg">
+    
+    <!-- Header (Aplikacija odmah počinje odavde) -->
+    <div class="px-4 py-4 flex items-center justify-between border-b border-black/5 z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 neumorph flex items-center justify-center text-base font-bold dynamic-accent">L</div>
+        <div>
+          <div class="font-bold text-base leading-tight dynamic-text">Luna</div>
+          <div class="text-[10px] text-slate-400 font-medium">3D Pametni Asistent</div>
+        </div>
+      </div>
+      <div class="text-xs font-bold dynamic-accent-bg text-white px-3 py-1.5 rounded-full shadow-sm">Saša</div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="flex flex-1 min-h-0 relative">
+      
+      <!-- ================= STRANICA 1: GLAVNI EKRAN ================= -->
+      <div id="home-screen" class="w-full h-full flex flex-col">
+        
+        <div class="flex flex-1 min-h-0 p-4 gap-3">
+          <!-- Beleške -->
+          <div class="w-1/2 flex flex-col">
+            <span class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider px-1">Beleške</span>
+            <div id="notes-container" class="flex-1 space-y-2.5 overflow-y-auto custom-scroll pr-1">
+              <div class="neumorph p-3 text-[11px] font-medium text-slate-400 italic">Nema zabeleženih misli...</div>
+            </div>
+          </div>
+
+          <!-- Aktivni Alarmi -->
+          <div class="w-1/2 flex flex-col">
+            <span class="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wider px-1">Aktivni Alarmi</span>
+            <div id="alarm-container" class="flex-1 space-y-2.5 overflow-y-auto custom-scroll pr-1">
+              <div class="neumorph p-3 text-[11px] font-medium text-slate-400 italic">Svi alarmi ugašeni...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donji komunikacioni blok -->
+        <div class="p-4 border-t border-black/5 flex flex-col items-center bg-black/[0.01]">
+          <div class="w-full text-center min-h-[45px] flex items-center justify-center px-2 mb-2">
+            <p id="luna-bubble" class="text-xs font-medium dynamic-text opacity-90">
+              "Zdravo Saša! Reci mi šta želiš da zapišem ili koji alarm da podesim?"
+            </p>
+          </div>
+
+          <div class="flex justify-center my-1">
+            <div id="mic-container" class="mic-3d" onclick="toggleListening()">
+              <div class="mic-inner" id="mic-inner-bg">
+                <i class="fa-solid fa-microphone text-white text-xl" id="mic-icon"></i>
+              </div>
+            </div>
+          </div>
+          <span id="status-subtext" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Dodirni za razgovor</span>
+        </div>
+      </div>
+
+      <!-- ================= STRANICA 2: PODEŠAVANJA (5 SLAJDERA ZA SENKE + BOJE) ================= -->
+      <div id="settings-screen" class="w-full h-full p-4 overflow-y-auto hidden">
+        <h2 class="text-base font-bold mb-4 flex items-center gap-2 dynamic-text">
+          <i class="fa-solid fa-sliders dynamic-accent"></i> 3D Laboratorija & Boje
+        </h2>
+        
+        <div class="space-y-3.5 text-[11px] font-semibold text-slate-600">
+          
+          <!-- TOP 5 KONTROLA ZA 3D I SENKE -->
+          <div class="p-3 bg-black/[0.02] border border-black/5 rounded-xl space-y-2.5">
+            <span class="text-slate-400 block uppercase text-[9px] tracking-wider">Glavna 3D Geometrija</span>
+            
+            <!-- 1. Udaljenost -->
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>1. Udaljenost senke (X/Y)</span><span id="v-dist">10px</span></div>
+              <input type="range" min="1" max="20" value="10" class="w-full accent-violet-600" oninput="update3D('--shadow-dist', this.value + 'px', 'v-dist')">
+            </div>
+            <!-- 2. Zamućenje -->
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>2. Širina / Zamućenje (Blur)</span><span id="v-blur">20px</span></div>
+              <input type="range" min="2" max="40" value="20" class="w-full accent-violet-600" oninput="update3D('--shadow-blur', this.value + 'px', 'v-blur')">
+            </div>
+            <!-- 3. Tamna senka -->
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>3. Intenzitet dubine (Tamno)</span><span id="v-dark">15%</span></div>
+              <input type="range" min="5" max="50" value="15" class="w-full accent-violet-600" oninput="updateShadowColor('dark', this.value)">
+            </div>
+            <!-- 4. Urezi i svetlo -->
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>4. Intenzitet ureza (Svetlo)</span><span id="v-light">100%</span></div>
+              <input type="range" min="20" max="100" value="100" class="w-full accent-violet-600" oninput="updateShadowColor('light', this.value)">
+            </div>
+            <!-- 5. Veličina mikrofona -->
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>5. Veličina 3D mikrofona</span><span id="v-size">140px</span></div>
+              <input type="range" min="80" max="180" value="140" class="w-full accent-violet-600" oninput="update3D('--mic-size', this.value + 'px', 'v-size')">
+            </div>
+          </div>
+
+          <!-- KONTROLA BOJA (Sve komponente zasebno) -->
+          <div class="p-3 bg-black/[0.02] border border-black/5 rounded-xl space-y-2.5">
+            <span class="text-slate-400 block uppercase text-[9px] tracking-wider">Podešavanje Svih Boja</span>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Boja svih tekstova</span>
+              <input type="color" value="#1e2937" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--text-color', this.value)">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Boja dugmića i akcenta</span>
+              <input type="color" value="#7c3aed" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--accent-color', this.value)">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Pozadina cele aplikacije</span>
+              <input type="color" value="#f1f5f9" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--bg-color', this.value)">
+            </div>
+          </div>
+
+          <!-- Slika telefona -->
+          <div class="p-2 bg-black/[0.02] border border-black/5 rounded-xl">
+            <button onclick="document.getElementById('file-upload').click()" class="w-full py-2 bg-slate-800 text-white rounded-lg font-bold text-center block shadow-md">
+              <i class="fa-solid fa-image mr-1"></i> Slika u mikrofonu
+            </button>
+            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="loadUserPhoto(this)">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Donja Navigacija -->
+    <div class="h-14 bg-white/40 border-t border-black/5 flex items-center justify-around text-slate-400 text-base z-20">
+      <i class="fa-solid fa-comment-dots cursor-pointer transition" id="nav-home" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-gear cursor-pointer transition" id="nav-settings" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <audio id="alarm-audio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav" loop></audio>
+
+  <script>
+    let activeAlarms = [];
+    let isListening = false;
+    let recognition;
+
+    // Govor i prepoznavanje glasa
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechKit = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechKit();
+      recognition.lang = 'sr-RS';
+
+      recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('mic-container').classList.add('listening');
+        document.getElementById('status-subtext').innerText = "Luna sluša...";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        document.getElementById('mic-container').classList.remove('listening');
+        document.getElementById('status-subtext').innerText = "主动 Razgovor";
+      };
+
+      recognition.onresult = (event) => {
+        processLunaBrain(event.results[0][0].transcript);
+      };
+    }
+
+    function processLunaBrain(tekst) {
+      const komanda = tekst.toLowerCase();
+      document.getElementById('luna-bubble').innerText = `Vi: "${tekst}"`;
+
+      // Logika Alarma
+      if (komanda.includes('alarm') || komanda.includes('probudi') || komanda.includes('navij')) {
+        const match = komanda.match(/(\d{1,2})[:\s]?(\d{2})/);
+        if (match) {
+          let vreme = `${match[1].padStart(2, '0')}:${match[2].padStart(2, '0')}`;
+          activeAlarms.push(vreme);
+          renderAlarms();
+          speakResponse(`Urađeno Saša. Podesila sam ti alarm za ${vreme}.`);
+          return;
+        }
+      }
+
+      // Logika Beleški
+      if (komanda.includes('zapiši') || komanda.includes('belešk') || komanda.includes('zapamti')) {
+        let čistTekst = tekst.replace(/(zapiši|belešku|zapamti|da)/gi, "").trim();
+        if (čistTekst.length > 1) {
+          addNote(čistTekst);
+          speakResponse(`Zapisala sam: ${čistTekst}`);
+          return;
+        }
+      }
+
+      // Ljudski razgovor
+      if (komanda.includes('kako si')) {
+        speakResponse("Ja sam super Saša, kako si ti proproveo dan?");
+      } else if (komanda.includes('hvala')) {
+        speakResponse("Nema na čemu, Saša! Tu sam uvek.");
+      } else {
+        speakResponse("Razumela sam te, hoćeš li da ti ovo sačuvam kao novu zabelešku?");
+      }
+    }
+
+    function speakResponse(odgovor) {
+      document.getElementById('luna-bubble').innerText = `Luna: "${odgovor}"`;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(odgovor);
+        utterance.lang = 'sr-RS';
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleListening() {
+      if (!recognition) return alert("Glasovne funkcije nisu podržane.");
+      document.getElementById('alarm-audio').pause();
+      isListening ? recognition.stop() : recognition.start();
+    }
+
+    function changeScreen(ekran) {
+      const home = document.getElementById('home-screen');
+      const settings = document.getElementById('settings-screen');
+      const navHome = document.getElementById('nav-home');
+      const navSettings = document.getElementById('nav-settings');
+
+      if (ekran === 'home') {
+        home.classList.remove('hidden'); settings.classList.add('hidden');
+        navHome.style.setProperty('color', 'var(--accent-color)', 'important');
+        navSettings.style.setProperty('color', '#94a3b8', 'important');
+      } else {
+        home.classList.add('hidden'); settings.classList.remove('hidden');
+        navSettings.style.setProperty('color', 'var(--accent-color)', 'important');
+        navHome.style.setProperty('color', '#94a3b8', 'important');
+      }
+    }
+
+    // Dinamički update CSS varijabli iz slajdera i color pickera
+    function update3D(promenljiva, vrednost, textId = null) {
+      document.documentElement.style.setProperty(promenljiva, vrednost);
+      if (textId) document.getElementById(textId).innerText = vrednost;
+    }
+
+    // Posebna funkcija za preračunavanje prozirnosti senki (Ureza i Dubina)
+    function updateShadowColor(tip, vrednost) {
+      if (tip === 'dark') {
+        let procenat = Math.round((vrednost / 100) * 255);
+        // Generiše RGB vrednost za tamnu neumorfnu senku
+        document.documentElement.style.setProperty('--shadow-dark-opacity', `rgba(${255 - procenat}, ${255 - procenat}, ${255 - procenat}, 1)`);
+        document.getElementById('v-dark').innerText = vrednost + '%';
+      } else {
+        let opasnost = vrednost / 100;
+        document.documentElement.style.setProperty('--shadow-light-opacity', `rgba(255, 255, 255, ${opasnost})`);
+        document.getElementById('v-light').innerText = vrednost + '%';
+      }
+    }
+
+    function addNote(tekst) {
+      const container = document.getElementById('notes-container');
+      if (container.innerHTML.includes("Nema zabeleženih misli")) container.innerHTML = "";
+      const note = document.createElement('div');
+      note.className = "neumorph p-3 text-[11px] font-semibold dynamic-text bg-white/20";
+      note.innerHTML = `<span>${tekst}</span>`;
+      container.prepend(note);
+    }
+
+    function renderAlarms() {
+      const container = document.getElementById('alarm-container');
+      if (activeAlarms.length === 0) {
+        container.innerHTML = `<div class="neumorph p-3 text-[11px] font-medium text-slate-400 italic">Svi alarmi ugašeni...</div>`;
+        return;
+      }
+      container.innerHTML = "";
+      activeAlarms.forEach((alarm, i) => {
+        const div = document.createElement('div');
+        div.className = "neumorph p-3 text-xs font-bold dynamic-text flex justify-between items-center bg-white/20";
+        div.innerHTML = `<span>${alarm}</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer text-[10px]" onclick="activeAlarms.splice(${i},1); renderAlarms();"></i>`;
+        container.appendChild(div);
+      });
+    }
+
+    // Alarm mehanizam u realnom vremenu
+    setInterval(() => {
+      const vreme = new Date();
+      if (vreme.getSeconds() === 0) {
+        const trenutno = vreme.getHours().toString().padStart(2, '0') + ":" + vreme.getMinutes().toString().padStart(2, '0');
+        activeAlarms.forEach((alarm, index) => {
+          if (alarm === trenutno) {
+            document.getElementById('alarm-audio').play().catch(() => {});
+            speakResponse(`Saša, vreme je! Kucnuo je čas za alarm u ${alarm}.`);
+            activeAlarms.splice(index, 1);
+            renderAlarms();
+          }
+        });
+      }
+    }, 1000);
+
+    function loadUserPhoto(input) {
+      if (input.files && input.files[0]) {
+        const citac = new FileReader();
+        citac.onload = function(e) {
+          const inner = document.getElementById('mic-inner-bg');
+          inner.style.backgroundImage = `url('${e.target.result}')`;
+          document.getElementById('mic-icon').style.opacity = '0.15';
+        }
+        citac.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // Pokretanje
+    changeScreen('home');
+  </script>
+</body>
+</html>
