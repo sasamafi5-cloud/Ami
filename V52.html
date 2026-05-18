@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA • S20 Ultra Pro Studio 3D</title>
+  
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Luna AI">
+  <link class="apple-touch-icon" rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4712/4712139.png">
+  
+  <link rel="manifest" id="pwa-manifest">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-color: #f1f5f9;
+      --text-color: #1e2937;
+      --accent-color: #0000ff; 
+      --item-text-color: #0000ff; 
+      
+      /* 3D Geometrija */
+      --shadow-dist: 12px;
+      --shadow-blur: 24px;
+      --shadow-dark-opacity: rgba(160, 175, 195, 0.8);  
+      --shadow-light-opacity: rgba(255, 255, 255, 1); 
+      
+      /* Dimenzije za Mikrofon i Sliku */
+      --mic-size: 150px;
+      --image-scale: 75%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone-frame {
+      width: 360px;
+      height: 690px;
+      background: #e2e8f0; 
+      border: 10px solid #1e2937;
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+    }
+
+    .dynamic-bg { background-color: var(--bg-color) !important; }
+    .dynamic-text { color: var(--text-color) !important; }
+    .dynamic-accent { color: var(--accent-color) !important; }
+    .dynamic-accent-bg { background-color: var(--accent-color) !important; }
+    .item-text-style { color: var(--item-text-color) !important; }
+
+    /* Izbačeni 3D podložni paneli */
+    .panel-3d-block {
+      background: var(--bg-color);
+      border-top: 2px solid rgba(255, 255, 255, 0.9);
+      border-left: 2px solid rgba(255, 255, 255, 0.9);
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 
+        5px 5px 15px rgba(148, 163, 184, 0.7),
+        -3px -3px 10px rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+    }
+
+    /* POPRAVKA: Ekstremna visina lebdenja i duboke senke za kartice */
+    .neumorph {
+      border-top: 2px solid rgba(255, 255, 255, 0.5);
+      border-left: 2px solid rgba(255, 255, 255, 0.5);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 
+        6px 14px 20px rgba(0, 0, 0, 0.38), 
+        2px 4px 6px rgba(0, 0, 0, 0.15),
+        -3px -3px 8px rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+      transition: all 0.2s ease;
+    }
+
+    /* Ekstremno 3D lebdenje za plavu karticu Saša */
+    .sasa-badge-3d {
+      background-color: var(--accent-color);
+      border-top: 2px solid rgba(255, 255, 255, 0.5);
+      border-left: 2px solid rgba(255, 255, 255, 0.5);
+      border-right: 1px solid rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      box-shadow: 
+        5px 12px 18px rgba(0, 0, 0, 0.45),
+        2px 4px 6px rgba(0, 0, 0, 0.15),
+        -2px -2px 6px rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    /* Urezani info paneli za tekst govora */
+    .inset-panel {
+      background: var(--bg-color);
+      box-shadow: 
+        inset 2px 2px 5px rgba(0,0,0,0.06),
+        inset -2px -2px 5px rgba(255,255,255,0.8);
+      border-radius: 16px;
+    }
+
+    /* 3D Oblačići za broj stavki */
+    .cloud-badge {
+      background: linear-gradient(135deg, #ff5252, #e53935);
+      color: white;
+      font-weight: 800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 4px 8px rgba(229, 57, 53, 0.4),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.4),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.2);
+      animation: float-cloud 3s ease-in-out infinite;
+    }
+
+    @keyframes float-cloud {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    /* Spoljašnji 3D Prsten Mikrofona */
+    .mic-3d {
+      width: var(--mic-size);
+      height: var(--mic-size);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-color);
+      cursor: pointer;
+      border-top: 2px solid rgba(255, 255, 255, 0.9);
+      border-left: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        var(--shadow-dist) var(--shadow-dist) var(--shadow-blur) var(--shadow-dark-opacity),
+        calc(var(--shadow-dist) * -1) calc(var(--shadow-dist) * -1) var(--shadow-blur) var(--shadow-light-opacity);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Unutrašnji krug sa slikom mikrofona */
+    .mic-inner {
+      width: var(--image-scale);
+      height: var(--image-scale);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      box-shadow: 
+        inset 0 4px 10px rgba(0, 0, 0, 0.15),
+        inset 0 -4px 10px rgba(255, 255, 255, 0.6),
+        0 6px 12px rgba(0,0,0,0.08);
+    }
+
+    .listening .mic-inner {
+      animation: pulse-listen 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-listen {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.05); filter: brightness(1.05); }
+    }
+
+    /* Prekidač (Toggle Switch) */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 34px;
+      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    input:checked + .slider { background-color: #0000ff; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    .custom-scroll::-webkit-scrollbar { width: 3px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 10px; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <div class="phone-frame">
+    
+    <div class="px-4 py-4 flex items-center justify-between border-b border-black/5 z-10 bg-slate-50">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 neumorph bg-slate-100 flex items-center justify-center text-base font-bold dynamic-accent">L</div>
+        <div>
+          <div class="font-bold text-base leading-tight dynamic-text">Luna</div>
+          <div class="text-[10px] text-slate-400 font-medium">3D Pametni Asistent</div>
+        </div>
+      </div>
+      <div class="text-xs sasa-badge-3d text-white px-5 py-2 select-none">Saša</div>
+    </div>
+
+    <div class="flex flex-1 flex-col min-h-0 relative p-3 gap-4 bg-slate-200">
+      
+      <div id="home-screen" class="w-full h-full flex flex-col gap-4">
+        
+        <div class="flex-[1.3] min-h-0 p-4 flex gap-4 panel-3d-block">
+          
+          <div class="w-1/2 flex flex-col relative">
+            <div class="flex items-center justify-between mb-2 px-1">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Beleške</span>
+              <div id="notes-badge" class="cloud-badge w-5 h-5 text-[10px]">0</div>
+            </div>
+            <div id="notes-container" class="flex-1 space-y-5 overflow-y-auto custom-scroll pr-1 py-2"></div>
+          </div>
+
+          <div class="w-1/2 flex flex-col relative">
+            <div class="flex items-center justify-between mb-2 px-1">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Aktivni Alarmi</span>
+              <div id="alarm-badge" class="cloud-badge w-5 h-5 text-[10px]">0</div>
+            </div>
+            <div id="alarm-container" class="flex-1 space-y-5 overflow-y-auto custom-scroll pr-1 py-2"></div>
+          </div>
+
+        </div>
+
+        <div class="flex-1 p-4 flex flex-col items-center justify-center panel-3d-block">
+          
+          <div class="w-full text-center min-h-[48px] flex items-center justify-center px-3 mb-2 inset-panel p-2">
+            <p id="luna-bubble" class="text-[11px] font-semibold item-text-style leading-relaxed">
+              Učitavam podatke...
+            </p>
+          </div>
+
+          <div class="flex justify-center my-0.5">
+            <div id="mic-container" class="mic-3d" onclick="toggleListening()">
+              <div class="mic-inner" id="mic-inner-bg">
+                <i class="fa-solid fa-microphone text-slate-400 text-xl hidden" id="mic-icon"></i>
+              </div>
+            </div>
+          </div>
+          <span id="status-subtext" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Dodirni za razgovor</span>
+        </div>
+      </div>
+
+      <div id="settings-screen" class="w-full h-full p-4 overflow-y-auto hidden panel-3d-block">
+        <h2 class="text-base font-bold mb-4 flex items-center gap-2 dynamic-text">
+          <i class="fa-solid fa-sliders dynamic-accent"></i> 3D Laboratorija & Boje
+        </h2>
+        
+        <div class="space-y-3.5 text-[11px] font-semibold text-slate-600">
+          
+          <div class="p-3 bg-blue-50/50 border border-blue-200 rounded-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-blue-700 font-bold uppercase text-[9px] tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-brain"></i> Sveznajući AI Režim (Groq Llama)
+              </span>
+              <label class="switch">
+                <input type="checkbox" id="ai-toggle" onchange="toggleAiMode(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            
+            <div>
+              <div class="flex justify-between text-slate-500 mb-1"><span>Groq API Ključ:</span></div>
+              <input type="password" id="groq-key" placeholder="Nalepi ovde gsk_..." class="w-full p-2 border border-slate-300 rounded-lg text-xs font-mono bg-white outline-none focus:border-blue-500" onchange="saveGroqKey(this.value)">
+              <p class="text-[9px] text-slate-400 mt-1 font-normal leading-normal">
+                * Kada je prekidač uključen, Luna zna sve o vremenu, svetskoj politici, istoriji i bilo čemu drugom što je pitaš.
+              </p>
+            </div>
+          </div>
+          
+          <div class="p-3 bg-black/[0.01] border border-black/5 rounded-xl space-y-2.5">
+            <span class="text-slate-400 block uppercase text-[9px] tracking-wider">Glavna 3D Geometrija</span>
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>1. Udaljenost senke (X/Y)</span><span id="v-dist">12px</span></div>
+              <input type="range" id="sl-dist" min="1" max="25" value="12" class="w-full accent-blue-600" oninput="update3D('--shadow-dist', this.value + 'px', 'v-dist', true)">
+            </div>
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>2. Širiman / Zamućenje (Blur)</span><span id="v-blur">24px</span></div>
+              <input type="range" id="sl-blur" min="2" max="50" value="24" class="w-full accent-blue-600" oninput="update3D('--shadow-blur', this.value + 'px', 'v-blur', true)">
+            </div>
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>3. Intenzitet dubine (Tamno)</span><span id="v-dark">20%</span></div>
+              <input type="range" id="sl-dark" min="5" max="60" value="20" class="w-full accent-blue-600" oninput="updateShadowColor('dark', this.value, true)">
+            </div>
+            <div>
+              <div class="flex justify-between text-slate-500 mb-0.5"><span>4. Intenzitet ureza (Svetlo)</span><span id="v-light">100%</span></div>
+              <input type="range" id="sl-light" min="20" max="100" value="100" class="w-full accent-blue-600" oninput="updateShadowColor('light', this.value, true)">
+            </div>
+            
+            <div class="border-t border-black/5 pt-2 mt-2">
+              <div class="flex justify-between text-blue-600 mb-0.5"><span>5. Veličina 3D prstena mikrofona</span><span id="v-size">150px</span></div>
+              <input type="range" id="sl-size" min="80" max="200" value="150" class="w-full accent-blue-600" oninput="update3D('--mic-size', this.value + 'px', 'v-size', true)">
+            </div>
+            <div>
+              <div class="flex justify-between text-pink-600 mb-0.5"><span>6. Veličina slike unutar mikrofona</span><span id="v-img-scale">75%</span></div>
+              <input type="range" id="sl-img-scale" min="40" max="95" value="75" class="w-full accent-pink-600" oninput="update3D('--image-scale', this.value + '%', 'v-img-scale', true)">
+            </div>
+          </div>
+
+          <div class="p-3 bg-black/[0.01] border border-black/5 rounded-xl space-y-2.5">
+            <span class="text-slate-400 block uppercase text-[9px] tracking-wider">Podešavanje Svih Boja</span>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Boja svih tekstova sistema</span>
+              <input type="color" id="cp-text" value="#1e2937" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--text-color', this.value, null, true)">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Boja dugmića i akcenta</span>
+              <input type="color" id="cp-accent" value="#0000ff" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--accent-color', this.value, null, true)">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-500">Pozadina cele aplikacije</span>
+              <input type="color" id="cp-bg" value="#f1f5f9" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--bg-color', this.value, null, true)">
+            </div>
+            <div class="flex items-center justify-between border-t border-black/5 pt-2 mt-2">
+              <span class="text-blue-600 font-bold">Boja teksta stavki (Alarmi/Beleške)</span>
+              <input type="color" id="cp-item-text" value="#0000ff" class="w-7 h-7 rounded cursor-pointer" oninput="update3D('--item-text-color', this.value, null, true)">
+            </div>
+          </div>
+
+          <div class="p-2 bg-black/[0.01] border border-black/5 rounded-xl">
+            <button onclick="document.getElementById('file-upload').click()" class="w-full py-2 bg-slate-800 text-white rounded-lg font-bold text-center block shadow-md">
+              <i class="fa-solid fa-image mr-1"></i> Promeni Sliku u Mikrofonu
+            </button>
+            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="loadUserPhoto(this)">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="h-14 bg-white/80 border-t border-black/5 flex items-center justify-around text-slate-400 text-base z-20">
+      <i class="fa-solid fa-comment-dots cursor-pointer transition" id="nav-home" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-gear cursor-pointer transition" id="nav-settings" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <audio id="alarm-audio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav" loop></audio>
+
+  <script>
+    let activeAlarms = JSON.parse(localStorage.getItem('luna_alarms')) || [];
+    let savedNotes = JSON.parse(localStorage.getItem('luna_notes')) || [];
+    let isListening = false;
+    let recognition;
+    
+    let isAiModeActive = localStorage.getItem('luna_ai_mode') === 'true';
+    let groqApiKey = localStorage.getItem('luna_groq_key') || '';
+
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechKit = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechKit();
+      recognition.lang = 'sr-RS';
+
+      recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('mic-container').classList.add('listening');
+        document.getElementById('status-subtext').innerText = "Luna sluša...";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        document.getElementById('mic-container').classList.remove('listening');
+        document.getElementById('status-subtext').innerText = "Dodirni za razgovor";
+      };
+
+      recognition.onresult = (event) => {
+        processLunaBrain(event.results[0][0].transcript);
+      };
+    }
+
+    function runMorningBriefing() {
+      const dani = ["Nedelja", "Ponedeljak", "Utorak", "Sreda", "Četvrtak", "Petak", "Subota"];
+      const sada = new Date();
+      const danUzivo = dani[sada.getDay()];
+      const satUzivo = sada.getHours().toString().padStart(2, '0') + ":" + sada.getMinutes().toString().padStart(2, '0');
+      
+      let porukaPozdrava = `Zdravo Saša! Danas je ${danUzivo}, a vreme je ${satUzivo}. `;
+      
+      if (savedNotes.length > 0) {
+        porukaPozdrava += `Od zabeleženih obaveza u sistemu imaš sledeće stavke: ${savedNotes.join('. ')}. `;
+      } else {
+        porukaPozdrava += `U beleškama nemaš zapisanih obaveza za danas. `;
+      }
+
+      if (activeAlarms.length > 0) {
+        porukaPozdrava += `Tvoji aktivni alarmi su podešeni za: ${activeAlarms.join(', ')}.`;
+      } else {
+        porukaPozdrava += `Nemaš aktivnih alarma za danas. Kako ti mogu pomoći?`;
+      }
+
+      speakResponse(porukaPozdrava);
+    }
+
+    function processLunaBrain(tekst) {
+      const komanda = tekst.toLowerCase();
+      document.getElementById('luna-bubble').innerText = `Vi: "${tekst}"`;
+
+      if (komanda.includes('alarm') || komanda.includes('probudi') || komanda.includes('navij')) {
+        const match = komanda.match(/(\d{1,2})[:\s]?(\d{2})/);
+        if (match) {
+          let vreme = `${match[1].padStart(2, '0')}:${match[2].padStart(2, '0')}`;
+          activeAlarms.push(vreme);
+          saveToStorage();
+          renderAlarms();
+          speakResponse(`Urađeno Saša. Podesila sam ti alarm za ${vreme}.`);
+          return;
+        }
+      }
+
+      if (komanda.includes('zapiši') || komanda.includes('belešk') || komanda.includes('zapamti') || komanda.includes('unesu')) {
+        let čistTekst = tekst.replace(/(zapiši|belešku|beleške|zapamti|unesu|unesi|stavu|stavi|da|i|termine|preglej|moje|imam|li|nešto|radim)/gi, "").trim();
+        if (čistTekst.length > 1) {
+          čistTekst = čistTekst.charAt(0).toUpperCase() + čistTekst.slice(1);
+          savedNotes.unshift(čistTekst);
+          saveToStorage();
+          renderNotes();
+          speakResponse(`Zapisala sam: ${čistTekst}`);
+          return;
+        }
+      }
+
+      if (isAiModeActive && groqApiKey && navigator.onLine) {
+        document.getElementById('luna-bubble').innerText = "Luna razmišlja...";
+        askGroqLlama(tekst);
+      } else {
+        standardResponse(komanda);
+      }
+    }
+
+    function standardResponse(komanda) {
+      if (komanda.includes('kako si')) {
+        speakResponse("Ja sam super Saša, kako si ti proveo dan?");
+      } else if (komanda.includes('hvala')) {
+        speakResponse("Nema na čemu, Saša! Tu sam uvek.");
+      } else {
+        speakResponse("Razumela sam te, hoćeš li da ti ovo sačuvam kao novu zabelešku?");
+      }
+    }
+
+    async function askGroqLlama(korisnikTekst) {
+      try {
+        const poruke = [
+          { 
+            role: "system", 
+            content: "Ti si Luna, sveznajući pametni 3D AI asistent i sekretarica za korisnika koji se zove Saša. Imaš pristup svim informacijama o svetu, politici, nauci, vremenu i opštim temama. Odgovaraj toplo, inteligentno, tečno i direktno na srpskom jeziku, uvek bez ikakvih znakova navoda u celom tekstu." 
+          },
+          { role: "user", content: korisnikTekst }
+        ];
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${groqApiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: poruke,
+            temperature: 0.6,
+            max_tokens: 150
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const odgovorOdAI = data.choices[0].message.content.trim();
+        speakResponse(odgovorOdAI);
+
+      } catch (error) {
+        console.error(error);
+        speakResponse(`Greška u vezi: ${error.message}.`);
+      }
+    }
+
+    function toggleAiMode(upaljen) {
+      isAiModeActive = upaljen;
+      localStorage.setItem('luna_ai_mode', upaljen);
+    }
+
+    function saveGroqKey(kljuc) {
+      groqApiKey = kljuc.trim();
+      localStorage.setItem('luna_groq_key', groqApiKey);
+    }
+
+    /* POPRAVLJENO: Sintaksa govora je sada 100% ispravna */
+    function speakResponse(odgovor) {
+      document.getElementById('luna-bubble').innerText = odgovor;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(odgovor);
+        utterance.lang = 'sr-RS';
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleListening() {
+      if (!recognition) return alert("Glasovne funkcije nisu podržane.");
+      document.getElementById('alarm-audio').pause();
+      isListening ? recognition.stop() : recognition.start();
+    }
+
+    function update3D(promenljiva, vrednost, textId = null, save = false) {
+      document.documentElement.style.setProperty(promenljiva, vrednost);
+      if (textId) document.getElementById(textId).innerText = vrednost;
+      
+      if(save) {
+        let config = JSON.parse(localStorage.getItem('luna_config')) || {};
+        config[promenljiva] = vrednost;
+        localStorage.setItem('luna_config', JSON.stringify(config));
+      }
+    }
+
+    function updateShadowColor(tip, vrednost, save = false) {
+      let config = JSON.parse(localStorage.getItem('luna_config')) || {};
+      
+      if (tip === 'dark') {
+        let procenat = Math.round((vrednost / 100) * 255);
+        let rgbString = `rgba(${255 - procenat}, ${255 - procenat}, ${255 - procenat}, 0.8)`;
+        document.documentElement.style.setProperty('--shadow-dark-opacity', rgbString);
+        document.getElementById('v-dark').innerText = vrednost + '%';
+        if(save) { config['--shadow-dark-opacity'] = rgbString; config['sl-dark-val'] = vrednost; }
+      } else {
+        let opasnost = vrednost / 100;
+        let lightString = `rgba(255, 255, 255, ${opasnost})`;
+        document.documentElement.style.setProperty('--shadow-light-opacity', lightString);
+        document.getElementById('v-light').innerText = vrednost + '%';
+        if(save) { config['--shadow-light-opacity'] = lightString; config['sl-light-val'] = vrednost; }
+      }
+      if(save) localStorage.setItem('luna_config', JSON.stringify(config));
+    }
+
+    function saveToStorage() {
+      localStorage.setItem('luna_alarms', JSON.stringify(activeAlarms));
+      localStorage.setItem('luna_notes', JSON.stringify(savedNotes));
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      document.getElementById('notes-badge').innerText = savedNotes.length;
+      
+      if (savedNotes.length === 0) {
+        container.innerHTML = `<div class="neumorph bg-slate-100 p-3.5 text-[10px] font-medium text-slate-400 italic text-center">Nema zabeleženih misli...</div>`;
+        return;
+      }
+      container.innerHTML = "";
+      savedNotes.forEach((note, idx) => {
+        const div = document.createElement('div');
+        div.className = "neumorph bg-sky-400 text-white py-3.5 px-4 pr-2 text-[10px] font-bold flex justify-between items-start gap-2 leading-snug tracking-wide";
+        div.innerHTML = `<span class="break-words max-w-[85%] text-left">${note}</span> <i class="fa-solid fa-trash text-white/70 hover:text-white cursor-pointer text-[10px] pt-0.5 px-1" onclick="savedNotes.splice(${idx},1); saveToStorage(); renderNotes();"></i>`;
+        container.appendChild(div);
+      });
+    }
+
+    function renderAlarms() {
+      const container = document.getElementById('alarm-container');
+      document.getElementById('alarm-badge').innerText = activeAlarms.length;
+
+      if (activeAlarms.length === 0) {
+        container.innerHTML = `<div class="neumorph bg-slate-100 p-3.5 text-[10px] font-medium text-slate-400 italic text-center">Svi alarmi ugašeni...</div>`;
+        return;
+      }
+      container.innerHTML = "";
+      activeAlarms.forEach((alarm, i) => {
+        const div = document.createElement('div');
+        div.className = "neumorph bg-white py-3.5 px-4 text-[11px] font-bold item-text-style flex justify-between items-center";
+        div.innerHTML = `<span>${alarm}</span> <i class="fa-solid fa-trash text-red-400 cursor-pointer text-[10px]" onclick="activeAlarms.splice(${i},1); saveToStorage(); renderAlarms();"></i>`;
+        container.appendChild(div);
+      });
+    }
+
+    function loadSavedConfig() {
+      let config = JSON.parse(localStorage.getItem('luna_config'));
+      if(config) {
+        if(config['--shadow-dist']) { update3D('--shadow-dist', config['--shadow-dist']); document.getElementById('sl-dist').value = parseInt(config['--shadow-dist']); document.getElementById('v-dist').innerText = config['--shadow-dist']; }
+        if(config['--shadow-blur']) { update3D('--shadow-blur', config['--shadow-blur']); document.getElementById('sl-blur').value = parseInt(config['--shadow-blur']); document.getElementById('v-blur').innerText = config['--shadow-blur']; }
+        if(config['sl-dark-val']) { updateShadowColor('dark', config['sl-dark-val']); document.getElementById('sl-dark').value = config['sl-dark-val']; }
+        if(config['sl-light-val']) { updateShadowColor('light', config['sl-light-val']); document.getElementById('sl-light').value = config['sl-light-val']; }
+        if(config['--mic-size']) { update3D('--mic-size', config['--mic-size']); document.getElementById('sl-size').value = parseInt(config['--mic-size']); document.getElementById('v-size').innerText = config['--mic-size']; }
+        if(config['--image-scale']) { update3D('--image-scale', config['--image-scale']); document.getElementById('sl-img-scale').value = parseInt(config['--image-scale']); document.getElementById('v-img-scale').innerText = config['--image-scale']; }
+        if(config['--text-color']) { update3D('--text-color', config['--text-color']); document.getElementById('cp-text').value = config['--text-color']; }
+        if(config['--accent-color']) { update3D('--accent-color', config['--accent-color']); document.getElementById('cp-accent').value = config['--accent-color']; }
+        if(config['--bg-color']) { update3D('--bg-color', config['--bg-color']); document.getElementById('cp-bg').value = config['--bg-color']; }
+      }
+      
+      document.getElementById('ai-toggle').checked = isAiModeActive;
+      if(groqApiKey) document.getElementById('groq-key').value = groqApiKey;
+
+      let savedMicImg = localStorage.getItem('luna_mic_bg');
+      if(savedMicImg) {
+        document.getElementById('mic-inner-bg').style.backgroundImage = `url('${savedMicImg}')`;
+      } else {
+        document.getElementById('mic-icon').classList.remove('hidden');
+      }
+      
+      renderNotes();
+      renderAlarms();
+      
+      setTimeout(runMorningBriefing, 600);
+    }
+
+    setInterval(() => {
+      const vreme = new Date();
+      if (vreme.getSeconds() === 0) {
+        const trenutno = vreme.getHours().toString().padStart(2, '0') + ":" + vreme.getMinutes().toString().padStart(2, '0');
+        activeAlarms.forEach((alarm, index) => {
+          if (alarm === trenutno) {
+            document.getElementById('alarm-audio').play().catch(() => {});
+            speakResponse(`Saša, vreme je! Kucnuo je čas za alarm u ${alarm}.`);
+            activeAlarms.splice(index, 1);
+            saveToStorage();
+            renderAlarms();
+          }
+        });
+      }
+    }, 1000);
+
+    function loadUserPhoto(input) {
+      if (input.files && input.files[0]) {
+        const citac = new FileReader();
+        citac.onload = function(e) {
+          document.getElementById('mic-inner-bg').style.backgroundImage = `url('${e.target.result}')`;
+          document.getElementById('mic-icon').classList.add('hidden');
+          localStorage.setItem('luna_mic_bg', e.target.result);
+        }
+        citac.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function changeScreen(ekran) {
+      const home = document.getElementById('home-screen');
+      const settings = document.getElementById('settings-screen');
+      const navHome = document.getElementById('nav-home');
+      const navSettings = document.getElementById('nav-settings');
+
+      if (ekran === 'home') {
+        home.classList.remove('hidden'); settings.classList.add('hidden');
+        navHome.style.setProperty('color', 'var(--accent-color)', 'important');
+        navSettings.style.setProperty('color', '#94a3b8', 'important');
+      } else {
+        home.classList.add('hidden'); settings.classList.remove('hidden');
+        navSettings.style.setProperty('color', 'var(--accent-color)', 'important');
+        navHome.style.setProperty('color', '#94a3b8', 'important');
+      }
+    }
+
+    loadSavedConfig();
+    changeScreen('home');
+  </script>
+</body>
+</html>
