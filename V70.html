@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA • 3D AI Sekretarica</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+    }
+
+    .phone-frame {
+      width: 360px;
+      height: 690px;
+      background: #e2e8f0;
+      border: 14px solid #1e2937;
+      border-radius: 52px;
+      overflow: hidden;
+      box-shadow: 0 35px 70px -10px rgba(0,0,0,0.9);
+    }
+
+    .panel-3d {
+      background: #ffffff;
+      border-radius: 24px;
+      border-top: 4px solid rgba(255,255,255,0.9);
+      border-left: 4px solid rgba(255,255,255,0.85);
+      box-shadow: 12px 16px 28px rgba(0,0,0,0.28), -8px -8px 22px rgba(255,255,255,0.9);
+    }
+
+    /* 3D L i Saša */
+    .logo-l {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(145deg, #7c3aed, #6d28d9);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      font-weight: 900;
+      box-shadow: 8px 12px 20px rgba(0,0,0,0.45), -6px -6px 16px rgba(255,255,255,0.9);
+      animation: floatSlow 3.5s ease-in-out infinite;
+    }
+
+    .sasa-badge {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      font-weight: 700;
+      box-shadow: 6px 10px 20px rgba(0,0,0,0.45), -5px -5px 14px rgba(255,255,255,0.9);
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .icon-3d {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 16px;
+      box-shadow: 6px 8px 16px rgba(0,0,0,0.35), -5px -5px 12px rgba(255,255,255,0.9);
+    }
+
+    .red-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.7);
+      border: 2px solid white;
+    }
+
+    .mic-container {
+      width: 172px;
+      height: 172px;
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 9999px;
+      box-shadow: 16px 20px 38px rgba(0,0,0,0.35), -12px -12px 28px rgba(255,255,255,0.9);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .listening .mic-container {
+      box-shadow: 0 0 0 12px rgba(59, 130, 246, 0.4);
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-slate-950">
+
+  <div class="phone-frame">
+    
+    <!-- HEADER -->
+    <div class="px-5 py-4 flex items-center justify-between bg-white border-b">
+      <div class="flex items-center gap-3">
+        <div class="logo-l">L</div>
+        <div>
+          <div class="font-semibold text-xl">Luna</div>
+          <div class="text-xs text-slate-500 -mt-1">3D AI Sekretarica</div>
+        </div>
+      </div>
+      <div class="sasa-badge">Saša</div>
+    </div>
+
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="flex-1 bg-slate-100 p-4 flex flex-col gap-4">
+      <div class="flex gap-3 h-[255px]">
+        <div class="w-1/2 flex flex-col gap-3">
+          <div onclick="selectSection('notes')" class="panel-3d p-4 cursor-pointer relative">
+            <div class="flex items-center gap-3">
+              <div id="note-icon" class="icon-3d"><i class="fa-solid fa-note-sticky text-blue-600 text-2xl"></i></div>
+              <div class="font-semibold text-lg">Beleške</div>
+              <div class="red-badge">3</div>
+            </div>
+          </div>
+
+          <div onclick="selectSection('alarms')" class="panel-3d p-4 cursor-pointer relative">
+            <div class="flex items-center gap-3">
+              <div id="bell-icon" class="icon-3d"><i class="fa-solid fa-bell text-yellow-500 text-2xl"></i></div>
+              <div class="font-semibold text-lg">Alarmi</div>
+              <div class="red-badge">2</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 panel-3d p-5 overflow-y-auto">
+          <div id="preview-content" class="text-sm"></div>
+        </div>
+      </div>
+
+      <!-- 3D Mikrofon -->
+      <div class="flex-1 flex flex-col items-center justify-center">
+        <div id="mic-container" onclick="toggleListening()" class="mic-container flex items-center justify-center">
+          <div id="mic-inner" class="w-[118px] h-[118px] bg-blue-50 rounded-full flex items-center justify-center">
+            <i class="fa-solid fa-microphone text-blue-700 text-5xl"></i>
+          </div>
+        </div>
+        <span class="mt-6 text-xs font-bold tracking-widest text-slate-500">DODIRNI ZA RAZGOVOR SA LUNA</span>
+      </div>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <div id="settings-screen" class="hidden flex-1 bg-slate-100 p-4 overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold">⚙️ Podešavanja</h2>
+        <i onclick="changeScreen('home')" class="fa-solid fa-arrow-left text-2xl cursor-pointer"></i>
+      </div>
+      
+      <div class="space-y-6">
+        <div class="panel-3d p-5">
+          <p class="font-medium mb-2">Groq API Ključ (obavezno za pametnu sekretaricu)</p>
+          <input type="password" id="groq-key" placeholder="gsk_..." class="w-full p-3 border rounded-2xl">
+          <button onclick="saveGroqKey()" class="mt-3 w-full bg-green-600 text-white py-3 rounded-2xl">Sačuvaj Ključ</button>
+        </div>
+
+        <div class="panel-3d p-5">
+          <p class="font-medium mb-3">Promeni ikone:</p>
+          <button onclick="triggerFile('note-upload')" class="w-full py-3 bg-blue-100 rounded-2xl mb-2">Promeni ikonu Beleški</button>
+          <button onclick="triggerFile('bell-upload')" class="w-full py-3 bg-amber-100 rounded-2xl">Promeni ikonu Alarma</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="h-14 bg-white border-t flex items-center justify-around text-2xl text-slate-400">
+      <i class="fa-solid fa-house cursor-pointer" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-sliders cursor-pointer" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <script>
+    let groqKey = localStorage.getItem('groq_key') || '';
+
+    function changeScreen(screen) {
+      document.getElementById('home-screen').classList.toggle('hidden', screen !== 'home');
+      document.getElementById('settings-screen').classList.toggle('hidden', screen !== 'settings');
+    }
+
+    function saveGroqKey() {
+      groqKey = document.getElementById('groq-key').value.trim();
+      if (groqKey) {
+        localStorage.setItem('groq_key', groqKey);
+        alert("✅ Ključ sačuvan! Luna je sada pametna sekretarica.");
+      }
+    }
+
+    function selectSection(section) {
+      const content = document.getElementById('preview-content');
+      if (section === 'notes') {
+        content.innerHTML = `<h3 class="font-bold">Beleške</h3><p class="text-sm mt-2">• Kupiti poklon<br>• Završiti projekat</p>`;
+      } else {
+        content.innerHTML = `<h3 class="font-bold">Alarmi</h3><p class="text-sm mt-2">07:30 — Buđenje<br>12:00 — Ručak</p>`;
+      }
+    }
+
+    // Glasovni razgovor
+    let recognition;
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'sr-RS';
+      recognition.onresult = (e) => processVoice(e.results[0][0].transcript);
+    }
+
+    function toggleListening() {
+      if (!recognition) return alert("Glasovno prepoznavanje nije podržano.");
+      recognition.start();
+      document.getElementById('mic-container').classList.add('listening');
+    }
+
+    async function processVoice(text) {
+      document.getElementById('preview-content').innerHTML = `<p class="text-blue-600 mb-2">Ti: ${text}</p>`;
+      
+      if (groqKey) {
+        try {
+          const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${groqKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "llama-3.1-8b-instant",
+              messages: [
+                { role: "system", content: "Ti si Luna, iskusna lična sekretarica. Odgovaraj ljubazno, precizno i korisno na srpskom jeziku." },
+                { role: "user", content: text }
+              ],
+              temperature: 0.7,
+              max_tokens: 200
+            })
+          });
+          const data = await res.json();
+          const reply = data.choices[0].message.content;
+          speak(reply);
+          document.getElementById('preview-content').innerHTML += `<p class="text-emerald-600">${reply}</p>`;
+        } catch (err) {
+          speak("Razumela sam te Saša.");
+        }
+      } else {
+        speak("Molim te unesi Groq API ključ u podešavanjima da bih mogla pametno da ti odgovaram.");
+      }
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'sr-RS';
+        speechSynthesis.speak(u);
+      }
+    }
+
+    function triggerFile(id) {
+      document.getElementById(id).click();
+    }
+
+    // Upload funkcije (ostavljene jednostavne)
+    function changeIcon(type, input) { /* ... */ }
+    function changeMicImage(input) { /* ... */ }
+
+    window.onload = () => {
+      changeScreen('home');
+      selectSection('notes');
+      if (groqKey) document.getElementById('groq-key').value = groqKey;
+    };
+  </script>
+</body>
+</html>
