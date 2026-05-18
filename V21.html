@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #111827;
+    }
+
+    .phone-frame {
+      width: 380px;
+      height: 720px;
+      margin: 40px auto;
+      background: #0f172a;
+      border: 12px solid #1e2937;
+      border-radius: 48px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .menu-item {
+      transition: all 0.3s ease;
+    }
+    .menu-item.active {
+      background: rgba(147, 51, 234, 0.2);
+      border-left: 4px solid rgb(147 51 234);
+    }
+
+    .mic-pulse {
+      animation: micPulse 1.5s infinite;
+    }
+
+    @keyframes micPulse {
+      0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.6); }
+      70% { box-shadow: 0 0 0 20px rgba(236, 72, 153, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-zinc-950">
+
+  <!-- TELEFON OKVIR -->
+  <div class="phone-frame">
+    
+    <!-- STATUS BAR -->
+    <div class="bg-black text-white text-[10px] flex justify-between px-6 py-2">
+      <div>18:42</div>
+      <div>5G • 92%</div>
+    </div>
+
+    <!-- APP HEADER -->
+    <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-4 flex items-center gap-3">
+      <div class="w-8 h-8 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center text-xl font-bold">L</div>
+      <div>
+        <div class="font-semibold text-lg tracking-tight">LUNA</div>
+        <div class="text-xs opacity-75 -mt-1">AI Sekretarica</div>
+      </div>
+      <div class="ml-auto text-xs">Saša</div>
+    </div>
+
+    <div class="flex h-[calc(100%-120px)]">
+
+      <!-- LEVI PANEL (kompaktno) -->
+      <div class="w-28 bg-zinc-900 border-r border-white/10 overflow-y-auto text-xs py-3">
+        <div onclick="switchTab(0)" class="menu-item active px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-0">
+          <i class="fa-solid fa-house text-purple-400 text-xl"></i>
+          <span class="mt-1">Početna</span>
+        </div>
+        <div onclick="switchTab(1)" class="menu-item px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-1">
+          <i class="fa-solid fa-bell text-amber-400 text-xl"></i>
+          <span class="mt-1">Alarmi</span>
+        </div>
+        <div onclick="switchTab(2)" class="menu-item px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-2">
+          <i class="fa-solid fa-list-check text-sky-400 text-xl"></i>
+          <span class="mt-1">Zadaci</span>
+        </div>
+        <div onclick="switchTab(3)" class="menu-item px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-3">
+          <i class="fa-solid fa-note-sticky text-emerald-400 text-xl"></i>
+          <span class="mt-1">Notes</span>
+        </div>
+        <div onclick="switchTab(4)" class="menu-item px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-4">
+          <i class="fa-solid fa-calendar text-violet-400 text-xl"></i>
+          <span class="mt-1">Kalendar</span>
+        </div>
+        <div onclick="switchTab(5)" class="menu-item px-3 py-4 flex flex-col items-center gap-1 cursor-pointer" id="tab-5">
+          <i class="fa-solid fa-microphone text-pink-400 text-xl"></i>
+          <span class="mt-1">AI</span>
+        </div>
+      </div>
+
+      <!-- GLAVNI PROSTOR -->
+      <div class="flex-1 flex flex-col bg-zinc-950">
+
+        <!-- DINAMIČKI NASLOV -->
+        <div class="px-5 py-3 border-b border-white/10 text-sm font-medium" id="page-title">Dobro jutro, Saša ☀️</div>
+
+        <!-- SADRŽAJ -->
+        <div class="flex-1 p-4 overflow-auto" id="content-area">
+
+          <!-- DASHBOARD -->
+          <div id="screen-0">
+            <div class="text-center mt-6">
+              <h1 class="text-2xl font-bold">Dobro jutro, Saša</h1>
+              <p class="text-purple-400 text-sm">Danas 3 obaveze • Sastanak u 15:00</p>
+            </div>
+
+            <!-- VELIKI MIKROFON -->
+            <div class="flex justify-center my-8">
+              <div onclick="startVoiceRecognition()" 
+                   id="mic-button"
+                   class="w-28 h-28 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center cursor-pointer mic-pulse shadow-2xl active:scale-95 transition-all">
+                <i class="fa-solid fa-microphone text-white text-5xl"></i>
+              </div>
+            </div>
+
+            <div class="glass rounded-3xl p-5 text-center text-sm">
+              <p class="text-zinc-300">"Reci nešto... npr. 'Zakazi sastanak sutra u 10h'"</p>
+            </div>
+          </div>
+
+          <!-- ALARMI -->
+          <div id="screen-1" class="hidden">
+            <h2 class="text-xl font-semibold mb-4">Alarmi</h2>
+            <div class="glass rounded-3xl p-6">
+              <div class="text-5xl font-mono font-bold">15:00</div>
+              <div class="text-pink-400">Sastanak sa Markom</div>
+              <button onclick="alert('Alarm uključen ✅')" class="mt-6 w-full py-3 bg-emerald-500 rounded-2xl text-sm">UKLJUČEN</button>
+            </div>
+          </div>
+
+          <!-- AI CHAT -->
+          <div id="screen-5" class="hidden flex flex-col h-full">
+            <div id="chat-log" class="flex-1 overflow-auto text-sm space-y-4 p-2"></div>
+            <input id="user-input" type="text" 
+                   class="bg-zinc-800 rounded-2xl px-5 py-4 text-sm outline-none"
+                   placeholder="Piši ili koristi mikrofon...">
+            <button onclick="sendMessage()" class="mt-3 w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl">Pošalji</button>
+          </div>
+
+        </div>
+
+        <!-- DONJI STATUS -->
+        <div class="glass px-4 py-2 text-[10px] flex justify-between items-center">
+          <div class="flex items-center gap-1">
+            <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+            <span>Offline AI</span>
+          </div>
+          <button onclick="startVoiceRecognition()" class="text-pink-400">
+            <i class="fa-solid fa-microphone"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(n) {
+      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + n).classList.add('active');
+
+      document.querySelectorAll('#content-area > div').forEach(el => el.classList.add('hidden'));
+      const screen = document.getElementById('screen-' + n);
+      if (screen) screen.classList.remove('hidden');
+
+      const titles = ["Dobro jutro, Saša", "Alarmi", "Zadaci", "Notes", "Kalendar", "AI Assistant"];
+      document.getElementById('page-title').textContent = titles[n];
+    }
+
+    // Glasovno prepoznavanje
+    let recognition;
+    function startVoiceRecognition() {
+      const mic = document.getElementById('mic-button');
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        alert("Tvoj browser ne podržava glasovni unos. Probaj Chrome na Androidu.");
+        return;
+      }
+
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'sr-RS';
+      recognition.interimResults = false;
+
+      mic.classList.add('!bg-red-500');
+      
+      recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript;
+        mic.classList.remove('!bg-red-500');
+        
+        if (document.getElementById('screen-5').classList.contains('hidden') === false) {
+          document.getElementById('user-input').value = text;
+          sendMessage();
+        } else {
+          alert("Čula sam: " + text + "\n\n(U pravoj aplikaciji bih automatski kreirala zadatak/alarma)");
+          // Primer automatske akcije
+          if (text.toLowerCase().includes("sastanak") || text.toLowerCase().includes("zakazi")) {
+            setTimeout(() => {
+              alert("✅ Automatski kreiran sastanak!");
+            }, 600);
+          }
+        }
+      };
+
+      recognition.onerror = () => {
+        mic.classList.remove('!bg-red-500');
+      };
+
+      recognition.start();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('user-input');
+      if (!input.value.trim()) return;
+
+      const chat = document.getElementById('chat-log');
+      chat.innerHTML += `<div class="text-right"><span class="inline-block bg-purple-600 text-white px-4 py-2 rounded-3xl">${input.value}</span></div>`;
+      
+      setTimeout(() => {
+        chat.innerHTML += `<div class="text-left"><span class="inline-block bg-zinc-700 px-4 py-2 rounded-3xl">Luna: Razumela sam. Kreiram podsetnik.</span></div>`;
+        chat.scrollTop = chat.scrollHeight;
+      }, 700);
+
+      input.value = '';
+    }
+
+    // Pozdrav pri učitavanju
+    window.onload = () => {
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance("Dobro jutro Saša. Danas imaš tri obaveze.");
+        utterance.lang = 'sr-RS';
+        speechSynthesis.speak(utterance);
+      }, 800);
+    };
+  </script>
+</body>
+</html>
