@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA • Neumorphism</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 720px;
+      background: #f1f5f9;
+      border: 12px solid #1e2937;
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Neumorphism bazične senke */
+    .neumorph {
+      background: #f1f5f9;
+      box-shadow: 
+        4px 4px 10px #d1d5db,
+        -4px -4px 10px #ffffff;
+      border-radius: 16px;
+      transition: all 0.2s ease;
+    }
+
+    /* Stanje kada je stavka selektovana (Utisnuto) */
+    .list-item.selected {
+      box-shadow: 
+        inset 4px 4px 8px #d1d5db, 
+        inset -4px -4px 8px #ffffff;
+      background: #eef2f6;
+    }
+
+    .badge {
+      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* Mikrofon dugme */
+    .mic-neu {
+      width: 80px;
+      height: 80px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      box-shadow: 
+        6px 6px 12px #cbd5e1,
+        -6px -6px 12px #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .mic-neu:active {
+      box-shadow: 
+        inset 6px 6px 12px #cbd5e1, 
+        inset -6px -6px 12px #ffffff;
+    }
+
+    .mic-inner {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(145deg, #7c3aed, #db2777);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-slate-900 p-4">
+
+  <div class="phone-frame">
+    <!-- Status Bar -->
+    <div class="h-9 bg-[#f1f5f9] flex items-end justify-between px-6 pb-1 text-xs text-slate-600 font-semibold select-none">
+      <span>18:45</span>
+      <div class="flex gap-1.5 items-center">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-three-quarters text-sm"></i>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="px-4 py-3 bg-[#f1f5f9] flex items-center justify-between border-b border-slate-200/60 shadow-sm z-10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 neumorph flex items-center justify-center text-base font-bold text-violet-600">L</div>
+        <div>
+          <div class="font-bold text-slate-800 text-sm leading-tight">Luna</div>
+          <div class="text-[10px] text-slate-500 font-medium">AI Sekretarica</div>
+        </div>
+      </div>
+      <div class="text-xs font-semibold bg-slate-200/60 px-2.5 py-1 rounded-full text-slate-700">Saša</div>
+    </div>
+
+    <!-- Glavni Sadržaj (Skaliran flex-1) -->
+    <div class="flex flex-1 min-h-0 bg-[#f1f5f9]">
+
+      <!-- Levi Panel (Navigacija) -->
+      <div class="w-2/5 border-r border-slate-200/60 p-3 space-y-3 overflow-y-auto hierarchy-scroll">
+
+        <div onclick="selectItem(this)" class="list-item neumorph p-2.5 flex flex-col sm:flex-row items-center gap-1.5 cursor-pointer text-center sm:text-left">
+          <i class="fa-solid fa-note-sticky text-base text-slate-500"></i>
+          <span class="font-semibold text-slate-700 text-[11px] flex-1 truncate w-full">Notes</span>
+          <div class="badge bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</div>
+        </div>
+
+        <div onclick="selectItem(this)" class="list-item neumorph p-2.5 flex flex-col sm:flex-row items-center gap-1.5 cursor-pointer text-center sm:text-left">
+          <i class="fa-solid fa-list-check text-base text-slate-500"></i>
+          <span class="font-semibold text-slate-700 text-[11px] flex-1 truncate w-full">To-Do</span>
+          <div class="badge bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">5</div>
+        </div>
+
+        <div onclick="selectItem(this)" class="list-item neumorph selected p-2.5 flex flex-col sm:flex-row items-center gap-1.5 cursor-pointer text-center sm:text-left">
+          <i class="fa-solid fa-file-lines text-base text-violet-600"></i>
+          <span class="font-semibold text-slate-700 text-[11px] flex-1 truncate w-full">Meetings</span>
+          <div class="badge bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">8</div>
+        </div>
+
+        <div onclick="selectItem(this)" class="list-item neumorph p-2.5 flex flex-col sm:flex-row items-center gap-1.5 cursor-pointer text-center sm:text-left">
+          <i class="fa-solid fa-file-pen text-base text-slate-500"></i>
+          <span class="font-semibold text-slate-700 text-[11px] flex-1 truncate w-full">Drafts</span>
+          <div class="badge bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</div>
+        </div>
+
+        <!-- Alarmi sekcija -->
+        <div class="pt-4 border-t border-slate-200/60 space-y-2">
+          <div class="neumorph p-2 flex flex-col items-center text-center">
+            <i class="fa-solid fa-bell text-amber-500 text-sm mb-1"></i>
+            <div class="text-[10px] font-bold text-slate-700 truncate w-full">Workout</div>
+            <div class="text-[9px] text-slate-400 mb-1.5">8:00 AM</div>
+            <input type="checkbox" checked class="w-4 h-4 accent-violet-600 cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <!-- Desni Panel (Akcija) -->
+      <div class="w-3/5 flex flex-col justify-between p-4 relative">
+        
+        <!-- Prazan prostor za transkript ili status -->
+        <div class="flex-1 flex items-center justify-center text-center p-2">
+          <p id="status-text" class="text-xs text-slate-400 italic">Sistem je spreman...</p>
+        </div>
+
+        <!-- Sekcija za Mikrofon -->
+        <div class="flex flex-col items-center gap-3 pb-4">
+          <div onclick="startVoice()" class="mic-neu">
+            <div class="mic-inner">
+              <i class="fa-solid fa-microphone text-white text-xl"></i>
+            </div>
+          </div>
+          <p class="text-center text-slate-500 text-[11px] font-semibold">
+            Dodirni da govoriš
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="h-14 bg-[#f1f5f9] border-t border-slate-200/60 flex items-center justify-around text-slate-400 text-xl z-10 shadow-inner">
+      <i class="fa-solid fa-house text-violet-600 cursor-pointer"></i>
+      <i class="fa-solid fa-search cursor-pointer hover:text-slate-600 transition-colors"></i>
+      <i class="fa-solid fa-calendar cursor-pointer hover:text-slate-600 transition-colors"></i>
+      <i class="fa-solid fa-user cursor-pointer hover:text-slate-600 transition-colors"></i>
+    </div>
+  </div>
+
+  <script>
+    function selectItem(el) {
+      document.querySelectorAll('.list-item').forEach(item => item.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function startVoice() {
+      const statusText = document.getElementById('status-text');
+      
+      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'sr-RS';
+        
+        statusText.innerText = "Slušam...";
+        statusText.classList.remove('text-slate-400');
+        statusText.classList.add('text-violet-600', 'font-medium');
+        
+        rec.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          statusText.innerText = `"${text}"`;
+          statusText.classList.replace('text-violet-600', 'text-slate-700');
+          alert("Luna je zabeležila:\n\n" + text);
+        };
+        
+        rec.onerror = () => {
+          statusText.innerText = "Greška. Pokušaj ponovo.";
+          statusText.className = "text-xs text-red-500 italic";
+        };
+        
+        rec.start();
+      } else {
+        alert("Prepoznavanje glasa nije podržano u ovom pregledaču. Pokušaj preko Google Chrome-a.");
+      }
+    }
+  </script>
+</body>
+</html>
