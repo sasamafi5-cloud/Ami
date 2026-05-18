@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LUNA AI • Premium 3D Assistant</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#050816;
+  --card:#0f172acc;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --blue:#00d4ff;
+  --purple:#7c3aed;
+  --pink:#ff00ff;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+  radial-gradient(circle at top,#111827 0%,#050816 70%);
+}
+
+/* PHONE */
+
+.phone{
+  width:360px;
+  height:740px;
+  border-radius:40px;
+  overflow:hidden;
+  position:relative;
+  background:var(--bg);
+  border:2px solid rgba(255,255,255,.06);
+
+  box-shadow:
+  0 30px 80px rgba(0,0,0,.7),
+  0 0 60px rgba(124,58,237,.15);
+}
+
+/* PARTICLES */
+
+.particle{
+  position:absolute;
+  width:3px;
+  height:3px;
+  background:white;
+  border-radius:50%;
+  opacity:.5;
+  animation:float 8s linear infinite;
+}
+
+.particle:nth-child(1){top:10%;left:15%;animation-delay:0s;}
+.particle:nth-child(2){top:30%;left:80%;animation-delay:2s;}
+.particle:nth-child(3){top:70%;left:20%;animation-delay:4s;}
+.particle:nth-child(4){top:60%;left:75%;animation-delay:1s;}
+.particle:nth-child(5){top:45%;left:45%;animation-delay:3s;}
+
+@keyframes float{
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-20px);}
+  100%{transform:translateY(0);}
+}
+
+/* HEADER */
+
+.header{
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  backdrop-filter:blur(20px);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-circle{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:
+  linear-gradient(135deg,var(--blue),var(--purple));
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  box-shadow:
+  0 0 25px rgba(0,212,255,.45);
+}
+
+.logo-circle i{
+  color:white;
+  font-size:18px;
+}
+
+.logo-text h1{
+  color:white;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+.logo-text p{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.premium{
+  padding:10px 18px;
+  border-radius:999px;
+  background:
+  linear-gradient(135deg,#2563eb,#7c3aed);
+
+  color:white;
+  font-size:12px;
+  font-weight:700;
+
+  box-shadow:
+  0 0 20px rgba(124,58,237,.4);
+}
+
+/* CONTENT */
+
+.content{
+  padding:20px;
+  height:calc(100% - 150px);
+  overflow:auto;
+}
+
+.section{
+  display:flex;
+  gap:14px;
+}
+
+.column{
+  width:50%;
+}
+
+.title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.title{
+  color:#cbd5e1;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.badge{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+
+  background:
+  linear-gradient(135deg,#ff4d6d,#ff006e);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:white;
+  font-size:11px;
+  font-weight:800;
+
+  box-shadow:
+  0 0 18px rgba(255,0,110,.45);
+}
+
+/* GLASS CARD */
+
+.card{
+  background:rgba(15,23,42,.72);
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,.06);
+
+  border-radius:28px;
+
+  padding:18px;
+
+  margin-bottom:14px;
+
+  box-shadow:
+  0 0 0 1px rgba(255,255,255,.03),
+  0 10px 30px rgba(0,0,0,.45),
+  0 0 25px rgba(80,120,255,.12),
+  inset 0 1px 1px rgba(255,255,255,.06);
+}
+
+.card h3{
+  color:white;
+  font-size:14px;
+  line-height:1.5;
+  font-weight:600;
+}
+
+.card small{
+  color:#60a5fa;
+  font-size:11px;
+}
+
+/* ALERT */
+
+.alert{
+  margin-top:10px;
+
+  background:rgba(15,23,42,.7);
+
+  border:1px solid rgba(255,255,255,.05);
+
+  border-radius:24px;
+
+  padding:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,.3);
+}
+
+.alert-left{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.alert-icon{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+
+  background:
+  linear-gradient(135deg,#2563eb,#7c3aed);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  box-shadow:
+  0 0 20px rgba(124,58,237,.35);
+}
+
+.alert h2{
+  color:white;
+  font-size:17px;
+  margin-bottom:4px;
+}
+
+.alert p{
+  color:#cbd5e1;
+  font-size:13px;
+}
+
+/* MIC */
+
+.mic-wrap{
+  margin-top:30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.mic{
+  width:240px;
+  height:240px;
+  border-radius:50%;
+
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+  radial-gradient(circle,#111827,#050816);
+
+  box-shadow:
+  0 0 60px rgba(124,58,237,.35);
+}
+
+.mic::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+
+  background:
+  conic-gradient(
+    from 0deg,
+    #00d4ff,
+    #7c3aed,
+    #ff00ff,
+    #00d4ff
+  );
+
+  filter:blur(16px);
+
+  animation:rotateGlow 6s linear infinite;
+}
+
+@keyframes rotateGlow{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+
+.mic-inner{
+  width:190px;
+  height:190px;
+  border-radius:50%;
+
+  position:relative;
+  z-index:2;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+  radial-gradient(circle,#1e293b,#0f172a);
+
+  box-shadow:
+  inset 0 0 25px rgba(255,255,255,.06),
+  0 0 40px rgba(0,212,255,.15);
+}
+
+.mic-inner i{
+  font-size:70px;
+  color:white;
+
+  text-shadow:
+  0 0 25px rgba(255,255,255,.5);
+}
+
+.wave{
+  width:240px;
+  height:60px;
+  margin-top:18px;
+  opacity:.6;
+
+  background:
+  radial-gradient(circle,#00d4ff 2px,transparent 3px);
+
+  background-size:20px 20px;
+
+  animation:waveMove 4s linear infinite;
+}
+
+@keyframes waveMove{
+  from{background-position:0 0;}
+  to{background-position:100px 0;}
+}
+
+.mic-text{
+  margin-top:10px;
+
+  color:#cbd5e1;
+
+  font-size:12px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+
+  text-shadow:
+  0 0 10px rgba(0,212,255,.5);
+}
+
+/* NAV */
+
+.nav{
+  position:absolute;
+  bottom:0;
+  left:0;
+
+  width:100%;
+  height:70px;
+
+  background:rgba(15,23,42,.75);
+
+  backdrop-filter:blur(20px);
+
+  border-top:1px solid rgba(255,255,255,.05);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+
+  box-shadow:
+  0 -10px 30px rgba(0,0,0,.4),
+  0 0 20px rgba(124,58,237,.15);
+}
+
+.nav i{
+  font-size:24px;
+  color:#94a3b8;
+}
+
+.active{
+  color:#00d4ff !important;
+
+  text-shadow:
+  0 0 15px rgba(0,212,255,.8);
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<div class="header">
+
+<div class="logo">
+
+<div class="logo-circle">
+<i class="fa-solid fa-brain"></i>
+</div>
+
+<div class="logo-text">
+<h1>LUNA AI</h1>
+<p>3D Premium Assistant</p>
+</div>
+
+</div>
+
+<div class="premium">
+Premium
+</div>
+
+</div>
+
+<div class="content">
+
+<div class="section">
+
+<div class="column">
+
+<div class="title-row">
+<div class="title">Beleške</div>
+<div class="badge">2</div>
+</div>
+
+<div class="card">
+<h3>Pregledaj moje beleške i termine</h3>
+<br>
+<small>12 Maj • 14:30</small>
+</div>
+
+<div class="card">
+<h3>Vožnja i obaveze</h3>
+<br>
+<small>12 Maj • 16:20</small>
+</div>
+
+</div>
+
+<div class="column">
+
+<div class="title-row">
+<div class="title">Alarmi</div>
+<div class="badge">1</div>
+</div>
+
+<div class="card">
+<h3>17:55</h3>
+<br>
+<small>Aktivan alarm</small>
+</div>
+
+</div>
+
+</div>
+
+<div class="alert">
+
+<div class="alert-left">
+
+<div class="alert-icon">
+<i class="fa-solid fa-star text-white"></i>
+</div>
+
+<div>
+<h2>Saša, vreme je!</h2>
+<p>Kucnuo je čas za alarm u 18:01.</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="mic-wrap">
+
+<div class="mic">
+
+<div class="mic-inner">
+<i class="fa-solid fa-microphone"></i>
+</div>
+
+</div>
+
+<div class="wave"></div>
+
+<div class="mic-text">
+Dodirni za razgovor
+</div>
+
+</div>
+
+</div>
+
+<div class="nav">
+
+<i class="fa-solid fa-comment-dots active"></i>
+<i class="fa-solid fa-gear"></i>
+
+</div>
+
+</div>
+
+</body>
+</html>
