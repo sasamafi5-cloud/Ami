@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna Asistent</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#121212; color:#e0e0e0; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:1rem; background:#1e1e1e; }
+    .logo { color:#4fc3f7; font-size:1.5rem; font-weight:bold; }
+    .button { background:#4fc3f7; color:#fff; padding:0.5rem 1rem; border-radius:20px; border:none; }
+    .card { background:rgba(255,255,255,0.05); margin:1rem; padding:1rem; border-radius:12px; }
+    textarea,input { width:100%; margin-top:0.5rem; padding:0.5rem; border-radius:8px; border:none; }
+    .microphone { display:flex; justify-content:center; margin-top:2rem; }
+    .mic-ring { width:120px; height:120px; border-radius:50%; background:radial-gradient(circle,#4fc3f7,#7e57c2); animation:pulse 3s infinite; cursor:pointer; }
+    @keyframes pulse { 0%{transform:scale(1);opacity:0.8;} 50%{transform:scale(1.1);opacity:1;} 100%{transform:scale(1);opacity:0.8;} }
+    .status { text-align:center; margin-top:1rem; color:#aaa; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Luna</div>
+    <button class="button">Saša</button>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Beleške 🔔</h2>
+      <textarea id="noteInput" placeholder="Unesi belešku..."></textarea>
+      <button onclick="addNote()">Dodaj belešku</button>
+      <button onclick="startVoiceInput()">🎤 Unesi glasom</button>
+      <ul id="notesList"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Aktivni Alarmi ⏰</h2>
+      <input type="time" id="alarmTime">
+      <button onclick="setAlarm()">Dodaj alarm</button>
+      <ul id="alarmsList"></ul>
+    </div>
+
+    <div class="microphone">
+      <div class="mic-ring" onclick="speakNotes()"></div>
+    </div>
+    <p class="status">Učitavam podatke...</p>
+  </main>
+
+  <script>
+    // Beleške
+    function addNote(noteText) {
+      const noteInput = document.getElementById("noteInput");
+      const notesList = document.getElementById("notesList");
+      const text = noteText || noteInput.value;
+      if (text.trim() !== "") {
+        const li = document.createElement("li");
+        li.textContent = text;
+        notesList.appendChild(li);
+        noteInput.value = "";
+        speak("Dodala sam belešku: " + text);
+      }
+    }
+
+    // Alarmi
+    function setAlarm(timeText) {
+      const alarmTime = timeText || document.getElementById("alarmTime").value;
+      const alarmsList = document.getElementById("alarmsList");
+      if (alarmTime) {
+        const li = document.createElement("li");
+        li.textContent = "Alarm u " + alarmTime;
+        alarmsList.appendChild(li);
+
+        const now = new Date();
+        const alarmDate = new Date();
+        const [hours, minutes] = alarmTime.split(":");
+        alarmDate.setHours(hours, minutes || 0, 0, 0);
+
+        const timeout = alarmDate.getTime() - now.getTime();
+        if (timeout > 0) {
+          setTimeout(() => {
+            alert("⏰ Alarm! " + alarmTime);
+            speak("Alarm! " + alarmTime);
+          }, timeout);
+        }
+        speak("Postavila sam alarm u " + alarmTime);
+      }
+    }
+
+    // TTS
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "sr-RS";
+      synth.speak(utter);
+    }
+
+    function speakNotes() {
+      let text = "";
+      document.querySelectorAll("#notesList li").forEach(li => text += li.textContent + ". ");
+      speak(text || "Nema beleški.");
+    }
+
+    // Glasovni unos
+    function startVoiceInput() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "sr-RS";
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const spokenText = event.results[0][0].transcript.toLowerCase();
+        if (spokenText.includes("beleška")) {
+          addNote(spokenText.replace("beleška", "").trim());
+        } else if (spokenText.includes("alarm")) {
+          const timeMatch = spokenText.match(/\d{1,2}[:.]?\d{0,2}/);
+          if (timeMatch) setAlarm(timeMatch[0]);
+        } else {
+          speak("Nisam sigurna, ponovi molim te.");
+        }
+      };
+    }
+
+    // Service Worker registracija
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registrovan"));
+    }
+  </script>
+</body>
+</html>
