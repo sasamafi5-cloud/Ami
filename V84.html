@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luna 3D Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --elevation-x: 5px;
+            --elevation-y: 5px;
+            --blur: 12px;
+            --shadow-opacity: 0.12;
+            --border-radius: 20px;
+            --mic-size: 95px; /* Početna veličina mikrofona */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background-color: #d1d5db; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+
+        .app-screen {
+            width: 100vw; max-width: 360px; height: 100vh; max-height: 720px;
+            background: #f1f5f9; border-radius: 36px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
+            background: #ffffff; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
+            z-index: 10; box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+        }
+        .logo-l { width: 38px; height: 38px; background: #8b5cf6; color: white; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+        .btn-sasa { background: #1d4ed8; color: white; border: none; padding: 7px 18px; font-weight: 700; border-radius: 16px; font-size: 13px; }
+
+        /* SADRŽAJ */
+        .main-content { padding: 14px; flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px; align-items: start; }
+        .left-column { display: flex; flex-direction: column; gap: 14px; }
+
+        .card {
+            background: var(--card-bg); border-radius: var(--border-radius); padding: 10px;
+            display: flex; align-items: center; gap: 10px; position: relative; cursor: pointer;
+            box-shadow: var(--elevation-x) var(--elevation-y) var(--blur) rgba(0,0,0,var(--shadow-opacity)),
+                        calc(var(--elevation-x) * -1) calc(var(--elevation-y) * -1) var(--blur) rgba(255,255,255,0.9);
+        }
+
+        .circle-icon-holder {
+            width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 2px solid #fff;
+            background: #f8fafc; position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .circle-icon-holder img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+
+        .right-display-card {
+            background: var(--card-bg); border-radius: calc(var(--border-radius) * 1.2); padding: 14px; height: 150px;
+            box-shadow: var(--elevation-x) var(--elevation-y) var(--blur) rgba(0,0,0,var(--shadow-opacity)),
+                        calc(var(--elevation-x) * -1) calc(var(--elevation-y) * -1) var(--blur) rgba(255,255,255,0.9);
+        }
+
+        /* DUGME MIKROFONA SA AUTOMATSKIM SKALIRANJEM */
+        .bottom-area { padding: 10px 14px 20px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+        .mic-3d-button {
+            width: var(--mic-size);
+            height: var(--mic-size);
+            border-radius: 50%; background: #f1f5f9;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1), inset 0 3px 5px rgba(255,255,255,0.9);
+            display: flex; align-items: center; justify-content: center; padding: calc(var(--mic-size) * 0.06);
+            cursor: pointer; transition: transform 0.1s;
+        }
+        .mic-3d-button:active { transform: scale(0.95); }
+
+        .mic-neon-ring { width: 100%; height: 100%; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #3b82f6, #ec4899); }
+        
+        .mic-center-white {
+            width: 100%; height: 100%; background: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .mic-center-white img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+        .mic-center-white i { font-size: calc(var(--mic-size) * 0.25); color: #3b82f6; z-index: 1; }
+
+        .bottom-action-text { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-color); opacity: 0.6; }
+
+        /* PODEŠAVANJA */
+        .settings-overlay {
+            position: absolute; inset: 0; background: rgba(255,255,255,0.98);
+            z-index: 20; padding: 16px; display: none; flex-direction: column; gap: 12px; overflow-y: auto;
+        }
+        .settings-overlay.open { display: flex; }
+
+        .slider-box { background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px; }
+        .slider-box-title { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; }
+
+        .api-input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; outline: none; }
+
+        .row-item label { font-size: 11px; color: #475569; display: flex; justify-content: space-between; margin-bottom: 2px; }
+        input[type="range"] { width: 100%; height: 4px; appearance: none; background: #cbd5e1; border-radius: 2px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #3b82f6; }
+
+        .upload-btn { background: #e2e8f0; border: 1px dashed #94a3b8; padding: 6px; border-radius: 6px; font-size: 11px; text-align: center; cursor: pointer; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app-screen">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-l">L</div>
+                <div class="header-text"><h1>Luna</h1><p>3D AI Sekretarica</p></div>
+            </div>
+            <div class="header-right">
+                <button class="btn-trigger-settings" id="openBtn"><i class="fa-solid fa-sliders"></i></button>
+                <button class="btn-sasa">Saša</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div class="card" onclick="switchTab('notes')">
+                    <div class="circle-icon-holder" id="h-notes"><i class="fa-solid fa-file-lines" style="color: #f59e0b;"></i></div>
+                    <div class="card-name">Beleške</div>
+                </div>
+                <div class="card" onclick="switchTab('alarms')">
+                    <div class="circle-icon-holder" id="h-alarms"><i class="fa-solid fa-bell" style="color: #ec4899;"></i></div>
+                    <div class="card-name">Alarmi</div>
+                </div>
+            </div>
+            <div class="right-display-card">
+                <div id="display-title" style="font-weight:700; font-size:14px; margin-bottom:5px;">Beleške</div>
+                <ul id="display-content" style="list-style:none; font-size:12px; color:#64748b;"></ul>
+            </div>
+
+            <div class="settings-overlay" id="settingsMenu">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="font-size:15px;">Konfiguracija</h2>
+                    <button id="closeBtn" class="btn-close" style="background:none; border:none; font-size:20px;">&times;</button>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">AI Sekretarica API</div>
+                    <input type="password" id="apiKeyInput" class="api-input" placeholder="Unesi svoj API ključ ovde...">
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">Veličina Mikrofona</div>
+                    <div class="row-item">
+                        <label>Prečnik dugmeta: <span id="micVal">95px</span></label>
+                        <input type="range" id="slMic" min="70" max="180" value="95">
+                    </div>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">Slike sa telefona</div>
+                    <label class="upload-btn" for="f-notes">Slika za Beleške</label><input type="file" id="f-notes" accept="image/*">
+                    <label class="upload-btn" for="f-alarms">Slika za Alarme</label><input type="file" id="f-alarms" accept="image/*">
+                    <label class="upload-btn" for="f-mic">Slika za Mikrofon</label><input type="file" id="f-mic" accept="image/*">
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">3D Senke i Boje</div>
+                    <div class="color-row-item" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="font-size:12px;">Boja teksta</label><input type="color" id="cText" value="#1e293b">
+                    </div>
+                    <div class="row-item">
+                        <label>Dubina (Y osa): <span id="valY">5px</span></label>
+                        <input type="range" id="slY" min="-15" max="15" value="5">
+                    </div>
+                    <div class="row-item">
+                        <label>Zamućenje: <span id="valB">12px</span></label>
+                        <input type="range" id="slB" min="2" max="30" value="12">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-area">
+            <div class="mic-3d-button" id="micBtn">
+                <div class="mic-neon-ring">
+                    <div class="mic-center-white" id="h-mic">
+                        <i class="fa-solid fa-microphone"></i>
+                    </div>
+                </div>
+            </div>
+            <p class="bottom-action-text" id="stText">Dodirni za razgovor</p>
+        </div>
+    </div>
+
+    <script>
+        let myKey = "";
+        const root = document.documentElement;
+
+        // Otvaranje podešavanja
+        document.getElementById('openBtn').onclick = () => document.getElementById('settingsMenu').classList.add('open');
+        document.getElementById('closeBtn').onclick = () => document.getElementById('settingsMenu').classList.remove('open');
+
+        // Veličina mikrofona (Automatsko skaliranje)
+        document.getElementById('slMic').oninput = (e) => {
+            let val = e.target.value + 'px';
+            root.style.setProperty('--mic-size', val);
+            document.getElementById('micVal').innerText = val;
+        };
+
+        // Čuvanje API ključa
+        document.getElementById('apiKeyInput').onchange = (e) => {
+            myKey = e.target.value;
+            console.log("Ključ ažuriran.");
+        };
+
+        // Ostali slajderi
+        document.getElementById('cText').oninput = (e) => root.style.setProperty('--text-color', e.target.value);
+        document.getElementById('slY').oninput = (e) => {
+            root.style.setProperty('--elevation-y', e.target.value + 'px');
+            document.getElementById('valY').innerText = e.target.value + 'px';
+        };
+        document.getElementById('slB').oninput = (e) => {
+            root.style.setProperty('--blur', e.target.value + 'px');
+            document.getElementById('valB').innerText = e.target.value + 'px';
+        };
+
+        // Funkcija za slike
+        function upImg(inp, hold) {
+            document.getElementById(inp).onchange = function(e) {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const h = document.getElementById(hold);
+                        let img = h.querySelector('img') || document.createElement('img');
+                        img.src = ev.target.result;
+                        if(!h.querySelector('img')) h.appendChild(img);
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+        }
+        upImg('f-notes', 'h-notes'); upImg('f-alarms', 'h-alarms'); upImg('f-mic', 'h-mic');
+
+        // Razgovor (Logika sa API ključem)
+        document.getElementById('micBtn').onclick = () => {
+            if(!myKey) { alert("Prvo unesi API ključ u podešavanjima!"); return; }
+            
+            const st = document.getElementById('stText');
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'sr-RS';
+            
+            st.innerText = "Slušam...";
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                st.innerText = "Razmišljam...";
+                // Ovde bi išao tvoj API poziv koristeći varijablu 'myKey' i 'text'
+                setTimeout(() => { st.innerText = "Luna: Odgovorila sam!"; }, 1500);
+            };
+        };
+
+        // Tabovi
+        function switchTab(t) {
+            const c = document.getElementById('display-content');
+            document.getElementById('display-title').innerText = t === 'notes' ? 'Beleške' : 'Alarmi';
+            c.innerHTML = t === 'notes' ? '<li>• Kupiti poklon</li><li>• Sastanak u 5</li>' : '<li>• 07:00 Budilnik</li><li>• 12:00 Lek</li>';
+        }
+        switchTab('notes');
+    </script>
+</body>
+</html>
