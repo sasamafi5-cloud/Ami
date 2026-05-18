@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Luna 3D AI Sekretarica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --elevation-x: 5px;
+            --elevation-y: 5px;
+            --blur: 12px;
+            --shadow-opacity: 0.12;
+            --border-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #d1d5db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-screen {
+            width: 100vw;
+            max-width: 360px;
+            height: 100vh;
+            max-height: 720px;
+            background: #f1f5f9;
+            border-radius: 36px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-l {
+            width: 38px;
+            height: 38px;
+            background: #8b5cf6;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .header-text h1 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .header-text p {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-trigger-settings {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        .btn-sasa {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 7px 18px;
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: 16px;
+        }
+
+        /* SREDNJI SADRŽAJ */
+        .main-content {
+            padding: 14px;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.10fr 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 
+                var(--elevation-x) var(--elevation-y) var(--blur) rgba(0, 0, 0, var(--shadow-opacity)),
+                calc(var(--elevation-x) * -1) calc(var(--elevation-y) * -1) var(--blur) rgba(255, 255, 255, 0.9);
+        }
+
+        .circle-icon-holder {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .circle-icon-holder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .circle-icon-holder i {
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .card-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right-display-card {
+            background: var(--card-bg);
+            border-radius: calc(var(--border-radius) * 1.2);
+            padding: 14px;
+            height: 160px;
+            box-shadow: 
+                var(--elevation-x) var(--elevation-y) var(--blur) rgba(0, 0, 0, var(--shadow-opacity)),
+                calc(var(--elevation-x) * -1) calc(var(--elevation-y) * -1) var(--blur) rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .display-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 2px;
+        }
+
+        .display-content {
+            list-style: none;
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        /* MIKROFON TRIGER */
+        .bottom-area {
+            padding: 16px 14px 24px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mic-3d-button {
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.1), 
+                inset 0 3px 5px rgba(255,255,255,0.9),
+                inset 0 -3px 5px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .mic-neon-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 2.5px;
+            background: linear-gradient(135deg, #3b82f6, #ec4899);
+        }
+
+        .mic-center-white {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 2px rgba(0,0,0,0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mic-center-white img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .mic-center-white i {
+            font-size: 24px;
+            color: #3b82f6;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            z-index: 1;
+        }
+
+        .bottom-action-text {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        /* PODEŠAVANJA PANEL */
+        .settings-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 20;
+            padding: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .settings-overlay.open {
+            display: flex;
+        }
+
+        .settings-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-top h2 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .btn-close {
+            background: #f1f5f9;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-box {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-box-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .row-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .row-item label {
+            font-size: 11px;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .row-item input[type="range"] {
+            width: 100%;
+            height: 4px;
+            appearance: none;
+            background: #cbd5e1;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .row-item input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+
+        .color-row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-row-item input[type="color"] {
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background: none;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            background: #e2e8f0;
+            border: 1px dashed #94a3b8;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            color: #475569;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-screen">
+        
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-l">L</div>
+                <div class="header-text">
+                    <h1>Luna</h1>
+                    <p>3D AI Sekretarica</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-trigger-settings" id="openBtn"><i class="fa-solid fa-sliders"></i></button>
+                <button class="btn-sasa">Saša</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div class="card" onclick="switchTab('notes')">
+                    <span class="notification-badge" id="badge-notes">2</span>
+                    <div class="circle-icon-holder" id="img-holder-notes">
+                        <i class="fa-solid fa-file-lines" style="color: #f59e0b;"></i>
+                    </div>
+                    <div class="card-name">Beleške</div>
+                </div>
+
+                <div class="card" onclick="switchTab('alarms')">
+                    <span class="notification-badge" id="badge-alarms">2</span>
+                    <div class="circle-icon-holder" id="img-holder-alarms">
+                        <i class="fa-solid fa-bell" style="color: #ec4899;"></i>
+                    </div>
+                    <div class="card-name">Alarmi</div>
+                </div>
+            </div>
+
+            <div class="right-display-card">
+                <div class="display-title" id="display-title">Beleške</div>
+                <ul class="display-content" id="display-content">
+                    <li>• Kupiti poklon</li>
+                    <li>• Završiti projekat</li>
+                </ul>
+            </div>
+
+            <div class="settings-overlay" id="settingsMenu">
+                <div class="settings-top">
+                    <h2>Podešavanje izgleda</h2>
+                    <button class="btn-close" id="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">Ubacivanje slika sa telefona</div>
+                    <label class="upload-btn" for="file-notes">Izaberi sliku za Beleške</label>
+                    <input type="file" id="file-notes" accept="image/*">
+
+                    <label class="upload-btn" for="file-alarms">Izaberi sliku za Zvonce/Alarme</label>
+                    <input type="file" id="file-alarms" accept="image/*">
+
+                    <label class="upload-btn" for="file-mic">Izaberi sliku za Mikrofon</label>
+                    <input type="file" id="file-mic" accept="image/*">
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">Boje na ekranu</div>
+                    <div class="row-item color-row-item">
+                        <label>Boja teksta i slova</label>
+                        <input type="color" id="colorText" value="#1e293b">
+                    </div>
+                    <div class="row-item color-row-item">
+                        <label>Pozadina kartica</label>
+                        <input type="color" id="colorCard" value="#ffffff">
+                    </div>
+                </div>
+
+                <div class="slider-box">
+                    <div class="slider-box-title">3D Geometrija i Senke</div>
+                    <div class="row-item">
+                        <label>Širina senke (Osa X): <span id="valX">5px</span></label>
+                        <input type="range" id="slX" min="-15" max="15" value="5">
+                    </div>
+                    <div class="row-item">
+                        <label>Visina / Dubina senke (Osa Y): <span id="valY">5px</span></label>
+                        <input type="range" id="slY" min="-15" max="15" value="5">
+                    </div>
+                    <div class="row-item">
+                        <label>Zamućenje (Blur): <span id="valBlur">12px</span></label>
+                        <input type="range" id="slBlur" min="2" max="30" value="12">
+                    </div>
+                    <div class="row-item">
+                        <label>Jačina senke: <span id="valOpacity">12%</span></label>
+                        <input type="range" id="slOpacity" min="5" max="30" value="12">
+                    </div>
+                    <div class="row-item">
+                        <label>Zaobljenost ćoškova: <span id="valRadius">20px</span></label>
+                        <input type="range" id="slRadius" min="4" max="35" value="20">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-area">
+            <div class="mic-3d-button" id="micButton">
+                <div class="mic-neon-ring">
+                    <div class="mic-center-white" id="img-holder-mic">
+                        <i class="fa-solid fa-microphone"></i>
+                    </div>
+                </div>
+            </div>
+            <p class="bottom-action-text" id="statusText">Dodirni za razgovor sa Lunom</p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- KONFIGURACIJA API KLJUČA ---
+        const API_KEY = "OVDE_UBACI_TVOJ_API_KLJUC"; // Zameni sa svojim stvarnim ključem za sekretaricu
+
+        let activeTab = 'notes';
+        const notesList = ['• Kupiti poklon', '• Završiti projekat'];
+        const alarmsList = ['• 07:00 - Dobro jutro', '• 14:30 - Pauza za kafu'];
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const title = document.getElementById('display-title');
+            const content = document.getElementById('display-content');
+            content.innerHTML = '';
+            
+            if(tab === 'notes') {
+                title.innerText = 'Beleške';
+                notesList.forEach(i => content.innerHTML += `<li>${i}</li>`);
+            } else {
+                title.innerText = 'Alarmi';
+                alarmsList.forEach(i => content.innerHTML += `<li>${i}</li>`);
+            }
+        }
+
+        // Otvaranje/Zatvaranje podešavanja
+        const settingsMenu = document.getElementById('settingsMenu');
+        document.getElementById('openBtn').addEventListener('click', () => settingsMenu.classList.add('open'));
+        document.getElementById('closeBtn').addEventListener('click', () => settingsMenu.classList.remove('open'));
+
+        // Slajderi
+        const root = document.documentElement;
+        document.getElementById('colorText').addEventListener('input', (e) => root.style.setProperty('--text-color', e.target.value));
+        document.getElementById('colorCard').addEventListener('input', (e) => root.style.setProperty('--card-bg', e.target.value));
+        
+        document.getElementById('slX').addEventListener('input', (e) => {
+            root.style.setProperty('--elevation-x', e.target.value + 'px');
+            document.getElementById('valX').innerText = e.target.value + 'px';
+        });
+        document.getElementById('slY').addEventListener('input', (e) => {
+            root.style.setProperty('--elevation-y', e.target.value + 'px');
+            document.getElementById('valY').innerText = e.target.value + 'px';
+        });
+        document.getElementById('slBlur').addEventListener('input', (e) => {
+            root.style.setProperty('--blur', e.target.value + 'px');
+            document.getElementById('valBlur').innerText = e.target.value + 'px';
+        });
+        document.getElementById('slOpacity').addEventListener('input', (e) => {
+            root.style.setProperty('--shadow-opacity', e.target.value / 100);
+            document.getElementById('valOpacity').innerText = e.target.value + '%';
+        });
+        document.getElementById('slRadius').addEventListener('input', (e) => {
+            root.style.setProperty('--border-radius', e.target.value + 'px');
+            document.getElementById('valRadius').innerText = e.target.value + 'px';
+        });
+
+        // Slike upload
+        function handleImageUpload(inputId, holderId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const holder = document.getElementById(holderId);
+                        let img = holder.querySelector('img');
+                        if (!img) {
+                            img = document.createElement('img');
+                            holder.appendChild(img);
+                        }
+                        img.src = event.target.result;
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+        handleImageUpload('file-notes', 'img-holder-notes');
+        handleImageUpload('file-alarms', 'img-holder-alarms');
+        handleImageUpload('file-mic', 'img-holder-mic');
+
+        // --- FUNKCIJA ZA RAZGOVOR SA LUNOM ---
+        document.getElementById('micButton').addEventListener('click', () => {
+            const status = document.getElementById('statusText');
+            status.innerText = "Luna sluša... Izgovori nešto";
+            
+            // Logika za glasovno prepoznavanje u pretraživaču (Web Speech API)
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                status.innerText = "Glasovno prepoznavanje nije podržano na ovom uređaju.";
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'sr-RS'; // Podešeno na srpski jezik
+
+            recognition.onresult = function(event) {
+                const textSpoken = event.results[0][0].transcript;
+                status.innerText = `Rekao si: "${textSpoken}"`;
+                
+                // Ovde se tekst šalje ka sekretarici koristeći tvoj ključ (API_KEY)
+                console.log("Šaljem sekretarici: " + textSpoken + " preko ključa: " + API_KEY);
+            };
+
+            recognition.onerror = function() {
+                status.innerText = "Greška u prepoznavanju glasa. Pokušaj ponovo.";
+            };
+
+            recognition.start();
+        });
+    </script>
+</body>
+</html>
