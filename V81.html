@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna 3D AI Sekretarica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS VARIJABLE KOJE SLAJDERI KONTROLIŠU UŽIVO --- */
+        :root {
+            --bg-lightness: 94%;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --btn-saša: #2563eb;
+            --gradient-start: #3b82f6;
+            --gradient-end: #ec4899;
+            --border-radius: 24px;
+            --elevation: 6px;
+            --blur: 16px;
+            --opacity: 0.12;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: hsl(210, 20%, var(--bg-lightness));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        /* --- GLAVNI KONTEJNER TELEFONA --- */
+        .phone-container {
+            width: 100%;
+            max-width: 390px;
+            height: 820px;
+            background: #f8fafc;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 8px solid #1e293b;
+            overflow: hidden;
+            display: flex;
+            flex-col: column;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* --- HEADER (POBOLJŠAN) --- */
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-l {
+            width: 44px;
+            height: 44px;
+            background: #7c3aed;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: calc(var(--border-radius) / 1.5);
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+        }
+
+        .header-info h1 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .header-info p {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-settings {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.2s;
+        }
+
+        .btn-settings:hover {
+            transform: rotate(45deg);
+        }
+
+        /* Popravljeno dugme Saša sa više paddinga */
+        .btn-sasa {
+            background: var(--btn-saša);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
+
+        /* --- GLAVNI SADRŽAJ --- */
+        .content {
+            padding: 20px;
+            flex-1: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* --- DINAMIČKI 3D NEOMORFIZAM ZA KARTICE --- */
+        .neomorphic-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            border: none;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            box-shadow: 
+                var(--elevation) var(--elevation) var(--blur) rgba(0, 0, 0, var(--opacity)),
+                calc(var(--elevation) * -1) calc(var(--elevation) * -1) var(--blur) rgba(255, 255, 255, 0.9);
+            transform: translateY(calc(var(--elevation) * -0.3));
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Popravljene slike: Savršeni krugovi sa unutrašnjom senkom */
+        .card-image-holder {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 2px solid white;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+        }
+
+        .card-image-holder i {
+            font-size: 22px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        /* Popravljeni bedževi: Pomereni skroz u ugao */
+        .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+        }
+
+        /* --- LISTA SA FUNKCIJOM BRISANJA --- */
+        .list-container {
+            text-align: left;
+            min-height: 160px;
+        }
+
+        .list-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding-bottom: 6px;
+        }
+
+        .item-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .btn-delete:hover {
+            color: #ef4444;
+        }
+
+        /* --- POPRAVLJENI 3D MIKROFON I TEKST --- */
+        .bottom-section {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.02), transparent);
+        }
+
+        /* Glavni veliki 3D krug oko mikrofona */
+        .mic-outer-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #f8fafc;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.8), 0 10px 20px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .mic-outer-circle:active {
+            transform: scale(0.97);
+        }
+
+        /* Neon prsten podesiv preko slajdera kolora */
+        .mic-gradient-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        /* Unutrašnji krug koji je dobio 3D senku */
+        .mic-inner-white {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05), 0 6px 12px rgba(0,0,0,0.12);
+        }
+
+        /* Ikona mikrofona sa drop-shadow efektom dubine */
+        .mic-inner-white i {
+            font-size: 32px;
+            color: var(--gradient-start);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        /* Popravljen tekst sa razmakom i ispravnom gramatikom */
+        .action-text {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        /* --- STRANA ZA PODEŠAVANJA (SLAJDERI PANEL) --- */
+        .settings-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 20;
+            padding: 24px;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .settings-panel.active {
+            display: flex;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .settings-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .btn-close-settings {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-group {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .slider-group-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-row label {
+            font-size: 12px;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-row input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            appearance: none;
+            outline: none;
+        }
+
+        .control-row input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        .color-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-row input[type="color"] {
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        
+        <div class="header">
+            <div class="header-left">
+                <div class="avatar-l">L</div>
+                <div class="header-info">
+                    <h1>Luna</h1>
+                    <p>3D AI Sekretarica</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-settings" id="openSettings"><i class="fa-solid fa-sliders"></i></button>
+                <button class="btn-sasa">Saša</button>
+            </div>
+        </div>
+
+        <div class="content">
+            
+            <div class="grid-cards">
+                <div class="neomorphic-card" onclick="switchTab('notes')">
+                    <span class="badge" id="badge-notes">2</span>
+                    <div class="card-image-holder">
+                        <i class="fa-solid fa-file-text" style="color: #3b82f6;"></i>
+                    </div>
+                    <div class="card-title">Beleške</div>
+                </div>
+
+                <div class="neomorphic-card" onclick="switchTab('alarms')">
+                    <span class="badge" id="badge-alarms">2</span>
+                    <div class="card-image-holder">
+                        <i class="fa-solid fa-bell" style="color: #ec4899;"></i>
+                    </div>
+                    <div class="card-title">Alarmi</div>
+                </div>
+            </div>
+
+            <div class="neomorphic-card list-container">
+                <h3 class="list-title" id="list-title">Moje Beleške</h3>
+                <ul class="item-list" id="dynamic-list">
+                    </ul>
+            </div>
+
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-header">
+                    <h2><i class="fa-solid fa-palette"></i> 3D & Kolor</h2>
+                    <button class="btn-close-settings" id="closeSettings"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-group-title">3D Izgled i Senke</div>
+                    <div class="control-row">
+                        <label>Visina / Dubina 3D: <span id="val-elevation">6px</span></label>
+                        <input type="range" id="sl-elevation" min="0" max="18" value="6">
+                    </div>
+                    <div class="control-row">
+                        <label>Zamućenje senke (Blur): <span id="val-blur">16px</span></label>
+                        <input type="range" id="sl-blur" min="4" max="40" value="16">
+                    </div>
+                    <div class="control-row">
+                        <label>Vidljivost senke (Opacity): <span id="val-opacity">12%</span></label>
+                        <input type="range" id="sl-opacity" min="5" max="35" value="12">
+                    </div>
+                    <div class="control-row">
+                        <label>Zaobljenost uglova: <span id="val-radius">24px</span></label>
+                        <input type="range" id="sl-radius" min="8" max="40" value="24">
+                    </div>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-group-title">Podešavanje Boja</div>
+                    <div class="control-row color-row">
+                        <label>Glavni tekst i slova</label>
+                        <input type="color" id="col-text" value="#1e293b">
+                    </div>
+                    <div class="control-row color-row">
+                        <label>Pozadina kartica</label>
+                        <input type="color" id="col-card" value="#ffffff">
+                    </div>
+                    <div class="control-row color-row">
+                        <label>Dugme "Saša"</label>
+                        <input type="color" id="col-sasa" value="#2563eb">
+                    </div>
+                    <div class="control-row color-row">
+                        <label>Sjaj mikrofona (Levo)</label>
+                        <input type="color" id="col-grad1" value="#3b82f6">
+                    </div>
+                    <div class="control-row color-row">
+                        <label>Sjaj mikrofona (Desno)</label>
+                        <input type="color" id="col-grad2" value="#ec4899">
+                    </div>
+                    <div class="control-row">
+                        <label>Svetlina pozadine ekrana: <span id="val-bg">94%</span></label>
+                        <input type="range" id="sl-bg" min="75" max="98" value="94">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-section">
+            <div class="mic-outer-circle">
+                <div class="mic-gradient-ring">
+                    <div class="mic-inner-white">
+                        <i class="fa-solid fa-microphone"></i>
+                    </div>
+                </div>
+            </div>
+            <p class="action-text">Dodirni za razgovor sa Lunom</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Podaci aplikacije
+        let notes = [
+            { id: 1, text: "Kupiti poklon" },
+            { id: 2, text: "Završiti projekat" }
+        ];
+
+        let alarms = [
+            { id: 1, text: "07:00 - Dobro jutro" },
+            { id: 2, text: "14:30 - Pauza za kafu" }
+        ];
+
+        let currentTab = 'notes';
+
+        // Otvaranje i zatvaranje podešavanja
+        const panel = document.getElementById('settingsPanel');
+        document.getElementById('openSettings').addEventListener('click', () => panel.classList.add('active'));
+        document.getElementById('closeSettings').addEventListener('click', () => panel.classList.remove('active'));
+
+        // Prikaz podataka na ekranu
+        function renderList() {
+            const listElement = document.getElementById('dynamic-list');
+            const titleElement = document.getElementById('list-title');
+            listElement.innerHTML = '';
+
+            // Ažuriraj brojeve na crvenim bedževima
+            document.getElementById('badge-notes').innerText = notes.length;
+            document.getElementById('badge-alarms').innerText = alarms.length;
+
+            if (currentTab === 'notes') {
+                titleElement.innerText = "Moje Beleške";
+                if(notes.length === 0) listElement.innerHTML = '<li class="list-item" style="color:#94a3b8; font-style:italic">Nema beleški.</li>';
+                notes.forEach(item => {
+                    listElement.innerHTML += `
+                        <li class="list-item">
+                            <span>• ${item.text}</span>
+                            <button class="btn-delete" onclick="deleteItem(${item.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>
+                    `;
+                });
+            } else {
+                titleElement.innerText = "Aktivni Alarmi";
+                if(alarms.length === 0) listElement.innerHTML = '<li class="list-item" style="color:#94a3b8; font-style:italic">Svi alarmi isključeni.</li>';
+                alarms.forEach(item => {
+                    listElement.innerHTML += `
+                        <li class="list-item">
+                            <span><i class="fa-regular fa-clock" style="margin-right:5px"></i> ${item.text}</span>
+                            <button class="btn-delete" onclick="deleteItem(${item.id})"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>
+                    `;
+                });
+            }
+        }
+
+        // Promena tabova
+        function switchTab(tab) {
+            currentTab = tab;
+            renderList();
+        }
+
+        // Funkcija brisanja stavke
+        function deleteItem(id) {
+            if (currentTab === 'notes') {
+                notes = notes.filter(item => item.id !== id);
+            } else {
+                alarms = alarms.filter(item => item.id !== id);
+            }
+            renderList();
+        }
+
+        // --- UŽIVO APDEJT CSS-A PREKO SLAJDERA (3D I BOJE) ---
+        function setupSliders() {
+            const root = document.documentElement;
+
+            // 3D Slajderi
+            document.getElementById('sl-elevation').addEventListener('input', (e) => {
+                root.style.setProperty('--elevation', e.target.value + 'px');
+                document.getElementById('val-elevation').innerText = e.target.value + 'px';
+            });
+            document.getElementById('sl-blur').addEventListener('input', (e) => {
+                root.style.setProperty('--blur', e.target.value + 'px');
+                document.getElementById('val-blur').innerText = e.target.value + 'px';
+            });
+            document.getElementById('sl-opacity').addEventListener('input', (e) => {
+                root.style.setProperty('--opacity', (e.target.value / 100));
+                document.getElementById('val-opacity').innerText = e.target.value + '%';
+            });
+            document.getElementById('sl-radius').addEventListener('input', (e) => {
+                root.style.setProperty('--border-radius', e.target.value + 'px');
+                document.getElementById('val-radius').innerText = e.target.value + 'px';
+            });
+
+            // Kolor Slajderi / Biranje Boja
+            document.getElementById('col-text').addEventListener('input', (e) => {
+                root.style.setProperty('--text-color', e.target.value);
+            });
+            document.getElementById('col-card').addEventListener('input', (e) => {
+                root.style.setProperty('--card-bg', e.target.value);
+            });
+            document.getElementById('col-sasa').addEventListener('input', (e) => {
+                root.style.setProperty('--btn-saša', e.target.value);
+            });
+            document.getElementById('col-grad1').addEventListener('input', (e) => {
+                root.style.setProperty('--gradient-start', e.target.value);
+            });
+            document.getElementById('col-grad2').addEventListener('input', (e) => {
+                root.style.setProperty('--gradient-end', e.target.value);
+            });
+            document.getElementById('sl-bg').addEventListener('input', (e) => {
+                root.style.setProperty('--bg-lightness', e.target.value + '%');
+                document.getElementById('val-bg').innerText = e.target.value + '%';
+            });
+        }
+
+        // Pokretanje aplikacije pri učitavanju
+        window.onload = () => {
+            renderList();
+            setupSliders();
+        };
+    </script>
+</body>
+</html>
