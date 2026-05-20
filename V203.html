@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA • 3D AI Sekretarica</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    body { font-family: 'Inter', sans-serif; background: #0f172a; }
+
+    .phone-frame {
+      width: 360px; height: 690px;
+      background: #e2e8f0;
+      border: 14px solid #1e2937;
+      border-radius: 52px;
+      overflow: hidden;
+      box-shadow: 0 35px 70px -10px rgba(0,0,0,0.9);
+    }
+
+    /* Osnovni 3D plastični paneli */
+    .panel-3d {
+      background: #ffffff;
+      border-radius: 24px;
+      border-top: 4px solid rgba(255,255,255,0.9);
+      border-left: 4px solid rgba(255,255,255,0.85);
+      box-shadow: 8px 12px 24px rgba(0,0,0,0.15), -6px -6px 18px rgba(255,255,255,0.9);
+    }
+
+    /* Premium 3D Plastični i mekani efekat za stavke unutar liste */
+    .item-3d-plastic {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-radius: 16px;
+      border-top: 2px solid rgba(255,255,255,0.9);
+      border-left: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 4px 6px 12px rgba(15, 23, 42, 0.08), -3px -3px 8px rgba(255,255,255,0.9);
+      transition: all 0.2s ease;
+    }
+
+    /* Duplo veći avatar sa lebdećom animacijom */
+    .avatar-container {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      box-shadow: 0 8px 16px rgba(29, 78, 216, 0.3), inset 0 2px 4px rgba(255,255,255,0.4);
+      animation: floatSlow 3.5s ease-in-out infinite;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.02); }
+    }
+
+    /* Potpuno okrugla dugmad za glavne sekcije */
+    .icon-3d {
+      width: 46px; height: 46px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 50%; 
+      box-shadow: 3px 5px 10px rgba(0,0,0,0.12), -3px -3px 8px rgba(255,255,255,0.9);
+      overflow: hidden;
+      flex-shrink: 0; /* Ne dozvoljava skupljanje ikonice */
+    }
+
+    /* Plastično sjajno dugme na vrhu za Sašu */
+    .sasa-plastic-badge {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      color: white;
+      font-weight: 800;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border-top: 2px solid rgba(255,255,255,0.6);
+      border-bottom: 2px solid rgba(0,0,0,0.2);
+      box-shadow: 0 5px 10px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .red-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white; width: 20px; height: 20px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; border: 2px solid white;
+    }
+
+    .mic-container {
+      width: 140px; height: 140px;
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 50%;
+      box-shadow: 10px 14px 28px rgba(0,0,0,0.18), -8px -8px 20px rgba(255,255,255,0.9);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .listening .mic-container { animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.05); box-shadow: 0 0 22px rgba(59, 130, 246, 0.5); } }
+
+    /* Savršeno mali, okrugli, plastični X dugmići za brisanje */
+    .btn-delete-round {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fca5a5, #ef4444);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px;
+      font-weight: bold;
+      border-top: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 1px 2px 4px rgba(239, 68, 68, 0.25);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.1s ease;
+    }
+    .btn-delete-round:active { transform: scale(0.85); }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-slate-950">
+
+  <!-- Skriveni fajl menadžer ulazi za vaše slike sa telefona -->
+  <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="changeAvatar(this)">
+  <input type="file" id="note-upload" accept="image/*" class="hidden" onchange="changeIcon('note', this)">
+  <input type="file" id="bell-upload" accept="image/*" class="hidden" onchange="changeIcon('bell', this)">
+  <input type="file" id="mic-upload" accept="image/*" class="hidden" onchange="changeMicImage(this)">
+
+  <div class="phone-frame flex flex-col justify-between">
+    
+    <!-- HEADER -->
+    <div class="px-4 py-3 flex items-center justify-between bg-white border-b shadow-sm z-10">
+      <div class="flex items-center gap-3">
+        <!-- Duplo veći lebdeći Avatar -->
+        <div onclick="triggerFile('avatar-upload')" id="avatar-holder" class="avatar-container flex items-center justify-center">
+          <i class="fa-solid fa-robot text-white text-3xl"></i>
+        </div>
+        <div>
+          <div class="font-bold text-base text-slate-800 tracking-tight">Luna</div>
+          <div class="text-[11px] text-slate-400 font-medium -mt-1">3D AI Asistent</div>
+        </div>
+      </div>
+      <!-- Plastično dugme Saša -->
+      <div class="sasa-plastic-badge text-xs">Saša</div>
+    </div>
+
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="flex-1 bg-slate-100 p-3 flex flex-col gap-3 overflow-hidden">
+      
+      <!-- Gornji vidžeti sa okruglim dugmićima -->
+      <div class="flex gap-2.5 h-[200px]">
+        <div class="w-[42%] flex flex-col gap-2.5">
+          <div onclick="selectSection('notes')" class="panel-3d p-2 cursor-pointer relative flex-1 flex items-center overflow-hidden">
+            <div class="flex items-center gap-2 min-w-0 w-full">
+              <div id="note-icon" class="icon-3d"><i class="fa-solid fa-note-sticky text-blue-600 text-base"></i></div>
+              <div class="font-bold text-[11px] text-slate-700 truncate pr-2">Beleške</div>
+              <div id="badge-notes" class="red-badge">2</div>
+            </div>
+          </div>
+
+          <div onclick="selectSection('alarms')" class="panel-3d p-2 cursor-pointer relative flex-1 flex items-center overflow-hidden">
+            <div class="flex items-center gap-2 min-w-0 w-full">
+              <div id="bell-icon" class="icon-3d"><i class="fa-solid fa-bell text-yellow-500 text-base"></i></div>
+              <div class="font-bold text-[11px] text-slate-700 truncate pr-2">Alarmi</div>
+              <div id="badge-alarms" class="red-badge">1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ekran za prikaz trenutne sekcije sa 3D efektom i skrolovanjem -->
+        <div class="flex-1 panel-3d p-3 overflow-y-auto bg-slate-50/50 shadow-inner">
+          <div id="preview-content" class="text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Donji deo: Mikrofon i Komande -->
+      <div class="flex-1 flex flex-col items-center justify-center pt-1">
+        <div id="mic-trigger" onclick="toggleListening()" class="mic-container flex items-center justify-center">
+          <div id="mic-inner" class="w-[100px] h-[100px] bg-blue-50 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+            <i id="mic-icon-graphic" class="fa-solid fa-microphone text-blue-600 text-3xl"></i>
+          </div>
+        </div>
+        <span id="mic-status-text" class="mt-3 text-[10px] font-black tracking-widest text-slate-400 uppercase">DODIRNI I KAŽI KOMANDU</span>
+      </div>
+    </div>
+
+    <!-- SETTINGS SCREEN (VRAĆEN GROQ API KLJUČ I SVE FUNKCIJE) -->
+    <div id="settings-screen" class="hidden flex-1 bg-slate-100 p-4 overflow-y-auto">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-lg font-bold text-slate-800">⚙️ Podešavanja</h2>
+        <i onclick="changeScreen('home')" class="fa-solid fa-arrow-left text-xl cursor-pointer text-slate-600"></i>
+      </div>
+      
+      <div class="space-y-4">
+        <!-- VRAĆEN I SREĐEN API KLJUČ -->
+        <div class="panel-3d p-4">
+          <p class="font-bold text-xs text-slate-700 mb-2">🔑 Groq AI API Ključ</p>
+          <input type="password" id="groq-key" placeholder="gsk_..." class="w-full p-2.5 border border-slate-300 rounded-xl text-xs bg-slate-50">
+          <button onclick="saveGroqKey()" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-bold text-xs transition shadow-md shadow-blue-600/20">Sačuvaj Ključ</button>
+        </div>
+
+        <!-- Personalizacija ekrana -->
+        <div class="panel-3d p-4">
+          <p class="font-bold text-xs text-slate-700 mb-3">🎨 Promeni izgled slikom sa telefona:</p>
+          <button onclick="triggerFile('avatar-upload')" class="w-full py-2.5 bg-blue-50 text-blue-700 rounded-xl mb-2 font-bold text-xs text-left px-3 border border-blue-200/50">📸 Promeni sliku Avatara (Lune)</button>
+          <button onclick="triggerFile('note-upload')" class="w-full py-2.5 bg-indigo-50 text-indigo-700 rounded-xl mb-2 font-bold text-xs text-left px-3 border border-indigo-200/50">📸 Promeni okruglu ikonu Beleški</button>
+          <button onclick="triggerFile('bell-upload')" class="w-full py-2.5 bg-amber-50 text-amber-700 rounded-xl mb-2 font-bold text-xs text-left px-3 border border-amber-200/50">📸 Promeni okruglu ikonu Alarma</button>
+          <button onclick="triggerFile('mic-upload')" class="w-full py-2.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs text-left px-3 border border-emerald-200/50">📸 Promeni sliku unutar mikrofona</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="h-14 bg-white border-t flex items-center justify-around text-xl text-slate-400 z-10">
+      <i class="fa-solid fa-house cursor-pointer hover:text-blue-600" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-sliders cursor-pointer hover:text-blue-600" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <script>
+    let groqKey = localStorage.getItem('groq_key') || '';
+
+    let appData = {
+      notes: ["Kupiti poklon za rođendan", "Završiti projekat za Sašu"],
+      alarms: ["15:45", "07:30"],
+      appointments: ["Sastanak u 18:00", "Lekarski pregled"]
+    };
+
+    let activeSection = 'notes';
+    let isListening = false;
+    let recognition;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function changeScreen(screen) {
+      document.getElementById('home-screen').classList.toggle('hidden', screen !== 'home');
+      document.getElementById('settings-screen').classList.toggle('hidden', screen !== 'settings');
+    }
+
+    function saveGroqKey() {
+      const keyInput = document.getElementById('groq-key').value.trim();
+      if (keyInput) {
+        groqKey = keyInput;
+        localStorage.setItem('groq_key', groqKey);
+        alert("✅ API ključ sačuvan!");
+      } else {
+        localStorage.removeItem('groq_key');
+        groqKey = '';
+        alert("⚠️ Ključ uklonjen.");
+      }
+    }
+
+    function triggerFile(id) {
+      document.getElementById(id).click();
+    }
+
+    function changeAvatar(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('avatar-holder').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function changeIcon(type, input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const html = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`;
+        if (type === 'note') document.getElementById('note-icon').innerHTML = html;
+        else document.getElementById('bell-icon').innerHTML = html;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function changeMicImage(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('mic-inner').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function obrisiBelesku(index) {
+      appData.notes.splice(index, 1);
+      updateDisplay();
+      lunaGovori("Obrisano.");
+    }
+
+    function obrisiAlarm(index) {
+      appData.alarms.splice(index, 1);
+      updateDisplay();
+      lunaGovori("Uklonjeno.");
+    }
+
+    function obrisiTermin(index) {
+      appData.appointments.splice(index, 1);
+      updateDisplay();
+      lunaGovori("Obrisano.");
+    }
+
+    // AŽURIRANI EKSTREMNO LEPI 3D PLASTIČNI OBLAČIĆI
+    function updateDisplay() {
+      document.getElementById('badge-notes').innerText = appData.notes.length;
+      document.getElementById('badge-alarms').innerText = appData.alarms.length + appData.appointments.length;
+      
+      const content = document.getElementById('preview-content');
+      if (activeSection === 'notes') {
+        let html = `<h3 class="font-extrabold text-xs text-blue-600 mb-2 tracking-wide uppercase">📝 Beleške</h3><ul class="space-y-2">`;
+        if (appData.notes.length === 0) html += `<p class="text-slate-400 text-center py-4 font-medium">Lista je prazna</p>`;
+        
+        appData.notes.forEach((n, idx) => {
+          html += `
+            <li class="item-3d-plastic p-2 px-2.5 text-slate-700 flex justify-between items-center gap-2">
+              <span class="font-semibold text-[11px] leading-tight break-all w-full pr-1">${n}</span>
+              <div onclick="obrisiBelesku(${idx})" class="btn-delete-round"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      } else {
+        let html = `<h3 class="font-extrabold text-xs text-yellow-600 mb-2 tracking-wide uppercase">⏰ Alarmi & Termini</h3><ul class="space-y-2">`;
+        if (appData.alarms.length === 0 && appData.appointments.length === 0) html += `<p class="text-slate-400 text-center py-4 font-medium">Nema alarma</p>`;
+        
+        appData.alarms.forEach((a, idx) => {
+          html += `
+            <li class="item-3d-plastic p-2 px-2.5 text-slate-700 flex justify-between items-center gap-2 border-l-4 border-l-amber-400">
+              <span class="font-bold text-[11px] text-amber-600">⏰ ${a}</span>
+              <div onclick="obrisiAlarm(${idx})" class="btn-delete-round"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        
+        appData.appointments.forEach((t, idx) => {
+          html += `
+            <li class="item-3d-plastic p-2 px-2.5 text-slate-700 flex justify-between items-center gap-2 border-l-4 border-l-emerald-400">
+              <span class="font-semibold text-[11px] leading-tight break-all w-full pr-1">📅 ${t}</span>
+              <div onclick="obrisiTermin(${idx})" class="btn-delete-round"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      }
+    }
+
+    function selectSection(section) {
+      activeSection = section;
+      updateDisplay();
+    }
+
+    function lunaGovori(tekst) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const govornik = new SpeechSynthesisUtterance(tekst);
+        govornik.lang = 'sr-RS';
+        govornik.pitch = 1.1;
+        govornik.rate = 1.0;
+        window.speechSynthesis.speak(govornik);
+      }
+    }
+
+    function pustiAlarmniTon() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.5);
+    }
+
+    function obradiGlasovnuKomandu(izgovor) {
+      const tekst = izgovor.toLowerCase();
+      const content = document.getElementById('preview-content');
+
+      if (tekst.includes('belešk') || tekst.includes('zapiši')) {
+        let beleska = izgovor.replace(/zapiši|belešku|zabeleži|belesku/gi, "").trim();
+        if (beleska.length > 2) {
+          appData.notes.push(beleska);
+          activeSection = 'notes';
+          updateDisplay();
+          lunaGovori("Zapisala sam vašu belešku Saša.");
+        }
+      } 
+      else if (tekst.includes('alarm')) {
+        const satMinutMatrica = tekst.match(/(\d{1,2})[:.\s](\d{2})/);
+        if (satMinutMatrica) {
+          let sat = satMinutMatrica[1].padStart(2, '0');
+          let minut = satMinutMatrica[2];
+          let vremeAlarma = `${sat}:${minut}`;
+          appData.alarms.push(vremeAlarma);
+          activeSection = 'alarms';
+          updateDisplay();
+          lunaGovori(`Uspesno postavljen alarm za ${vremeAlarma}.`);
+        } else {
+          lunaGovori("Saša, molim vas recite tačno vreme za alarm.");
+        }
+      }
+      else if (tekst.includes('termin') || tekst.includes('sastanak') || tekst.includes('zakaži')) {
+        let termin = izgovor.replace(/zakaži|zakazi|termin/gi, "").trim();
+        appData.appointments.push(termin);
+        activeSection = 'alarms';
+        updateDisplay();
+        lunaGovori("Termin je uspešno zabeležen.");
+      }
+      else {
+        content.innerHTML = `
+          <div class="item-3d-plastic p-2 mb-2 font-bold text-blue-600 text-[11px]">Saša: "${izgovor}"</div>
+          <div class="item-3d-plastic p-2 font-bold text-emerald-600 text-[11px]">Luna: Čujem vas, recite mi komandu.</div>`;
+        lunaGovori("Čujem vas Saša, recite mi komandu.");
+      }
+    }
+
+    function toggleListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Vaš mobilni telefon ili pregledač ne podržava glasovne komande. Koristite Google Chrome.");
+        return;
+      }
+
+      if (!recognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'sr-RS';
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          isListening = true;
+          document.getElementById('home-screen').classList.add('listening');
+          document.getElementById('mic-status-text').innerText = "SLUŠAM VAS ŠAŠA...";
+          document.getElementById('mic-status-text').className = "mt-3 text-[10px] font-black tracking-widest text-blue-600 uppercase";
+        };
+
+        recognition.onresult = (e) => {
+          const rezultat = e.results[0][0].transcript;
+          obradiGlasovnuKomandu(rezultat);
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          document.getElementById('home-screen').classList.remove('listening');
+          document.getElementById('mic-status-text').innerText = "DODIRNI I KAŽI KOMANDU";
+          document.getElementById('mic-status-text').className = "mt-3 text-[10px] font-black tracking-widest text-slate-400 uppercase";
+        };
+
+        recognition.onerror = () => { recognition.stop(); };
+      }
+
+      if (isListening) recognition.stop();
+      else recognition.start();
+    }
+
+    setInterval(() => {
+      const sada = new Date();
+      const trenutnoVreme = sada.toTimeString().split(' ')[0].substring(0, 5);
+      
+      if (appData.alarms.includes(trenutnoVreme)) {
+        appData.alarms = appData.alarms.filter(a => a !== trenutnoVreme);
+        updateDisplay();
+        
+        pustiAlarmniTon();
+        setTimeout(() => {
+          lunaGovori("Saša, vreme je za vaš alarm! Ponoviću, vreme je za vaš alarm!");
+        }, 500);
+      }
+    }, 1000);
+
+    window.onload = () => {
+      changeScreen('home');
+      if (groqKey) document.getElementById('groq-key').value = groqKey;
+      updateDisplay();
+    };
+  </script>
+</body>
+</html>
