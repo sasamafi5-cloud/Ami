@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA SMART PRO • 3D AI Sekretarica</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    body { font-family: 'Inter', sans-serif; background: #0f172a; }
+
+    .phone-frame {
+      width: 360px; height: 690px;
+      background: #e2e8f0;
+      border: 14px solid #1e2937;
+      border-radius: 52px;
+      overflow: hidden;
+      box-shadow: 0 35px 70px -10px rgba(0,0,0,0.9);
+    }
+
+    .panel-3d {
+      background: #ffffff;
+      border-radius: 24px;
+      border-top: var(--plastic-thickness, 4px) solid rgba(255,255,255,0.9);
+      border-left: var(--plastic-thickness, 4px) solid rgba(255,255,255,0.85);
+      box-shadow: var(--shadow-x, 8px) var(--shadow-y, 12px) var(--shadow-blur, 24px) rgba(0,0,0,0.15), -6px -6px 18px rgba(255,255,255,0.9);
+    }
+
+    .item-3d-plastic {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-radius: 16px;
+      border-top: 2px solid rgba(255,255,255,0.9);
+      border-left: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 3px 5px 10px rgba(15, 23, 42, 0.06), -2px -2px 6px rgba(255,255,255,0.9);
+    }
+
+    .avatar-container {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      box-shadow: 0 8px 16px rgba(29, 78, 216, 0.3), inset 0 2px 4px rgba(255,255,255,0.4);
+      animation: floatSlow 3.5s ease-in-out infinite;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.02); }
+    }
+
+    .icon-3d {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 50%; 
+      box-shadow: 3px 5px 10px rgba(0,0,0,0.12), -3px -3px 8px rgba(255,255,255,0.9);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .sasa-plastic-badge {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      color: white;
+      font-weight: 800;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border-top: 2px solid rgba(255,255,255,0.6);
+      border-bottom: 2px solid rgba(0,0,0,0.2);
+      box-shadow: 0 5px 10px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .red-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white; width: 18px; height: 18px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 900; border: 1.5px solid white;
+      z-index: 20;
+    }
+
+    .mic-container {
+      width: var(--mic-size, 135px);
+      height: var(--mic-size, 135px);
+      background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+      border-radius: 50%;
+      box-shadow: 10px 14px 28px rgba(0,0,0,0.18), -8px -8px 20px rgba(255,255,255,0.9);
+      cursor: pointer;
+      transition: width 0.1s ease, height 0.1s ease;
+    }
+
+    .listening .mic-container { animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.04); box-shadow: 0 0 26px rgba(59, 130, 246, 0.6); } }
+
+    .btn-delete-round {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fca5a5, #ef4444);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: bold;
+      border-top: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 1px 2px 4px rgba(239, 68, 68, 0.25);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mode-btn-active {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      color: white !important;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-slate-950">
+
+  <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="changeAvatar(this)">
+  <input type="file" id="note-upload" accept="image/*" class="hidden" onchange="changeIcon('note', this)">
+  <input type="file" id="bell-upload" accept="image/*" class="hidden" onchange="changeIcon('bell', this)">
+  <input type="file" id="mic-upload" accept="image/*" class="hidden" onchange="changeMicImage(this)">
+
+  <div class="phone-frame flex flex-col justify-between" id="phone-body">
+    
+    <div class="px-4 py-3 flex items-center justify-between bg-white border-b shadow-sm z-10">
+      <div class="flex items-center gap-3">
+        <div onclick="triggerFile('avatar-upload')" id="avatar-holder" class="avatar-container flex items-center justify-center">
+          <i class="fa-solid fa-robot text-white text-3xl"></i>
+        </div>
+        <div>
+          <div class="font-bold text-base text-slate-800 tracking-tight" id="lbl-luna">Luna</div>
+          <div class="text-[11px] text-slate-400 font-medium -mt-1" id="lbl-status-mod">Smart AI Režim</div>
+        </div>
+      </div>
+      <div class="sasa-plastic-badge text-xs" id="badge-sasa">Saša</div>
+    </div>
+
+    <div id="home-screen" class="flex-1 bg-slate-100 p-3 flex flex-col gap-3 overflow-hidden">
+      
+      <div class="flex gap-2.5 h-[200px]">
+        <div class="w-[52%] flex flex-col gap-2.5">
+          <div onclick="selectSection('notes')" class="panel-3d p-2.5 cursor-pointer relative flex-1 flex items-center">
+            <div class="flex items-center gap-2 w-full">
+              <div id="note-icon" class="icon-3d"><i class="fa-solid fa-note-sticky text-blue-600 text-base custom-icon-clr"></i></div>
+              <div class="font-bold text-xs text-slate-700 custom-text-clr truncate">Beleške</div>
+              <div id="badge-notes" class="red-badge">0</div>
+            </div>
+          </div>
+
+          <div onclick="selectSection('alarms')" class="panel-3d p-2.5 cursor-pointer relative flex-1 flex items-center">
+            <div class="flex items-center gap-2 w-full">
+              <div id="bell-icon" class="icon-3d"><i class="fa-solid fa-bell text-yellow-500 text-base custom-icon-clr"></i></div>
+              <div class="font-bold text-xs text-slate-700 custom-text-clr truncate">Alarmi</div>
+              <div id="badge-alarms" class="red-badge">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 panel-3d p-3 overflow-y-auto bg-slate-50/50 shadow-inner">
+          <div id="preview-content" class="text-xs"></div>
+        </div>
+      </div>
+
+      <div class="panel-3d p-2 flex justify-between gap-1 bg-white">
+        <button id="mod-smart" onclick="setAiMode('smart')" class="flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-slate-100 text-slate-700 transition mode-btn-active">🧠 Pametna</button>
+        <button id="mod-funny" onclick="setAiMode('funny')" class="flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-slate-100 text-slate-700 transition">🤪 Šaljiva</button>
+        <button id="mod-expert" onclick="setAiMode('expert')" class="flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-slate-100 text-slate-700 transition">🔮 Sveznalica</button>
+        <button id="mod-pro" onclick="setAiMode('pro')" class="flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-slate-100 text-slate-700 transition">💼 Profi</button>
+      </div>
+
+      <div class="flex-1 flex flex-col items-center justify-center pt-1">
+        <div id="mic-trigger" onclick="toggleListening()" class="mic-container flex items-center justify-center">
+          <div id="mic-inner" class="w-[88%] h-[88%] bg-blue-50 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+            <i id="mic-icon-graphic" class="fa-solid fa-microphone text-blue-600 text-3xl custom-icon-clr"></i>
+          </div>
+        </div>
+        <span id="mic-status-text" class="mt-3 text-[10px] font-black tracking-widest text-slate-400 uppercase">DODIRNI I KAŽI KOMANDU</span>
+      </div>
+    </div>
+
+    <div id="settings-screen" class="hidden flex-1 bg-slate-100 p-4 overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-base font-bold text-slate-800">⚙️ Napredna Podešavanja</h2>
+        <i onclick="changeScreen('home')" class="fa-solid fa-arrow-left text-xl cursor-pointer text-slate-600"></i>
+      </div>
+      
+      <div class="space-y-4 text-xs">
+        <div class="panel-3d p-3.5">
+          <p class="font-bold text-slate-700 mb-3">🎙️ Dimenzije i Veličina Mikrofona:</p>
+          <div>
+            <label class="flex justify-between text-[11px] mb-1">Veličina kruga mikrofona: <span id="val-micsize">135px</span></label>
+            <input type="range" min="110" max="210" value="135" class="w-full h-1 bg-slate-200 rounded" oninput="updateMicSize(this.value)">
+          </div>
+        </div>
+
+        <div class="panel-3d p-3.5">
+          <p class="font-bold text-slate-700 mb-3">🎛️ Podešavanje 3D Plastike i Senki:</p>
+          <div class="space-y-2.5">
+            <div>
+              <label class="flex justify-between text-[11px] mb-1">Visina/Debljina Ureza: <span id="val-thickness">4px</span></label>
+              <input type="range" min="1" max="8" value="4" class="w-full h-1 bg-slate-200 rounded" oninput="update3DEffect('thickness', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-3d p-3.5">
+          <p class="font-bold text-slate-700 mb-1.5">🔑 Groq AI API Ključ</p>
+          <input type="password" id="groq-key" placeholder="gsk_..." class="w-full p-2 border border-slate-300 rounded-xl text-xs bg-slate-50">
+          <button onclick="saveGroqKey()" class="mt-2 w-full bg-blue-600 text-white py-2 rounded-xl font-bold">Sačuvaj Ključ</button>
+        </div>
+
+        <div class="panel-3d p-3.5 space-y-2">
+          <p class="font-bold text-slate-700">📸 Promeni izgled slikom sa telefona:</p>
+          <button onclick="triggerFile('avatar-upload')" class="w-full py-2 bg-blue-50 text-blue-700 rounded-xl font-bold text-left px-3">🤖 Promeni sliku Avatara</button>
+          <button onclick="triggerFile('note-upload')" class="w-full py-2 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-left px-3">📝 Promeni ikonu Beleški</button>
+          <button onclick="triggerFile('bell-upload')" class="w-full py-2 bg-amber-50 text-amber-700 rounded-xl font-bold text-left px-3">🔔 Promeni ikonu Alarma</button>
+          <button onclick="triggerFile('mic-upload')" class="w-full py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-left px-3">🎙️ Promeni izgled unutar Mikrofona</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-14 bg-white border-t flex items-center justify-around text-xl text-slate-400 z-10">
+      <i class="fa-solid fa-house cursor-pointer hover:text-blue-600" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-sliders cursor-pointer hover:text-blue-600" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <script>
+    let groqKey = localStorage.getItem('groq_key') || '';
+    let currentAiMode = localStorage.getItem('luna_ai_mode') || 'smart';
+
+    let appData = JSON.parse(localStorage.getItem('luna_app_data')) || {
+      notes: [],
+      alarms: []
+    };
+
+    let activeSection = 'notes';
+    let isListening = false;
+    let recognition;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function sacuvajUMemoriju() {
+      localStorage.setItem('luna_app_data', JSON.stringify(appData));
+    }
+
+    function changeScreen(screen) {
+      document.getElementById('home-screen').classList.toggle('hidden', screen !== 'home');
+      document.getElementById('settings-screen').classList.toggle('hidden', screen !== 'settings');
+    }
+
+    function saveGroqKey() {
+      const keyInput = document.getElementById('groq-key').value.trim();
+      if (keyInput) { groqKey = keyInput; localStorage.setItem('groq_key', groqKey); alert("✅ API ključ sačuvan!"); }
+    }
+
+    function setAiMode(mod) {
+      currentAiMode = mod;
+      localStorage.setItem('luna_ai_mode', mod);
+      
+      document.querySelectorAll('[id^="mod-"]').forEach(btn => btn.classList.remove('mode-btn-active'));
+      document.getElementById(`mod-${mod}`).classList.add('mode-btn-active');
+      
+      const nazivi = { smart: "Pametna AI", funny: "Šaljiva AI", expert: "Sveznalica AI", pro: "Profi AI" };
+      document.getElementById('lbl-status-mod').innerText = nazivi[mod] + " Režim";
+    }
+
+    function triggerFile(id) { document.getElementById(id).click(); }
+
+    function changeAvatar(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => { 
+        document.getElementById('avatar-holder').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+        localStorage.setItem('saved_avatar', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function changeIcon(type, input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const html = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`;
+        if (type === 'note') { document.getElementById('note-icon').innerHTML = html; localStorage.setItem('saved_icon_note', e.target.result); }
+        else if (type === 'bell') { document.getElementById('bell-icon').innerHTML = html; localStorage.setItem('saved_icon_bell', e.target.result); }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function updateMicSize(val) {
+      document.documentElement.style.setProperty('--mic-size', val + 'px');
+      document.getElementById('val-micsize').innerText = val + 'px';
+      localStorage.setItem('saved_mic_size', val);
+    }
+
+    function update3DEffect(prop, val) {
+      if(prop === 'thickness') { document.documentElement.style.setProperty('--plastic-thickness', val + 'px'); }
+    }
+
+    function changeMicImage(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => { 
+        document.getElementById('mic-inner').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`; 
+        localStorage.setItem('saved_mic_img', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function obrisiBelesku(index) { appData.notes.splice(index, 1); sacuvajUMemoriju(); updateDisplay(); lunaGovori("Beleška obrisana."); }
+    function obrisiAlarm(index) { appData.alarms.splice(index, 1); sacuvajUMemoriju(); updateDisplay(); lunaGovori("Uklonjeno."); }
+
+    function updateDisplay() {
+      document.getElementById('badge-notes').innerText = appData.notes.length;
+      document.getElementById('badge-alarms').innerText = appData.alarms.length;
+      
+      const content = document.getElementById('preview-content');
+      if (activeSection === 'notes') {
+        let html = `<h3 class="font-extrabold text-xs text-blue-600 mb-2 uppercase">📝 Sve Beleške</h3><ul class="space-y-2">`;
+        if (appData.notes.length === 0) html += `<p class="text-slate-400 text-center py-4">Nema stavki</p>`;
+        appData.notes.forEach((n, idx) => {
+          html += `
+            <li class="item-3d-plastic p-2.5 px-3 text-slate-700 flex justify-between items-center gap-3">
+              <span class="font-semibold text-xs text-slate-800">${n}</span>
+              <div onclick="obrisiBelesku(${idx})" class="btn-delete-round"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      } else {
+        let html = `<h3 class="font-extrabold text-xs text-yellow-600 mb-2 uppercase">⏰ Alarmi & Podsetnici</h3><ul class="space-y-2">`;
+        if (appData.alarms.length === 0) html += `<p class="text-slate-400 text-center py-4">Nema alarma</p>`;
+        appData.alarms.forEach((a, idx) => {
+          html += `
+            <li class="item-3d-plastic p-2.5 px-3 text-slate-700 flex justify-between items-center gap-3 border-l-4 border-l-amber-400">
+              <span class="font-bold text-xs text-amber-600">[${a.time}] ${a.label}</span>
+              <div onclick="obrisiAlarm(${idx})" class="btn-delete-round"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      }
+    }
+
+    function selectSection(section) { activeSection = section; updateDisplay(); }
+
+    function lunaGovori(tekst) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const govornik = new SpeechSynthesisUtterance(tekst);
+        govornik.lang = 'sr-RS';
+        govornik.pitch = 1.1; govornik.rate = 1.0;
+        window.speechSynthesis.speak(govornik);
+      }
+    }
+
+    function pustiAlarmniTon() {
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      osc.start(); osc.stop(audioCtx.currentTime + 2.0);
+    }
+
+    function obradiGlasovnuKomandu(izgovor) {
+      let tekst = izgovor.toLowerCase().trim();
+      document.getElementById('mic-status-text').innerText = "OBRAĐUJEM REČENO...";
+
+      if (tekst.startsWith('briši') || tekst.startsWith('obriši') || tekst.startsWith('ukloni')) {
+        let meta = tekst.replace(/briši|obriši|ukloni|belesku|belešku|alarm|poruku/gi, "").trim();
+        
+        let nadjenAlarm = appData.alarms.findIndex(a => meta.includes(a.time) || meta.includes(a.label.toLowerCase()));
+        if (nadjenAlarm !== -1) {
+          appData.alarms.splice(nadjenAlarm, 1);
+          sacuvajUMemoriju(); updateDisplay(); lunaGovori("Alarm je uspešno uklonjen."); return;
+        }
+        
+        let nadjenaBeleska = appData.notes.findIndex(n => n.toLowerCase().includes(meta) || meta.includes(n.toLowerCase()));
+        if (nadjenaBeleska !== -1) {
+          appData.notes.splice(nadjenaBeleska, 1);
+          sacuvajUMemoriju(); updateDisplay(); lunaGovori("Ta beleška je uspešno obrisana."); return;
+        }
+        lunaGovori("Saša, nisam uspela da pronađem stavku sa tim opisom za brisanje.");
+        return;
+      }
+
+      if (tekst.includes('alarm') || tekst.includes('termin') || tekst.includes('sastanak') || tekst.includes('zakaži')) {
+        const satMinutMatrica = tekst.match(/(\d{1,2})[:.\s]h?(\d{2})?/);
+        if (satMinutMatrica) {
+          let sat = satMinutMatrica[1].padStart(2, '0');
+          let minut = satMinutMatrica[2] ? satMinutMatrica[2] : '00';
+          let vreme = `${sat}:${minut}`;
+          
+          let oznaka = izgovor.replace(/napravi|unesi|stavi|podesi|alarm|za|u|h|sati|termin|sastanak|zakaži|zakazi/gi, "").replace(satMinutMatrica[0], "").trim();
+          if(!oznaka) oznaka = "Sastanak";
+          
+          oznaka = oznaka.charAt(0).toUpperCase() + oznaka.slice(1);
+
+          if (tekst.includes('termin') || tekst.includes('sastanak') || tekst.includes('zakaži')) {
+            appData.alarms.push({ time: vreme, label: `${oznaka} u ${vreme}h` });
+            lunaGovori(`Zabeležila sam termin: ${oznaka} u ${vreme} časova.`);
+          } else {
+            appData.alarms.push({ time: vreme, label: oznaka });
+            lunaGovori(`Postavila sam alarm u ${vreme} za ${oznaka}.`);
+          }
+          
+          sacuvajUMemoriju();
+          activeSection = 'alarms';
+          updateDisplay();
+          return;
+        }
+      }
+
+      if (tekst.includes('belešk') || tekst.includes('zapiši') || tekst.includes('zabeleži')) {
+        let cistaBeleska = izgovor.replace(/zapiši|belešku|zabeleži|belesku|unesi|novu/gi, "").trim();
+        if (cistaBeleska.length > 1) {
+          cistaBeleska = cistaBeleska.charAt(0).toUpperCase() + cistaBeleska.slice(1);
+          appData.notes.push(cistaBeleska);
+          sacuvajUMemoriju();
+          activeSection = 'notes';
+          updateDisplay();
+          lunaGovori(`Upešno zapisano: ${cistaBeleska}`);
+          return;
+        }
+      }
+
+      pitajGroqAI(izgovor);
+    }
+
+    async function pitajGroqAI(pitanje) {
+      if (!groqKey) {
+        lunaGovori("Saša, molim vas unesite Groq API ključ u podešavanja.");
+        return;
+      }
+
+      let systemPrompt = "";
+      if (currentAiMode === 'smart') {
+        systemPrompt = "Ti si Luna, visoko inteligentni AI asistent. Odgovaraš Saši kratko, izuzetno pametno, logično i tačno na srpskom jeziku.";
+      } else if (currentAiMode === 'funny') {
+        systemPrompt = "Ti si šaljiva Luna. Odgovaraj Saši kroz šalu, koristi srpski sleng, budi opuštena i duhovita, ali daj odgovor.";
+      } else if (currentAiMode === 'expert') {
+        systemPrompt = "Ti si Luna Sveznalica. Znaš sve o svetskoj politici, istoriji, geografiji i trenutnom vremenu. Daj Saši bogate i tačne informacije.";
+      } else if (currentAiMode === 'pro') {
+        systemPrompt = "Ti si profesionalni sekretar. Odgovori Saši maksimalno profesionalno, hladno, precizno, bez suvišnih reči.";
+      }
+
+      try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${groqKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile", // Najnoviji aktivni i dugotrajno podržani model
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: pitanje }
+            ],
+            max_tokens: 150
+          })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok && data.choices && data.choices[0]) {
+          let odgovor = data.choices[0].message.content;
+          lunaGovori(odgovor);
+          document.getElementById('preview-content').innerHTML = `<div class="p-2 bg-blue-50 rounded-xl text-slate-800"><b>Luna:</b> ${odgovor}</div>`;
+        } else {
+          let detaljiGreske = data.error ? data.error.message : "Nepoznata greška";
+          document.getElementById('preview-content').innerHTML = `<div class="p-2 bg-red-50 text-red-700 rounded-xl"><b>Greška sa servera:</b> ${detaljiGreske}<br><small>Proveri API ključ u podešavanjima.</small></div>`;
+          lunaGovori("Serverska greška. Saša, pogledajte ekran.");
+        }
+      } catch (err) {
+        document.getElementById('preview-content').innerHTML = `<div class="p-2 bg-red-50 text-red-700 rounded-xl"><b>Lokalna greška:</b> Nemoguće dostići Groq mrežu.</div>`;
+        lunaGovori("Problem sa internet vezom.");
+      }
+    }
+
+    function toggleListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) { alert("Sistem ne podržava glas."); return; }
+      if (!recognition) {
+        recognition = new SpeechRecognition(); 
+        recognition.lang = 'sr-RS';
+        recognition.continuous = false; 
+        recognition.interimResults = false; 
+        
+        recognition.onstart = () => {
+          isListening = true; 
+          document.getElementById('home-screen').classList.add('listening');
+          document.getElementById('mic-status-text').innerText = "SLUŠAM VAS ŠAŠA...";
+        };
+        recognition.onresult = (e) => { obradiGlasovnuKomandu(e.results[0][0].transcript); };
+        recognition.onend = () => {
+          isListening = false; 
+          document.getElementById('home-screen').classList.remove('listening');
+          document.getElementById('mic-status-text').innerText = "DODIRNI I KAŽI KOMANDU";
+        };
+      }
+      if (isListening) recognition.stop(); else recognition.start();
+    }
+
+    setInterval(() => {
+      const sada = new Date(); 
+      const trenutnoVreme = sada.toTimeString().split(' ')[0].substring(0, 5);
+      
+      appData.alarms.forEach((alarm, indeks) => {
+        if (alarm.time === trenutnoVreme) {
+          pustiAlarmniTon();
+          setTimeout(() => { 
+            lunaGovori(`Saša, vreme je! Imate zakazano: ${alarm.label}.`); 
+          }, 500);
+          appData.alarms.splice(indeks, 1);
+          sacuvajUMemoriju();
+          updateDisplay();
+        }
+      });
+    }, 1000);
+
+    window.onload = () => {
+      changeScreen('home');
+      update3DEffect('thickness', 4);
+      if (groqKey) document.getElementById('groq-key').value = groqKey;
+      
+      setAiMode(currentAiMode);
+      
+      let sačuvanaVeličinaMika = localStorage.getItem('saved_mic_size') || '135';
+      updateMicSize(sačuvanaVeličinaMika);
+      
+      let av = localStorage.getItem('saved_avatar');
+      if(av) document.getElementById('avatar-holder').innerHTML = `<img src="${av}" class="w-full h-full object-cover">`;
+      
+      let n_ico = localStorage.getItem('saved_icon_note');
+      if(n_ico) document.getElementById('note-icon').innerHTML = `<img src="${n_ico}" class="w-full h-full object-cover rounded-full">`;
+      
+      let b_ico = localStorage.getItem('saved_icon_bell');
+      if(b_ico) document.getElementById('bell-icon').innerHTML = `<img src="${b_ico}" class="w-full h-full object-cover rounded-full">`;
+      
+      let m_img = localStorage.getItem('saved_mic_img');
+      if(m_img) document.getElementById('mic-inner').innerHTML = `<img src="${m_img}" class="w-full h-full object-cover">`;
+
+      updateDisplay();
+    };
+  </script>
+</body>
+</html>
