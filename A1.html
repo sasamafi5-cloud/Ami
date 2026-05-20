@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Luna Smart Pro AI</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:#dfe1e6;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+/* TELEFON */
+
+.phone{
+width:100%;
+max-width:412px;
+height:100vh;
+background:#dfe1e6;
+overflow:hidden;
+position:relative;
+}
+
+/* HEADER */
+
+.header{
+height:112px;
+padding:14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#f4f4f4;
+box-shadow:0 3px 10px rgba(0,0,0,.06);
+}
+
+.left-header{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.avatar{
+width:78px;
+height:78px;
+border-radius:50%;
+background:#e7eaf1;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+-6px -6px 12px rgba(255,255,255,.9),
+6px 6px 12px rgba(0,0,0,.09);
+overflow:hidden;
+cursor:pointer;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.avatar i{
+font-size:38px;
+color:#9aa4b8;
+}
+
+.header-text h1{
+font-size:44px;
+font-weight:900;
+line-height:40px;
+color:#08112d;
+}
+
+.header-text p{
+font-size:18px;
+font-weight:700;
+color:#9aa4b8;
+margin-top:8px;
+}
+
+.right-header{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.theme-btn{
+width:58px;
+height:58px;
+border-radius:50%;
+background:#f4f4f4;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+color:#65708a;
+cursor:pointer;
+
+box-shadow:
+-5px -5px 10px rgba(255,255,255,.8),
+5px 5px 10px rgba(0,0,0,.08);
+}
+
+.sasa-btn{
+padding:18px 32px;
+border-radius:30px;
+background:#0f91d5;
+color:white;
+font-size:20px;
+font-weight:800;
+cursor:pointer;
+
+box-shadow:
+0 10px 20px rgba(15,145,213,.25);
+}
+
+/* CONTENT */
+
+.content{
+padding:14px;
+overflow-y:auto;
+height:calc(100vh - 112px);
+}
+
+/* TOP GRID */
+
+.top-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
+
+/* CARDS */
+
+.card{
+background:#e3e4e9;
+border-radius:36px;
+padding:18px;
+position:relative;
+cursor:pointer;
+
+box-shadow:
+-8px -8px 14px rgba(255,255,255,.8),
+8px 8px 14px rgba(0,0,0,.08);
+}
+
+.small-card{
+height:185px;
+display:flex;
+align-items:center;
+gap:18px;
+}
+
+.card-icon{
+width:94px;
+height:94px;
+border-radius:50%;
+background:#f3f3f3;
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:
+-6px -6px 12px rgba(255,255,255,.9),
+6px 6px 12px rgba(0,0,0,.07);
+overflow:hidden;
+}
+
+.card-icon img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.card-icon i{
+font-size:42px;
+}
+
+.card-title{
+font-size:32px;
+font-weight:900;
+color:#08112d;
+}
+
+/* BADGE */
+
+.badge{
+position:absolute;
+top:16px;
+right:16px;
+width:46px;
+height:46px;
+border-radius:50%;
+background:#ff0000;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+font-weight:900;
+color:white;
+border:4px solid white;
+
+box-shadow:
+0 0 16px rgba(255,0,0,.35);
+}
+
+/* PREVIEW */
+
+.preview{
+height:384px;
+overflow-y:auto;
+font-size:18px;
+font-weight:700;
+line-height:34px;
+color:#08112d;
+}
+
+/* MODES */
+
+.modes{
+margin-top:16px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+}
+
+.mode-btn{
+height:142px;
+border-radius:36px;
+background:#ececec;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-size:19px;
+font-weight:900;
+cursor:pointer;
+transition:.25s;
+
+box-shadow:
+-8px -8px 14px rgba(255,255,255,.8),
+8px 8px 14px rgba(0,0,0,.08);
+}
+
+.mode-btn span{
+font-size:44px;
+margin-bottom:8px;
+}
+
+.mode-active{
+background:#347dff;
+color:white;
+
+box-shadow:
+0 10px 25px rgba(52,125,255,.35);
+}
+
+/* MICROPHONE */
+
+.mic-wrap{
+margin-top:28px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+
+.mic{
+width:250px;
+height:250px;
+border-radius:50%;
+background:#ececec;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+cursor:pointer;
+position:relative;
+
+box-shadow:
+-10px -10px 18px rgba(255,255,255,.85),
+10px 10px 18px rgba(0,0,0,.09);
+}
+
+.mic::before{
+content:"";
+position:absolute;
+inset:8px;
+border-radius:50%;
+padding:6px;
+background:linear-gradient(135deg,#00d0ff,#ff00ff,#347dff);
+-webkit-mask:
+linear-gradient(#fff 0 0) content-box,
+linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
+}
+
+#mic-inner{
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+border-radius:50%;
+z-index:5;
+}
+
+#mic-inner img{
+width:100%;
+height:100%;
+object-fit:cover;
+object-position:center;
+border-radius:50%;
+}
+
+#mic-inner i{
+font-size:110px;
+color:#99a4ba;
+}
+
+.mic-text{
+margin-top:22px;
+font-size:18px;
+font-weight:900;
+letter-spacing:3px;
+color:#8f9ab1;
+text-align:center;
+}
+
+/* DELETE */
+
+.delete-btn{
+width:28px;
+height:28px;
+border-radius:50%;
+background:red;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:13px;
+cursor:pointer;
+flex-shrink:0;
+}
+
+/* ITEMS */
+
+.list-item{
+background:#f3f3f3;
+padding:12px;
+border-radius:20px;
+margin-bottom:10px;
+
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:10px;
+
+box-shadow:
+-5px -5px 10px rgba(255,255,255,.8),
+5px 5px 10px rgba(0,0,0,.05);
+}
+
+/* SETTINGS */
+
+.settings{
+position:absolute;
+inset:0;
+background:#dfe1e6;
+z-index:999;
+padding:18px;
+overflow-y:auto;
+display:none;
+}
+
+.settings-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.settings-top h2{
+font-size:28px;
+font-weight:900;
+}
+
+.close-btn{
+font-size:26px;
+cursor:pointer;
+}
+
+.setting-card{
+background:#ececec;
+padding:18px;
+border-radius:28px;
+margin-bottom:16px;
+
+box-shadow:
+-6px -6px 12px rgba(255,255,255,.8),
+6px 6px 12px rgba(0,0,0,.08);
+}
+
+.setting-card p{
+font-size:14px;
+font-weight:800;
+margin-bottom:14px;
+}
+
+.setting-card button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:18px;
+margin-top:10px;
+font-weight:800;
+cursor:pointer;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:412px){
+
+.header{
+height:100px;
+}
+
+.avatar{
+width:66px;
+height:66px;
+}
+
+.header-text h1{
+font-size:34px;
+}
+
+.header-text p{
+font-size:15px;
+}
+
+.sasa-btn{
+font-size:16px;
+padding:15px 24px;
+}
+
+.small-card{
+height:150px;
+}
+
+.card-icon{
+width:74px;
+height:74px;
+}
+
+.card-title{
+font-size:24px;
+}
+
+.preview{
+height:310px;
+font-size:15px;
+line-height:28px;
+}
+
+.mode-btn{
+height:120px;
+font-size:16px;
+}
+
+.mode-btn span{
+font-size:34px;
+}
+
+.mic{
+width:210px;
+height:210px;
+}
+
+#mic-inner i{
+font-size:84px;
+}
+
+.mic-text{
+font-size:15px;
+}
+
+.badge{
+width:38px;
+height:38px;
+font-size:18px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<!-- SETTINGS -->
+
+<div class="settings" id="settings">
+
+<div class="settings-top">
+<h2>⚙️ Settings</h2>
+<div class="close-btn" onclick="closeSettings()">
+<i class="fa-solid fa-xmark"></i>
+</div>
+</div>
+
+<div class="setting-card">
+
+<p>📸 Promeni Avatar</p>
+<button onclick="document.getElementById('avatarInput').click()">
+Postavi sliku
+</button>
+
+</div>
+
+<div class="setting-card">
+
+<p>🎙️ Promeni Mikrofon</p>
+<button onclick="document.getElementById('micInput').click()">
+Postavi sliku
+</button>
+
+</div>
+
+<div class="setting-card">
+
+<p>🎨 Dark / Light Mode</p>
+<button onclick="toggleTheme()">
+Promeni temu
+</button>
+
+</div>
+
+</div>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="left-header">
+
+<div class="avatar" onclick="document.getElementById('avatarInput').click()"
+id="avatar">
+
+<i class="fa-solid fa-robot"></i>
+
+</div>
+
+<div class="header-text">
+<h1>Luna</h1>
+<p id="modeLabel">Smart AI Režim</p>
+</div>
+
+</div>
+
+<div class="right-header">
+
+<div class="theme-btn" onclick="toggleTheme()">
+<i class="fa-solid fa-moon"></i>
+</div>
+
+<div class="sasa-btn" onclick="openSettings()">
+Saša
+</div>
+
+</div>
+
+</div>
+
+<!-- CONTENT -->
+
+<div class="content">
+
+<div class="top-grid">
+
+<div>
+
+<div class="card small-card" onclick="showNotes()">
+
+<div class="card-icon">
+<i class="fa-solid fa-note-sticky" style="color:#347dff"></i>
+</div>
+
+<div class="card-title">Beleške</div>
+
+<div class="badge" id="noteCount">0</div>
+
+</div>
+
+<div style="height:14px"></div>
+
+<div class="card small-card" onclick="showAlarms()">
+
+<div class="card-icon">
+<i class="fa-solid fa-bell" style="color:#eab308"></i>
+</div>
+
+<div class="card-title">Alarmi</div>
+
+<div class="badge" id="alarmCount">0</div>
+
+</div>
+
+</div>
+
+<div class="card preview" id="preview">
+
+Dobrodošao u Luna Smart Pro aplikaciju.
+
+</div>
+
+</div>
+
+<!-- MODES -->
+
+<div class="modes">
+
+<div class="mode-btn mode-active" onclick="setMode(this,'Pametna AI')">
+<span>🧠</span>
+Pametna
+</div>
+
+<div class="mode-btn" onclick="setMode(this,'Šaljiva AI')">
+<span>🤪</span>
+Šaljiva
+</div>
+
+<div class="mode-btn" onclick="setMode(this,'Sveznalica AI')">
+<span>🔮</span>
+Sveznal
+</div>
+
+<div class="mode-btn" onclick="setMode(this,'Profesionalna AI')">
+<span>💼</span>
+Profi
+</div>
+
+</div>
+
+<!-- MICROPHONE -->
+
+<div class="mic-wrap">
+
+<div class="mic" onclick="toggleMic()">
+
+<div id="mic-inner">
+
+<i class="fa-solid fa-microphone"></i>
+
+</div>
+
+</div>
+
+<div class="mic-text" id="micText">
+DODIRNI I KAŽI KOMANDU
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- INPUTS -->
+
+<input type="file" id="avatarInput" hidden accept="image/*">
+<input type="file" id="micInput" hidden accept="image/*">
+
+<script>
+
+let notes = [];
+let alarms = [];
+
+const preview = document.getElementById("preview");
+
+function openSettings(){
+document.getElementById("settings").style.display="block";
+}
+
+function closeSettings(){
+document.getElementById("settings").style.display="none";
+}
+
+/* MODE */
+
+function setMode(el,name){
+
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+btn.classList.remove("mode-active");
+});
+
+el.classList.add("mode-active");
+
+document.getElementById("modeLabel").innerText=name;
+
+speak("Promenjen režim");
+
+}
+
+/* SHOW NOTES */
+
+function showNotes(){
+
+if(notes.length===0){
+
+preview.innerHTML=`Nema beleški`;
+
+return;
+
+}
+
+let html="";
+
+notes.forEach((note,index)=>{
+
+html+=`
+
+<div class="list-item">
+
+<div>${note}</div>
+
+<div class="delete-btn"
+onclick="deleteNote(${index})">
+X
+</div>
+
+</div>
+
+`;
+
+});
+
+preview.innerHTML=html;
+
+}
+
+/* SHOW ALARMS */
+
+function showAlarms(){
+
+if(alarms.length===0){
+
+preview.innerHTML=`Nema alarma`;
+
+return;
+
+}
+
+let html="";
+
+alarms.forEach((alarm,index)=>{
+
+html+=`
+
+<div class="list-item">
+
+<div>${alarm}</div>
+
+<div class="delete-btn"
+onclick="deleteAlarm(${index})">
+X
+</div>
+
+</div>
+
+`;
+
+});
+
+preview.innerHTML=html;
+
+}
+
+/* DELETE */
+
+function deleteNote(index){
+
+notes.splice(index,1);
+
+updateBadges();
+
+showNotes();
+
+}
+
+function deleteAlarm(index){
+
+alarms.splice(index,1);
+
+updateBadges();
+
+showAlarms();
+
+}
+
+/* BADGES */
+
+function updateBadges(){
+
+document.getElementById("noteCount").innerText=notes.length;
+
+document.getElementById("alarmCount").innerText=alarms.length;
+
+}
+
+/* SPEAK */
+
+function speak(text){
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.lang="sr-RS";
+
+window.speechSynthesis.speak(speech);
+
+}
+
+/* MICROPHONE */
+
+let recognition;
+let listening=false;
+
+function toggleMic(){
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+
+alert("Telefon ne podržava voice recognition");
+
+return;
+
+}
+
+if(!recognition){
+
+recognition=new SpeechRecognition();
+
+recognition.lang="sr-RS";
+
+recognition.continuous=false;
+
+recognition.interimResults=false;
+
+recognition.onstart=()=>{
+
+listening=true;
+
+document.getElementById("micText").innerText=
+"SLUŠAM...";
+
+};
+
+recognition.onend=()=>{
+
+listening=false;
+
+document.getElementById("micText").innerText=
+"DODIRNI I KAŽI KOMANDU";
+
+};
+
+recognition.onresult=(e)=>{
+
+let text=e.results[0][0].transcript.toLowerCase();
+
+handleCommand(text);
+
+};
+
+}
+
+if(listening){
+
+recognition.stop();
+
+}else{
+
+recognition.start();
+
+}
+
+}
+
+/* COMMANDS */
+
+function handleCommand(text){
+
+preview.innerHTML=`<b>Komanda:</b><br>${text}`;
+
+if(text.includes("beleška")){
+
+let note=text.replace("beleška","");
+
+notes.push(note);
+
+updateBadges();
+
+showNotes();
+
+speak("Beleška sačuvana");
+
+return;
+
+}
+
+if(text.includes("alarm")){
+
+let alarm=text.replace("alarm","");
+
+alarms.push(alarm);
+
+updateBadges();
+
+showAlarms();
+
+speak("Alarm dodat");
+
+return;
+
+}
+
+if(text.includes("koliko je sati")){
+
+let now=new Date();
+
+let time=now.getHours()+":"+now.getMinutes();
+
+preview.innerHTML=`Sada je ${time}`;
+
+speak("Sada je "+time);
+
+return;
+
+}
+
+speak("Razumela sam");
+
+}
+
+/* AVATAR */
+
+document.getElementById("avatarInput")
+.addEventListener("change",function(e){
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(ev){
+
+document.getElementById("avatar")
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* MICROPHONE IMAGE */
+
+document.getElementById("micInput")
+.addEventListener("change",function(e){
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(ev){
+
+document.getElementById("mic-inner")
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* THEME */
+
+let dark=false;
+
+function toggleTheme(){
+
+dark=!dark;
+
+if(dark){
+
+document.body.style.background="#0b1220";
+
+document.querySelector(".phone").style.background="#0b1220";
+
+}else{
+
+document.body.style.background="#dfe1e6";
+
+document.querySelector(".phone").style.background="#dfe1e6";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
