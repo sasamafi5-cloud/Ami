@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUNA SMART PRO • 3D AI Sekretarica</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --mic-size: 150px;
+      --plastic-thickness: 5px;
+      --inset-depth: 5px;
+      --text-contrast: #1e293b;
+      --phone-bg: #f1f5f9;
+      --header-bg: #ffffff;
+      --panel-inset-bg: #f8fafc;
+      --panel-out-bg: #ffffff;
+      --3d-light-reflection: rgba(255, 255, 255, 0.95);
+      --3d-shadow-color: rgba(0, 0, 0, 0.15);
+      --inset-shadow-color: rgba(0, 0, 0, 0.12);
+    }
+
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background: #f1f5f9; 
+      margin: 0; 
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Prilagođavanje celom ekranu mobilnog do kraja ivica */
+    .phone-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      background: var(--phone-bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    /* Duboka 3D urezana ležišta u plastici */
+    .panel-3d-inset {
+      background: var(--panel-inset-bg);
+      border-radius: 24px;
+      border-bottom: var(--inset-depth) solid var(--3d-light-reflection);
+      border-right: var(--inset-depth) solid var(--3d-light-reflection);
+      border-top: var(--inset-depth) solid rgba(0,0,0,0.15);
+      border-left: var(--inset-depth) solid rgba(0,0,0,0.1);
+      box-shadow: inset var(--inset-depth) var(--inset-depth) 10px var(--inset-shadow-color), 
+                  inset -2px -2px 6px var(--3d-light-reflection);
+      position: relative;
+    }
+
+    /* Ispupčeni 3D paneli */
+    .panel-3d-out {
+      background: var(--panel-out-bg);
+      border-radius: 24px;
+      border-top: var(--plastic-thickness) solid var(--3d-light-reflection);
+      border-left: var(--plastic-thickness) solid var(--3d-light-reflection);
+      border-bottom: 3px solid rgba(0,0,0,0.12);
+      border-right: 3px solid rgba(0,0,0,0.1);
+      box-shadow: 4px 8px 16px var(--3d-shadow-color), -2px -2px 6px var(--3d-light-reflection);
+    }
+
+    /* Plastične stavke unutar beležaka */
+    .item-3d-plastic {
+      background: #ffffff;
+      border-radius: 14px;
+      border-top: 2px solid var(--3d-light-reflection);
+      border-left: 2px solid var(--3d-light-reflection);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* 3D Okrugle Ikone za Alarme i Beleške */
+    .icon-3d-round {
+      width: 46px; height: 46px;
+      display: flex; align-items: center; justify-content: center;
+      background: #ffffff;
+      border-radius: 50%; 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1), -1px -1px 3px #fff;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* SAVRŠENO OKRUGLI AVATAR KOJI LEBDI */
+    .avatar-container {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+      animation: floatSlow 3.5s ease-in-out infinite;
+      cursor: pointer;
+      overflow: hidden;
+      border: 2px solid #ffffff;
+      z-index: 50;
+    }
+
+    /* 3D LEBDEĆE SAŠA DUGME */
+    .sasa-plastic-badge {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      color: white; 
+      font-weight: 800;
+      padding: 6px 16px; 
+      border-radius: 20px;
+      border-top: 2px solid rgba(255,255,255,0.6);
+      box-shadow: 0 8px 16px rgba(2, 132, 199, 0.35);
+      animation: floatSlow 3.5s ease-in-out infinite;
+      animation-delay: 0.3s;
+      cursor: pointer;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .theme-toggle-btn {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; cursor: pointer;
+      background: #ffffff;
+      border-top: 2px solid var(--3d-light-reflection);
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.08);
+    }
+
+    .red-badge {
+      position: absolute; top: -2px; right: -2px;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white; width: 18px; height: 18px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; border: 1.5px solid white;
+    }
+
+    /* ČISTI I CENTRIRANI 3D MIKROFON BEZ NASLAGA */
+    .mic-container {
+      width: var(--mic-size); 
+      height: var(--mic-size);
+      background: #ffffff;
+      border-radius: 50%;
+      border-top: var(--plastic-thickness) solid var(--3d-light-reflection);
+      border-left: var(--plastic-thickness) solid var(--3d-light-reflection);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.12), -4px -4px 12px var(--3d-light-reflection);
+      cursor: pointer;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      position: relative; 
+      z-index: 40;
+    }
+
+    .listening .mic-container { animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.03); box-shadow: 0 0 20px #3b82f6; } }
+
+    /* Aktivni mod koji upadne u plastiku */
+    .mode-btn-active {
+      background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+      color: white !important;
+      border-top: 3px solid rgba(0,0,0,0.2) !important;
+      border-left: 3px solid rgba(0,0,0,0.15) !important;
+      box-shadow: inset 2px 3px 6px rgba(0,0,0,0.4) !important;
+    }
+
+    .btn-delete-round {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #ef4444; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; cursor: pointer;
+    }
+
+    .custom-text-clr { color: var(--text-contrast) !important; }
+  </style>
+</head>
+<body>
+
+  <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="changeAvatar(this)">
+  <input type="file" id="note-upload" accept="image/*" class="hidden" onchange="changeIcon('note', this)">
+  <input type="file" id="bell-upload" accept="image/*" class="hidden" onchange="changeIcon('bell', this)">
+  <input type="file" id="mic-upload" accept="image/*" class="hidden" onchange="changeMicImage(this)">
+
+  <div class="phone-frame" id="phone-body">
+    
+    <div class="px-4 py-3 flex items-center justify-between bg-white border-b z-50">
+      <div class="flex items-center gap-3">
+        <div onclick="triggerFile('avatar-upload')" id="avatar-holder" class="avatar-container flex items-center justify-center">
+          <i class="fa-solid fa-robot text-slate-400 text-2xl"></i>
+        </div>
+        <div>
+          <div class="font-black text-base tracking-tight text-slate-800" id="lbl-luna">Luna</div>
+          <div class="text-[11px] text-slate-400 font-bold" id="lbl-status-mod">Smart AI Režim</div>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div onclick="toggleThemeMode()" class="theme-toggle-btn" id="theme-btn-icon">
+          <i class="fa-solid fa-moon text-slate-500 text-xs"></i>
+        </div>
+        <div onclick="changeScreen('settings')" class="sasa-plastic-badge text-xs" id="badge-sasa">Saša</div>
+      </div>
+    </div>
+
+    <div id="home-screen" class="flex-1 flex flex-col justify-between p-4 overflow-hidden relative z-20">
+      
+      <div class="flex gap-3 h-[210px] shrink-0">
+        <div class="w-[50%] flex flex-col gap-3">
+          
+          <div onclick="selectSection('notes')" class="panel-3d-inset p-2.5 cursor-pointer flex-1 flex items-center">
+            <div class="flex items-center gap-3 w-full relative">
+              <div id="note-icon" class="icon-3d-round">
+                <i class="fa-solid fa-note-sticky text-blue-500 text-lg"></i>
+              </div>
+              <div class="font-extrabold text-sm custom-text-clr tracking-tight">Beleške</div>
+              <div id="badge-notes" class="red-badge">0</div>
+            </div>
+          </div>
+
+          <div onclick="selectSection('alarms')" class="panel-3d-inset p-2.5 cursor-pointer flex-1 flex items-center">
+            <div class="flex items-center gap-3 w-full relative">
+              <div id="bell-icon" class="icon-3d-round">
+                <i class="fa-solid fa-bell text-yellow-500 text-lg"></i>
+              </div>
+              <div class="font-extrabold text-sm custom-text-clr tracking-tight">Alarmi</div>
+              <div id="badge-alarms" class="red-badge">0</div>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="flex-1 panel-3d-out p-3 overflow-y-auto">
+          <div id="preview-content" class="text-[12px] font-bold custom-text-clr leading-relaxed"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-4 gap-1.5 mt-2 shrink-0">
+        <div class="panel-3d-inset p-0.5">
+          <button id="mod-smart" onclick="setAiMode('smart')" class="w-full py-3 text-[10px] font-black rounded-xl bg-transparent custom-text-clr transition flex flex-col items-center gap-0.5"><span>🧠</span>Pametna</button>
+        </div>
+        <div class="panel-3d-inset p-0.5">
+          <button id="mod-funny" onclick="setAiMode('funny')" class="w-full py-3 text-[10px] font-black rounded-xl bg-transparent custom-text-clr transition flex flex-col items-center gap-0.5"><span>🤪</span>Šaljiva</button>
+        </div>
+        <div class="panel-3d-inset p-0.5">
+          <button id="mod-expert" onclick="setAiMode('expert')" class="w-full py-3 text-[10px] font-black rounded-xl bg-transparent custom-text-clr transition flex flex-col items-center gap-0.5"><span>🔮</span>Sveznal</button>
+        </div>
+        <div class="panel-3d-inset p-0.5">
+          <button id="mod-pro" onclick="setAiMode('pro')" class="w-full py-3 text-[10px] font-black rounded-xl bg-transparent custom-text-clr transition flex flex-col items-center gap-0.5"><span>💼</span>Profi</button>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center justify-center mt-auto mb-4 relative z-40">
+        <div id="mic-trigger" onclick="toggleListening()" class="mic-container">
+          <div id="mic-inner" class="w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+            <i id="mic-icon-graphic" class="fa-solid fa-microphone text-blue-500 text-3xl"></i>
+          </div>
+        </div>
+        <span id="mic-status-text" class="mt-3 text-[10px] font-black tracking-widest text-slate-400 text-center uppercase">DODIRNI I KAŽI KOMANDU</span>
+      </div>
+    </div>
+
+    <div id="settings-screen" class="hidden flex-1 p-4 overflow-y-auto relative z-20 bg-white">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-base font-black text-slate-800">⚙️ Kontrolna Tabla</h2>
+        <i onclick="changeScreen('home')" class="fa-solid fa-arrow-left text-xl cursor-pointer text-slate-400 p-1"></i>
+      </div>
+      
+      <div class="space-y-4 text-xs">
+        <div class="panel-3d-out p-4 space-y-3">
+          <p class="font-black text-blue-500 uppercase text-[10px] border-b pb-1">📐 Geometrija i Veličine</p>
+          <div>
+            <label class="flex justify-between font-bold text-slate-700 mb-1">Veličina mikrofona: <span id="lbl-mic">150px</span></label>
+            <input type="range" min="120" max="180" value="150" class="w-full h-1 bg-slate-200 rounded" oninput="updateStyle('mic', this.value)">
+          </div>
+        </div>
+
+        <div class="panel-3d-out p-4">
+          <p class="font-bold text-slate-700 mb-1">🔑 Groq AI API Ključ</p>
+          <input type="password" id="groq-key" placeholder="gsk_..." class="w-full p-2.5 border rounded-xl bg-slate-50 text-xs">
+          <button onclick="saveGroqKey()" class="mt-2 w-full bg-blue-600 text-white py-2 rounded-xl font-bold">Sačuvaj Ključ</button>
+        </div>
+
+        <div class="panel-3d-out p-4 space-y-2">
+          <p class="font-bold text-slate-700">📸 Brzo osvežavanje slika:</p>
+          <button onclick="triggerFile('avatar-upload')" class="w-full py-2 bg-blue-50 text-blue-700 rounded-xl font-bold text-left px-3">🤖 Postavi Avatar</button>
+          <button onclick="triggerFile('note-upload')" class="w-full py-2 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-left px-3">📝 Postavi Sličicu Beleški</button>
+          <button onclick="triggerFile('bell-upload')" class="w-full py-2 bg-amber-50 text-amber-700 rounded-xl font-bold text-left px-3">🔔 Postavi Sličicu Alarma</button>
+          <button onclick="triggerFile('mic-upload')" class="w-full py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-left px-3">🎙️ Ubaci sliku u Mikrofon</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-14 border-t bg-white flex items-center justify-around text-2xl text-slate-400 z-50 shrink-0">
+      <i class="fa-solid fa-house cursor-pointer hover:text-blue-500 p-2" onclick="changeScreen('home')"></i>
+      <i class="fa-solid fa-sliders cursor-pointer hover:text-blue-500 p-2" onclick="changeScreen('settings')"></i>
+    </div>
+  </div>
+
+  <script>
+    let groqKey = localStorage.getItem('groq_key') || '';
+    let currentAiMode = localStorage.getItem('luna_ai_mode') || 'smart';
+    let themeMode = localStorage.getItem('luna_theme_mode') || 'light';
+    let appData = JSON.parse(localStorage.getItem('luna_app_data')) || { notes: ["U beleške telefon broj 1.89 568 432113423"], alarms: [] };
+    let activeSection = 'notes';
+    let isListening = false;
+    let recognition;
+
+    function sacuvajUMemoriju() { localStorage.setItem('luna_app_data', JSON.stringify(appData)); }
+    
+    function changeScreen(screen) {
+      document.getElementById('home-screen').classList.toggle('hidden', screen !== 'home');
+      document.getElementById('settings-screen').classList.toggle('hidden', screen !== 'settings');
+    }
+
+    function saveGroqKey() {
+      const keyInput = document.getElementById('groq-key').value.trim();
+      if (keyInput) { groqKey = keyInput; localStorage.setItem('groq_key', groqKey); alert("✅ Ključ sačuvan!"); }
+    }
+
+    function toggleThemeMode() {
+      themeMode = (themeMode === 'light') ? 'dark' : 'light';
+      localStorage.setItem('luna_theme_mode', themeMode);
+      primeniTemu();
+    }
+
+    function primeniTemu() {
+      const ram = document.getElementById('phone-body');
+      if (themeMode === 'dark') { ram.classList.add('dark-mode-active'); } 
+      else { ram.classList.remove('dark-mode-active'); }
+    }
+
+    function setAiMode(mod) {
+      currentAiMode = mod; localStorage.setItem('luna_ai_mode', mod);
+      document.querySelectorAll('[id^="mod-"]').forEach(btn => btn.classList.remove('mode-btn-active'));
+      document.getElementById(`mod-${mod}`).classList.add('mode-btn-active');
+      const nazivi = { smart: "Pametna AI", funny: "Šaljiva AI", expert: "Sveznalica AI", pro: "Profi AI" };
+      document.getElementById('lbl-status-mod').innerText = nazivi[mod] + " Režim";
+    }
+
+    function triggerFile(id) { document.getElementById(id).click(); }
+    
+    function changeAvatar(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => { 
+        document.getElementById('avatar-holder').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+        localStorage.setItem('saved_avatar', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function changeIcon(type, input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const html = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+        if (type === 'note') { document.getElementById('note-icon').innerHTML = html; localStorage.setItem('saved_icon_note', e.target.result); }
+        else if (type === 'bell') { document.getElementById('bell-icon').innerHTML = html; localStorage.setItem('saved_icon_bell', e.target.result); }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function changeMicImage(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => { 
+        document.getElementById('mic-inner').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`; 
+        localStorage.setItem('saved_mic_img', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function updateStyle(prop, val) {
+      if (prop === 'mic') { 
+        document.documentElement.style.setProperty('--mic-size', val + 'px'); 
+        document.getElementById('lbl-mic').innerText = val + 'px'; 
+        localStorage.setItem('reg_mic', val); 
+      }
+    }
+
+    function obrisiBelesku(index) { appData.notes.splice(index, 1); sacuvajUMemoriju(); updateDisplay(); }
+    function obrisiAlarm(index) { appData.alarms.splice(index, 1); sacuvajUMemoriju(); updateDisplay(); }
+
+    function updateDisplay() {
+      document.getElementById('badge-notes').innerText = appData.notes.length;
+      document.getElementById('badge-alarms').innerText = appData.alarms.length;
+      const content = document.getElementById('preview-content');
+      
+      if (activeSection === 'notes') {
+        let html = `<h3 class="font-black text-sm text-blue-500 mb-2 uppercase tracking-wide">📝 SVE BELEŠKE</h3><ul class="space-y-2">`;
+        if (appData.notes.length === 0) html += `<p class="text-slate-400 text-center py-4">Nema stavki</p>`;
+        appData.notes.forEach((n, idx) => {
+          html += `
+            <li class="item-3d-plastic p-3 flex justify-between items-start gap-2">
+              <span class="font-bold text-slate-700 text-xs break-words flex-1">${n}</span>
+              <div onclick="obrisiBelesku(${idx})" class="btn-delete-round mt-0.5"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      } else {
+        let html = `<h3 class="font-black text-sm text-yellow-500 mb-2 uppercase tracking-wide">⏰ ALARMI & PODSETNICI</h3><ul class="space-y-2">`;
+        if (appData.alarms.length === 0) html += `<p class="text-slate-400 text-center py-4">Nema alarma</p>`;
+        appData.alarms.forEach((a, idx) => {
+          html += `
+            <li class="item-3d-plastic p-3 flex justify-between items-start gap-2 border-l-4 border-l-amber-500">
+              <span class="font-black text-xs text-amber-600 flex-1">${a}</span>
+              <div onclick="obrisiAlarm(${idx})" class="btn-delete-round mt-0.5"><i class="fa-solid fa-xmark"></i></div>
+            </li>`;
+        });
+        content.innerHTML = html + `</ul>`;
+      }
+    }
+
+    function selectSection(section) { activeSection = section; updateDisplay(); }
+
+    function toggleListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!recognition && SpeechRecognition) {
+        recognition = new SpeechRecognition(); recognition.lang = 'sr-RS';
+        recognition.onstart = () => { isListening = true; document.getElementById('home-screen').classList.add('listening'); document.getElementById('mic-status-text').innerText = "SLUŠAM VAS ŠAŠA..."; };
+        recognition.onresult = (e) => { 
+          let tekst = e.results[0][0].transcript;
+          if(activeSection === 'notes') { appData.notes.push(tekst); } else { appData.alarms.push(tekst); }
+          sacuvajUMemoriju(); updateDisplay();
+        };
+        recognition.onend = () => { isListening = false; document.getElementById('home-screen').classList.remove('listening'); document.getElementById('mic-status-text').innerText = "DODIRNI I KAŽI KOMANDU"; };
+      }
+      if (isListening) recognition.stop(); else recognition.start();
+    }
+
+    window.onload = () => {
+      changeScreen('home');
+      if (groqKey) document.getElementById('groq-key').value = groqKey;
+      setAiMode(currentAiMode);
+      primeniTemu();
+
+      let r_mic = localStorage.getItem('reg_mic') || '150'; updateStyle('mic', r_mic);
+
+      // Učitavanje postavljenih slika iz lokalne memorije
+      let av = localStorage.getItem('saved_avatar'); if(av) document.getElementById('avatar-holder').innerHTML = `<img src="${av}" class="w-full h-full object-cover">`;
+      let n_ico = localStorage.getItem('saved_icon_note'); if(n_ico) document.getElementById('note-icon').innerHTML = `<img src="${n_ico}" class="w-full h-full object-cover">`;
+      let b_ico = localStorage.getItem('saved_icon_bell'); if(b_ico) document.getElementById('bell-icon').innerHTML = `<img src="${b_ico}" class="w-full h-full object-cover">`;
+      let m_img = localStorage.getItem('saved_mic_img'); if(m_img) document.getElementById('mic-inner').innerHTML = `<img src="${m_img}" class="w-full h-full object-cover rounded-full">`;
+
+      updateDisplay();
+    };
+  </script>
+</body>
+</html>
