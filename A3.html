@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Luna Smart AI | Inteligentni asistent</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            padding: 12px;
+        }
+
+        /* TELEFON - Android optimizovan, kompaktan kao na slici */
+        .phone {
+            max-width: 420px;
+            width: 100%;
+            height: 780px;
+            background: #f5f7fb;
+            border-radius: 48px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        /* prilagođeni skrol */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 18px 20px 18px;
+            scrollbar-width: thin;
+        }
+
+        .app-content::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        /* ----- NEOMORFNE KARTICE ----- */
+        .card, .mode-chip, .avatar-circle, .icon-circle, .settings-card, .mic-circle {
+            transition: all 0.2s ease;
+        }
+
+        .card:active, .mode-chip:active, .mic-circle:active {
+            transform: scale(0.97);
+        }
+
+        /* HEADER KOMPAKTAN */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: #f5f7fb;
+        }
+
+        .avatar-circle {
+            width: 56px;
+            height: 56px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: -5px -5px 10px #ffffff, 5px 5px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-circle i {
+            font-size: 32px;
+            color: #347dff;
+        }
+
+        .title-group h1 {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1.1;
+            color: #08112d;
+        }
+
+        .title-group p {
+            font-size: 13px;
+            font-weight: 700;
+            color: #347dff;
+            letter-spacing: -0.2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .theme-toggle, .sasa-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2f5;
+            border-radius: 60px;
+            box-shadow: -5px -5px 10px #fff, 5px 5px 10px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .theme-toggle {
+            width: 46px;
+            height: 46px;
+            font-size: 22px;
+            color: #2c3e66;
+        }
+
+        .sasa-btn {
+            padding: 10px 24px;
+            font-weight: 800;
+            font-size: 16px;
+            background: #0f91d5;
+            color: white;
+            box-shadow: 0 6px 14px rgba(15, 145, 213, 0.3);
+        }
+
+        /* TOP GRID: beleške i alarmi */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: #eef2f5;
+            border-radius: 36px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: -6px -6px 12px #ffffff, 6px 6px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-icon {
+            width: 58px;
+            height: 58px;
+            background: #fafcff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 2px #fff, 3px 3px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon i {
+            font-size: 32px;
+        }
+
+        .stat-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #08112d;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: #ff3b30;
+            color: white;
+            font-weight: 900;
+            font-size: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(255, 48, 48, 0.5);
+        }
+
+        /* PREVIEW (SVE BELEŠKE / NEMA STAVKI) */
+        .preview-box {
+            background: #eef2f5;
+            border-radius: 36px;
+            padding: 16px;
+            margin-bottom: 20px;
+            min-height: 180px;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: -6px -6px 12px #fff, 6px 6px 12px rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            color: #1f2a44;
+            font-size: 14px;
+        }
+
+        .list-item {
+            background: #ffffffcc;
+            backdrop-filter: blur(2px);
+            margin-bottom: 8px;
+            padding: 10px 14px;
+            border-radius: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .delete-item {
+            background: #ff3b30;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 4 moda (Pametna, Šaljiva, Sveznal, Profi) */
+        .modes-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .mode-chip {
+            background: #eef2f5;
+            border-radius: 38px;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: -5px -5px 10px #fff, 5px 5px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .mode-chip span:first-child {
+            font-size: 32px;
+        }
+
+        .mode-active {
+            background: #347dff;
+            color: white;
+            box-shadow: 0 8px 18px rgba(52, 125, 255, 0.3);
+        }
+
+        /* MIKROFON - kompaktan */
+        .mic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .mic-circle {
+            width: 160px;
+            height: 160px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: -12px -12px 20px #ffffff, 12px 12px 20px rgba(0, 0, 0, 0.08);
+            transition: 0.1s;
+            position: relative;
+        }
+
+        .mic-inner {
+            width: 94%;
+            height: 94%;
+            background: #ffffffd9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .mic-inner i {
+            font-size: 68px;
+            color: #0f91d5;
+        }
+
+        .mic-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mic-status {
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            background: #eef2f5;
+            padding: 6px 20px;
+            border-radius: 60px;
+            color: #347dff;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulseMic {
+            0% { box-shadow: -12px -12px 20px #fff, 12px 12px 20px rgba(0,0,0,0.08), 0 0 0 0 rgba(52,125,255,0.4);}
+            70% { box-shadow: -12px -12px 20px #fff, 12px 12px 20px rgba(0,0,0,0.08), 0 0 0 14px rgba(52,125,255,0);}
+            100% { box-shadow: -12px -12px 20px #fff, 12px 12px 20px rgba(0,0,0,0.08), 0 0 0 0 rgba(52,125,255,0);}
+        }
+        .mic-listening {
+            animation: pulseMic 1.2s infinite;
+        }
+
+        /* SETTINGS PANEL (Saša) */
+        .settings-panel {
+            position: absolute;
+            inset: 0;
+            background: #f5f7fb;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            border-radius: 48px;
+            display: none;
+            flex-direction: column;
+        }
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .settings-card {
+            background: #eef2f5;
+            border-radius: 34px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: -6px -6px 12px #fff, 6px 6px 12px rgba(0,0,0,0.05);
+        }
+        .settings-card button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 44px;
+            font-weight: 800;
+            margin-top: 12px;
+            background: #347dff;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Dark tema */
+        body.dark .phone,
+        body.dark .settings-panel,
+        body.dark .header,
+        body.dark .stat-card,
+        body.dark .preview-box,
+        body.dark .mode-chip,
+        body.dark .mic-circle,
+        body.dark .mic-inner,
+        body.dark .settings-card,
+        body.dark .mic-status,
+        body.dark .theme-toggle,
+        body.dark .list-item {
+            background: #131a2c;
+            color: #eef2ff;
+            box-shadow: none;
+        }
+        body.dark .stat-title,
+        body.dark .title-group h1,
+        body.dark .preview-box,
+        body.dark .mic-status {
+            color: #f0f3fc;
+        }
+        body.dark .stat-icon i,
+        body.dark .mic-inner i {
+            color: #9bb6ff;
+        }
+        body.dark .list-item {
+            background: #1f2a44;
+        }
+        body.dark .badge-count {
+            border-color: #131a2c;
+        }
+    </style>
+</head>
+<body>
+<div class="phone" id="phoneApp">
+
+    <!-- PANEL SA PODEŠAVANJIMA (Saša meni) -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2 style="font-size: 28px; font-weight: 900;">⚙️ Podešavanja</h2>
+            <div onclick="closeSettings()" style="font-size: 32px; cursor: pointer; background:#eef2f5; width: 48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius: 60px;">✕</div>
+        </div>
+        <div class="settings-card">
+            <p style="font-weight:800; margin-bottom:6px;">📸 Avatar asistenta</p>
+            <button onclick="document.getElementById('avatarFile').click()">Izaberi sliku avatara</button>
+        </div>
+        <div class="settings-card">
+            <p style="font-weight:800; margin-bottom:6px;">🎙️ Slika mikrofona (tvoja)</p>
+            <button onclick="document.getElementById('micImageFile').click()">Postavi sliku za mikrofon</button>
+        </div>
+        <div class="settings-card">
+            <p style="font-weight:800; margin-bottom:6px;">🌗 Tamna / Svetla tema</p>
+            <button onclick="toggleDarkTheme()">Promeni temu</button>
+        </div>
+        <div class="settings-card">
+            <p style="font-weight:800; margin-bottom:6px;">ℹ️ Verzija 2.0 · Luna AI</p>
+            <button onclick="speakMessage('Luna Smart asistent aktivan')">Test glas</button>
+        </div>
+    </div>
+
+    <!-- GLAVNI EKRAN -->
+    <div class="header">
+        <div class="avatar-circle" id="avatarArea" onclick="document.getElementById('avatarFile').click()">
+            <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="title-group">
+            <h1>Luna</h1>
+            <p id="modeLabel">Pametna AI</p>
+        </div>
+        <div class="header-actions">
+            <div class="theme-toggle" onclick="toggleDarkTheme()">
+                <i class="fa-solid fa-moon"></i>
+            </div>
+            <div class="sasa-btn" onclick="openSettings()">Saša</div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <!-- Statistike (Beleške i alarmi) -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="showNotesUI()">
+                <div class="stat-icon"><i class="fa-solid fa-note-sticky" style="color:#347dff"></i></div>
+                <div class="stat-title">Beleške</div>
+                <div class="badge-count" id="noteBadge">0</div>
+            </div>
+            <div class="stat-card" onclick="showAlarmsUI()">
+                <div class="stat-icon"><i class="fa-solid fa-bell" style="color:#eab308"></i></div>
+                <div class="stat-title">Alarmi</div>
+                <div class="badge-count" id="alarmBadge">0</div>
+            </div>
+        </div>
+
+        <!-- Preview oblast (SVE BELEŠKE / Nema stavki) -->
+        <div class="preview-box" id="previewArea">
+            <div style="font-weight:800; margin-bottom:6px;">📋 SVE BELEŠKE</div>
+            <div style="color:#6c7a9e;">Nema stavki</div>
+        </div>
+
+        <!-- 4 AI MODA -->
+        <div class="modes-row">
+            <div class="mode-chip mode-active" data-mode="Pametna AI" onclick="setAIMode(this, 'Pametna AI')">
+                <span>🧠</span><span>Pametna</span>
+            </div>
+            <div class="mode-chip" data-mode="Šaljiva AI" onclick="setAIMode(this, 'Šaljiva AI')">
+                <span>🤪</span><span>Šaljiva</span>
+            </div>
+            <div class="mode-chip" data-mode="Sveznalica AI" onclick="setAIMode(this, 'Sveznalica AI')">
+                <span>🔮</span><span>Sveznal</span>
+            </div>
+            <div class="mode-chip" data-mode="Profesionalna AI" onclick="setAIMode(this, 'Profesionalna AI')">
+                <span>💼</span><span>Profi</span>
+            </div>
+        </div>
+
+        <!-- MIKROFON (kompaktan, kao na slici) -->
+        <div class="mic-container">
+            <div class="mic-circle" id="micBtn">
+                <div class="mic-inner" id="micInnerVisual">
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+            </div>
+            <div class="mic-status" id="micStatusLabel">DODIRNI I KAŽI KOMANDU</div>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="avatarFile" accept="image/*" hidden>
+    <input type="file" id="micImageFile" accept="image/*" hidden>
+</div>
+
+<script>
+    // ---------- GLOBALNI PODACI ----------
+    let notes = [];          // niz beleški
+    let alarms = [];        // niz alarma
+    let currentAIMode = "Pametna AI";
+    let isDark = false;
+    let recognition = null;
+    let isMicActive = false;
+
+    // DOM reference
+    const previewDiv = document.getElementById("previewArea");
+    const noteBadgeSpan = document.getElementById("noteBadge");
+    const alarmBadgeSpan = document.getElementById("alarmBadge");
+    const modeLabelSpan = document.getElementById("modeLabel");
+    const micInner = document.getElementById("micInnerVisual");
+    const micBtnCircle = document.getElementById("micBtn");
+    const micStatusSpan = document.getElementById("micStatusLabel");
+
+    // ----- HELPERS -----
+    function updateBadges() {
+        noteBadgeSpan.innerText = notes.length;
+        alarmBadgeSpan.innerText = alarms.length;
+    }
+
+    // prikaz svih beleški u preview sekciji (kao na slici)
+    function showNotesUI() {
+        if (notes.length === 0) {
+            previewDiv.innerHTML = `<div style="font-weight:800; margin-bottom:8px;">📋 SVE BELEŠKE</div><div style="color:#6c7a9e;">📭 Nema stavki</div>`;
+            return;
+        }
+        let html = `<div style="font-weight:800; margin-bottom:10px;">📋 SVE BELEŠKE</div>`;
+        notes.forEach((note, idx) => {
+            html += `<div class="list-item">
+                        <span>📌 ${escapeHtml(note)}</span>
+                        <div class="delete-item" onclick="deleteNoteItem(${idx})">✕</div>
+                    </div>`;
+        });
+        previewDiv.innerHTML = html;
+    }
+
+    function showAlarmsUI() {
+        if (alarms.length === 0) {
+            previewDiv.innerHTML = `<div style="font-weight:800; margin-bottom:8px;">⏰ SVI ALARMI</div><div>🔕 Nema alarma</div>`;
+            return;
+        }
+        let html = `<div style="font-weight:800; margin-bottom:10px;">⏰ SVI ALARMI</div>`;
+        alarms.forEach((alm, idx) => {
+            html += `<div class="list-item">
+                        <span>🔔 ${escapeHtml(alm)}</span>
+                        <div class="delete-item" onclick="deleteAlarmItem(${idx})">✕</div>
+                    </div>`;
+        });
+        previewDiv.innerHTML = html;
+    }
+
+    function deleteNoteItem(index) {
+        notes.splice(index, 1);
+        updateBadges();
+        showNotesUI();
+        speakMessage("Beleška obrisana");
+    }
+    function deleteAlarmItem(index) {
+        alarms.splice(index, 1);
+        updateBadges();
+        showAlarmsUI();
+        speakMessage("Alarm obrisan");
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m){
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Govor (Text-to-Speech)
+    function speakMessage(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "sr-RS";
+        utterance.rate = 0.95;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // AI odgovor po režimu
+    function aiResponseByMode(userCommand) {
+        const cmd = userCommand;
+        switch(currentAIMode) {
+            case "Pametna AI": return `Razumela: "${cmd}". Dodaj belešku ili alarm, pitaj za sat.`;
+            case "Šaljiva AI": return `🤣 Hej, čula sam "${cmd}"! Šaljivo, zar ne? Šta radimo dalje?`;
+            case "Sveznalica AI": return `📖 Znam sve! Rekao si "${cmd}". Želiš još nešto?`;
+            case "Profesionalna AI": return `💼 Profesionalno primljeno: "${cmd}". Kako mogu pomoći?`;
+            default: return `Primljena komanda: ${cmd}`;
+        }
+    }
+
+    // Obrada glasovne komande (beleška / alarm / sat)
+    function processCommand(text) {
+        let lower = text.toLowerCase();
+        // prikaži u preview
+        previewDiv.innerHTML = `<div style="font-weight:700;">🎤 Komanda: "${text}"</div><div style="margin-top:6px;">🤖 obrađujem...</div>`;
+        
+        if (lower.includes("beleška") || lower.includes("belešku")) {
+            let clean = text.replace(/beleška|belešku/gi, "").trim();
+            if (clean === "") clean = "prazna beleška";
+            notes.push(clean);
+            updateBadges();
+            showNotesUI();
+            speakMessage("Beleška sačuvana");
+            return;
+        }
+        if (lower.includes("alarm")) {
+            let alarmText = text.replace(/alarm/gi, "").trim();
+            if (alarmText === "") alarmText = "podsetnik";
+            alarms.push(alarmText);
+            updateBadges();
+            showAlarmsUI();
+            speakMessage("Alarm dodat");
+            return;
+        }
+        if (lower.includes("koliko je sati") || lower.includes("vreme") || lower.includes("koliko sati")) {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let timeStr = `${hours}:${minutes < 10 ? '0'+minutes : minutes}`;
+            previewDiv.innerHTML = `<div>🕒 Trenutno je ${timeStr}</div>`;
+            speakMessage(`Sada je ${timeStr}`);
+            return;
+        }
+        // default AI odgovor
+        let answer = aiResponseByMode(text);
+        previewDiv.innerHTML = `<div><strong>🤖 Luna (${currentAIMode})</strong><br>${answer}</div>`;
+        speakMessage(answer);
+    }
+
+    // ---------- MIKROFON (Speech Recognition, Android) ----------
+    function initSpeechRecognition() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) {
+            alert("Vaš browser ne podržava glasovni unos. Koristite Chrome na Androidu.");
+            return null;
+        }
+        const recog = new SpeechRec();
+        recog.lang = "sr-RS";
+        recog.continuous = false;
+        recog.interimResults = false;
+        return recog;
+    }
+
+    function toggleMic() {
+        if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+            alert("Glasovne komande nisu podržane");
+            return;
+        }
+        if (recognition && isMicActive) {
+            recognition.stop();
+            return;
+        }
+        recognition = initSpeechRecognition();
+        if (!recognition) return;
+        
+        recognition.onstart = () => {
+            isMicActive = true;
+            micBtnCircle.classList.add("mic-listening");
+            micStatusSpan.innerHTML = "🎙️ SLUŠAM... GOVORI";
+        };
+        recognition.onerror = () => {
+            isMicActive = false;
+            micBtnCircle.classList.remove("mic-listening");
+            micStatusSpan.innerHTML = "🎙️ Pokušaj ponovo";
+            setTimeout(() => { if(!isMicActive) micStatusSpan.innerHTML = "DODIRNI I KAŽI KOMANDU"; }, 1200);
+        };
+        recognition.onend = () => {
+            isMicActive = false;
+            micBtnCircle.classList.remove("mic-listening");
+            micStatusSpan.innerHTML = "DODIRNI I KAŽI KOMANDU";
+        };
+        recognition.onresult = (event) => {
+            const spoken = event.results[0][0].transcript;
+            processCommand(spoken);
+            recognition.stop();
+        };
+        recognition.start();
+    }
+
+    // promena AI moda
+    function setAIMode(element, mode) {
+        document.querySelectorAll(".mode-chip").forEach(chip => chip.classList.remove("mode-active"));
+        element.classList.add("mode-active");
+        currentAIMode = mode;
+        modeLabelSpan.innerText = mode;
+        speakMessage(`Prebačeno na ${mode} režim`);
+        previewDiv.innerHTML = `<div>✨ Režim: <strong>${mode}</strong><br>Spremna za komande.</div>`;
+    }
+
+    // Tema (dark/light)
+    function toggleDarkTheme() {
+        isDark = !isDark;
+        if (isDark) {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    }
+
+    // Settings panel
+    function openSettings() {
+        document.getElementById("settingsPanel").style.display = "flex";
+    }
+    function closeSettings() {
+        document.getElementById("settingsPanel").style.display = "none";
+    }
+
+    // Avatar i slika mikrofona (iz galerije)
+    document.getElementById("avatarFile").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const avatarDiv = document.getElementById("avatarArea");
+                avatarDiv.innerHTML = `<img src="${ev.target.result}" alt="avatar">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById("micImageFile").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                micInner.innerHTML = `<img src="${ev.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Povezivanje mikrofona sa dugmetom
+    document.getElementById("micBtn").addEventListener("click", toggleMic);
+
+    // inicijalno prikaz
+    updateBadges();
+    showNotesUI();
+
+    // global exports za inline onclicove
+    window.showNotesUI = showNotesUI;
+    window.showAlarmsUI = showAlarmsUI;
+    window.deleteNoteItem = deleteNoteItem;
+    window.deleteAlarmItem = deleteAlarmItem;
+    window.setAIMode = setAIMode;
+    window.toggleDarkTheme = toggleDarkTheme;
+    window.openSettings = openSettings;
+    window.closeSettings = closeSettings;
+    window.speakMessage = speakMessage;
+    window.toggleMic = toggleMic;
+</script>
+</body>
+</html>
