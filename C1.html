@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Luna Smart Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1220;--card:#141c2e;--card2:#1a2338;
+  --text:#e8eaf0;--sub:#5a6480;--header:#0e1828;--item:#111927;
+  --sl:rgba(255,255,255,0.04);--sd:rgba(0,0,0,0.55);
+  --ss:8px;--accent:#347dff;--accent2:#0f91d5;
+}
+.light{
+  --bg:#dfe1e6;--card:#e3e4e9;--card2:#ececec;
+  --text:#08112d;--sub:#9aa4b8;--header:#f4f4f4;--item:#f3f3f3;
+  --sl:rgba(255,255,255,0.85);--sd:rgba(0,0,0,0.09);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  display:flex;justify-content:center;align-items:center;
+  transition:background .3s;
+}
+.phone{
+  width:100%;max-width:430px;
+  height:100dvh;
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  position:relative;
+  transition:background .3s;
+}
+
+/* HEADER */
+.hdr{
+  flex-shrink:0;
+  padding:10px 14px;
+  min-height:76px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--header);
+  box-shadow:0 3px 10px rgba(0,0,0,.12);
+  transition:background .3s;
+  gap:10px;
+}
+.hdr-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.ava{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--card2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;cursor:pointer;flex-shrink:0;
+  box-shadow:-4px -4px 8px var(--sl),4px 4px 8px var(--sd);
+  overflow:hidden;transition:all .3s;
+}
+.ava img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.hdr-txt h1{font-size:32px;font-weight:900;color:var(--text);line-height:1;transition:color .3s;}
+.hdr-txt p{font-size:13px;font-weight:700;color:var(--sub);transition:color .3s;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.icon-btn{
+  width:46px;height:46px;border-radius:50%;
+  background:var(--card2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;
+  box-shadow:-3px -3px 7px var(--sl),3px 3px 7px var(--sd);
+  transition:all .3s;
+}
+.sasa-pill{
+  padding:12px 20px;border-radius:30px;
+  background:var(--accent2);color:white;
+  font-size:15px;font-weight:900;cursor:pointer;
+  box-shadow:0 6px 16px rgba(15,145,213,.3);
+  white-space:nowrap;
+}
+
+/* SCROLL AREA */
+.scroll{
+  flex:1;overflow-y:auto;
+  padding:10px 12px 16px;
+  -webkit-overflow-scrolling:touch;
+}
+.scroll::-webkit-scrollbar{width:3px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--sub);border-radius:2px;}
+
+/* TOP GRID */
+.top-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+
+.card{
+  background:var(--card);border-radius:24px;
+  box-shadow:calc(var(--ss)*-1) calc(var(--ss)*-1) calc(var(--ss)*1.5) var(--sl),
+             var(--ss) var(--ss) calc(var(--ss)*1.5) var(--sd);
+  transition:all .3s;cursor:pointer;
+  position:relative;
+}
+.mini-card{
+  height:clamp(110px,30vw,160px);
+  display:flex;align-items:center;gap:10px;padding:14px;
+  overflow:hidden;
+}
+.ci{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--item);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;
+  box-shadow:-3px -3px 7px var(--sl),3px 3px 7px var(--sd);
+}
+.ct{font-size:20px;font-weight:900;color:var(--text);transition:color .3s;}
+.bdg{
+  position:absolute;top:8px;right:8px;
+  width:30px;height:30px;border-radius:50%;
+  background:#e53935;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:white;
+  border:2px solid var(--card);
+}
+
+.preview-card{
+  padding:12px 14px;
+  min-height:clamp(120px,32vw,180px);
+  max-height:clamp(160px,42vw,240px);
+  overflow-y:auto;
+  font-size:14px;font-weight:700;line-height:1.65;
+  color:var(--text);transition:color .3s;
+}
+.preview-card::-webkit-scrollbar{width:3px;}
+.preview-card::-webkit-scrollbar-thumb{background:var(--sub);}
+
+/* MODES */
+.modes{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin-bottom:10px;
+}
+.mode-btn{
+  height:clamp(90px,24vw,128px);
+  border-radius:22px;
+  background:var(--card2);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  font-size:11px;font-weight:900;color:var(--text);
+  cursor:pointer;
+  box-shadow:calc(var(--ss)*-1) calc(var(--ss)*-1) calc(var(--ss)*1.5) var(--sl),
+             var(--ss) var(--ss) calc(var(--ss)*1.5) var(--sd);
+  transition:all .25s;
+}
+.mode-btn .me{font-size:30px;}
+.mode-on{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(52,125,255,.4);}
+
+/* MIC */
+.mic-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0 6px;}
+.mic{
+  width:clamp(150px,42vw,220px);
+  height:clamp(150px,42vw,220px);
+  border-radius:50%;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:calc(var(--ss)*-1.2) calc(var(--ss)*-1.2) calc(var(--ss)*2) var(--sl),
+             var(--ss) var(--ss) calc(var(--ss)*2) var(--sd);
+  transition:box-shadow .3s,background .3s;
+}
+.mic::before{
+  content:"";position:absolute;inset:7px;border-radius:50%;
+  background:linear-gradient(135deg,#00d0ff,#ff00ff,#347dff);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  padding:5px;
+}
+.mic.on{
+  box-shadow:0 0 0 6px rgba(52,125,255,.25),0 0 0 12px rgba(52,125,255,.12),
+             calc(var(--ss)*-1.2) calc(var(--ss)*-1.2) calc(var(--ss)*2) var(--sl),
+             var(--ss) var(--ss) calc(var(--ss)*2) var(--sd);
+}
+.mic-inner{
+  width:80%;height:80%;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(54px,15vw,88px);z-index:2;
+  overflow:hidden;
+}
+.mic-inner img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.mic-lbl{
+  margin-top:10px;font-size:11px;font-weight:900;
+  letter-spacing:2px;color:var(--sub);text-align:center;
+  transition:color .3s;
+}
+
+/* ITEMS */
+.li{
+  background:var(--item);border-radius:16px;
+  padding:10px 12px;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+  box-shadow:-3px -3px 7px var(--sl),3px 3px 7px var(--sd);
+  font-size:13px;color:var(--text);transition:all .3s;
+}
+.li .sub{font-size:11px;font-weight:900;color:var(--accent);margin-top:3px;}
+.del{
+  width:24px;height:24px;border-radius:50%;
+  background:#c0392b;color:white;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;cursor:pointer;
+}
+
+/* SETTINGS PANEL */
+.settings{
+  position:absolute;inset:0;background:var(--bg);
+  z-index:900;overflow-y:auto;padding:16px;
+  display:none;transition:background .3s;
+  -webkit-overflow-scrolling:touch;
+}
+.settings::-webkit-scrollbar{width:3px;}
+.settings::-webkit-scrollbar-thumb{background:var(--sub);}
+.set-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.set-top h2{font-size:22px;font-weight:900;color:var(--text);}
+.sc{
+  background:var(--card2);border-radius:22px;
+  padding:14px 16px;margin-bottom:12px;
+  box-shadow:-4px -4px 9px var(--sl),4px 4px 9px var(--sd);
+  transition:all .3s;
+}
+.sc label{display:block;font-size:12px;font-weight:900;color:var(--sub);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;}
+.sc input,.sc select,.sc textarea{
+  width:100%;padding:11px 12px;border:none;border-radius:14px;
+  background:var(--item);color:var(--text);
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+  box-shadow:inset 2px 2px 5px var(--sd),inset -2px -2px 5px var(--sl);
+  outline:none;-webkit-appearance:none;appearance:none;
+  transition:background .3s,color .3s;
+}
+.sc input[type=range]{padding:8px 12px;}
+.sc .rv{text-align:right;font-size:11px;font-weight:900;color:var(--accent);margin-top:4px;}
+.sc button{
+  width:100%;padding:12px;border:none;border-radius:14px;
+  margin-top:8px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;
+  background:var(--accent);color:white;
+  box-shadow:0 5px 14px rgba(52,125,255,.3);
+  transition:all .2s;
+}
+.sc button.sec{background:var(--card);color:var(--text);box-shadow:none;}
+.sc button.red{background:#c0392b;box-shadow:0 5px 14px rgba(192,57,43,.3);}
+.api-ok{color:#4caf50;font-size:12px;font-weight:900;margin-top:6px;}
+.api-err{color:#f44336;font-size:12px;font-weight:900;margin-top:6px;}
+
+/* ALARM */
+.alarm-screen{
+  position:fixed;inset:0;background:rgba(0,0,0,.9);
+  z-index:9999;display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:18px;
+}
+.alarm-screen.show{display:flex;}
+.ar-icon{font-size:72px;animation:rng .5s infinite alternate;}
+@keyframes rng{from{transform:rotate(-15deg);}to{transform:rotate(15deg);}}
+.alarm-screen h2{color:white;font-size:26px;font-weight:900;text-align:center;padding:0 24px;}
+.alarm-screen p{color:#aaa;font-size:15px;text-align:center;padding:0 24px;}
+.alarm-screen button{
+  padding:15px 48px;border-radius:30px;border:none;
+  background:var(--accent);color:white;font-size:18px;font-weight:900;
+  cursor:pointer;box-shadow:0 8px 20px rgba(52,125,255,.4);
+}
+
+input[type=file]{display:none;}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+
+<!-- ALARM -->
+<div class="alarm-screen" id="aRing">
+  <div class="ar-icon">🔔</div>
+  <h2 id="aTitle">Alarm!</h2>
+  <p id="aDesc"></p>
+  <button onclick="dismissAlarm()">Odbaci ✓</button>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings" id="settingsPanel">
+  <div class="set-top">
+    <h2>⚙️ Podešavanja</h2>
+    <div style="font-size:26px;cursor:pointer;color:var(--sub)" onclick="closeSettings()">✕</div>
+  </div>
+
+  <div class="sc">
+    <label>🔑 Groq API Ključ</label>
+    <input type="password" id="apiIn" placeholder="gsk_xxxxxxxxxxxxxxxx" oninput="ls('api',this.value)">
+    <div id="apiSt"></div>
+    <button onclick="testApi()">🧪 Testiraj ključ</button>
+  </div>
+
+  <div class="sc">
+    <label>🧠 Model</label>
+    <select id="modelSel" onchange="ls('model',this.value)">
+      <option value="llama-3.3-70b-versatile">Llama 3.3 70B ⭐</option>
+      <option value="llama-3.1-8b-instant">Llama 3.1 8B (brži)</option>
+      <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+      <option value="gemma2-9b-it">Gemma 2 9B</option>
+    </select>
+  </div>
+
+  <div class="sc">
+    <label>👤 Tvoje ime</label>
+    <input type="text" id="nameIn" placeholder="Saša" oninput="saveName(this.value)">
+  </div>
+
+  <div class="sc">
+    <label>🌍 Jezik govora</label>
+    <select id="langSel" onchange="saveLang(this.value)">
+      <option value="sr-RS">Srpski</option>
+      <option value="hr-HR">Hrvatski</option>
+      <option value="bs-BA">Bosanski</option>
+      <option value="en-US">English</option>
+      <option value="de-DE">Deutsch</option>
+    </select>
+  </div>
+
+  <div class="sc">
+    <label>🔊 Brzina govora</label>
+    <input type="range" id="rateR" min="5" max="18" value="10" oninput="saveRate(this.value)">
+    <div class="rv" id="rateV">1.0x</div>
+  </div>
+
+  <div class="sc">
+    <label>🌑 Dubina senki</label>
+    <input type="range" id="shadowR" min="2" max="22" value="8" oninput="setShadow(this.value)">
+    <div class="rv" id="shadowV">8px</div>
+  </div>
+
+  <div class="sc">
+    <label>🎨 Tema</label>
+    <button onclick="toggleTheme()">Promeni Dark / Light</button>
+  </div>
+
+  <div class="sc">
+    <label>🖼️ Avatar (dodirni da postaviš sliku)</label>
+    <button onclick="document.getElementById('avaFile').click()">📁 Postavi avatar sliku</button>
+    <button class="sec" onclick="resetAva()">↩ Reset avatar</button>
+  </div>
+
+  <div class="sc">
+    <label>🎙️ Mikrofon (dodirni da postaviš sliku)</label>
+    <button onclick="document.getElementById('micFile').click()">📁 Postavi sliku mikrofona</button>
+    <button class="sec" onclick="resetMic()">↩ Reset mikrofon</button>
+  </div>
+
+  <div class="sc">
+    <label>🗑️ Obriši sve podatke</label>
+    <button class="red" onclick="clearAll()">Obriši sve ⚠️</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="ava" id="avaDiv" onclick="document.getElementById('avaFile').click()">🤖</div>
+    <div class="hdr-txt">
+      <h1>Luna</h1>
+      <p id="modeP">Smart AI Režim</p>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="icon-btn" onclick="toggleTheme()" id="themeBtn">🌙</div>
+    <div class="sasa-pill" id="sasaBtn" onclick="openSettings()">Saša</div>
+  </div>
+</div>
+
+<!-- SCROLL -->
+<div class="scroll">
+
+  <!-- TOP GRID -->
+  <div class="top-grid">
+    <div>
+      <div class="card mini-card" onclick="showNotes()" style="margin-bottom:10px">
+        <div class="ci">📝</div>
+        <div class="ct">Beleške</div>
+        <div class="bdg" id="nBdg">0</div>
+      </div>
+      <div class="card mini-card" onclick="showAlarms()">
+        <div class="ci">🔔</div>
+        <div class="ct">Alarmi</div>
+        <div class="bdg" id="aBdg">0</div>
+      </div>
+    </div>
+    <div class="card preview-card" id="preview">
+      Dobrodošao!<br><br>
+      Postavi <b>Groq API ključ</b> u Podešavanjima, pa dodirni mikrofon i reci komandu. 🎙️
+    </div>
+  </div>
+
+  <!-- MODES -->
+  <div class="modes">
+    <div class="mode-btn mode-on" id="m0" onclick="setMode(0,'Smart AI','Ti si pametna AI sekretarica Luna. Odgovaraj kratko i jasno na srpskom.')">
+      <div class="me">🧠</div>Pametna
+    </div>
+    <div class="mode-btn" id="m1" onclick="setMode(1,'Šaljiva AI','Ti si šaljiva AI sekretarica Luna. Odgovaraj duhovito na srpskom.')">
+      <div class="me">🤪</div>Šaljiva
+    </div>
+    <div class="mode-btn" id="m2" onclick="setMode(2,'Sveznalica','Ti si enciklopedijska AI sekretarica Luna. Daj detalje na srpskom.')">
+      <div class="me">🔮</div>Sveznal
+    </div>
+    <div class="mode-btn" id="m3" onclick="setMode(3,'Profesional','Ti si profesionalna AI sekretarica Luna. Odgovaraj formalno na srpskom.')">
+      <div class="me">💼</div>Profi
+    </div>
+  </div>
+
+  <!-- MIC -->
+  <div class="mic-wrap">
+    <div class="mic" id="micBtn" onclick="toggleMic()">
+      <div class="mic-inner" id="micInner">🎙️</div>
+    </div>
+    <div class="mic-lbl" id="micLbl">DODIRNI I KAŽI KOMANDU</div>
+  </div>
+
+</div>
+
+<!-- FILE INPUTS -->
+<input type="file" id="avaFile" accept="image/*">
+<input type="file" id="micFile" accept="image/*">
+
+<script>
+/* ---- STATE ---- */
+let notes=[], alarms=[], dark=true, listening=false;
+let rec=null, sysPrompt='Ti si pametna AI sekretarica Luna. Odgovaraj kratko na srpskom.';
+let spRate=1.0, spLang='sr-RS', uName='Saša';
+
+/* ---- STORAGE HELPERS ---- */
+const ls=(k,v)=>localStorage.setItem('luna_'+k,v);
+const lg=(k,d='')=>localStorage.getItem('luna_'+k)||d;
+
+/* ---- INIT ---- */
+(function init(){
+  dark = lg('dark','1')==='1';
+  applyTheme();
+
+  const api=lg('api'); if(api) document.getElementById('apiIn').value=api;
+  const model=lg('model','llama-3.3-70b-versatile');
+  document.getElementById('modelSel').value=model;
+
+  const sh=lg('shadow','8');
+  document.getElementById('shadowR').value=sh;
+  document.getElementById('shadowV').innerText=sh+'px';
+  document.documentElement.style.setProperty('--ss',sh+'px');
+
+  const rt=lg('rate','10');
+  document.getElementById('rateR').value=rt;
+  document.getElementById('rateV').innerText=(rt/10).toFixed(1)+'x';
+  spRate=rt/10;
+
+  spLang=lg('lang','sr-RS');
+  document.getElementById('langSel').value=spLang;
+
+  uName=lg('name','Saša');
+  document.getElementById('nameIn').value=uName;
+  document.getElementById('sasaBtn').innerText=uName;
+
+  const avSrc=lg('ava');
+  if(avSrc) document.getElementById('avaDiv').innerHTML=`<img src="${avSrc}">`;
+
+  const micSrc=lg('mic');
+  if(micSrc) document.getElementById('micInner').innerHTML=`<img src="${micSrc}">`;
+
+  notes=JSON.parse(lg('notes','[]'));
+  alarms=JSON.parse(lg('alarms','[]'));
+  updateBadges();
+  scheduleAll();
+  setInterval(()=>checkAlarmsDue(),20000);
+})();
+
+/* ---- THEME ---- */
+function applyTheme(){
+  document.getElementById('app').className=dark?'phone':'phone light';
+  document.getElementById('themeBtn').innerText=dark?'☀️':'🌙';
+}
+function toggleTheme(){dark=!dark;ls('dark',dark?'1':'0');applyTheme();}
+
+/* ---- SETTINGS ---- */
+function openSettings(){document.getElementById('settingsPanel').style.display='block';}
+function closeSettings(){document.getElementById('settingsPanel').style.display='none';}
+
+function saveName(v){uName=v||'Saša';ls('name',uName);document.getElementById('sasaBtn').innerText=uName;}
+function saveLang(v){spLang=v;ls('lang',v);rec=null;}
+function saveRate(v){spRate=v/10;ls('rate',v);document.getElementById('rateV').innerText=(v/10).toFixed(1)+'x';}
+function setShadow(v){document.documentElement.style.setProperty('--ss',v+'px');document.getElementById('shadowV').innerText=v+'px';ls('shadow',v);}
+
+function clearAll(){
+  if(!confirm('Obrisati sve?'))return;
+  localStorage.clear();location.reload();
+}
+
+/* ---- API TEST ---- */
+async function testApi(){
+  const key=lg('api');
+  const st=document.getElementById('apiSt');
+  if(!key){st.innerHTML='<div class="api-err">⚠ Unesi API ključ</div>';return;}
+  st.innerHTML='<div style="color:var(--sub);font-size:12px;font-weight:900">Testiram...</div>';
+  try{
+    const r=await groqCall('Kaži samo: Zdravo!',key);
+    st.innerHTML=`<div class="api-ok">✓ Radi! "${r.slice(0,50)}"</div>`;
+  }catch(e){
+    st.innerHTML=`<div class="api-err">✗ ${e.message}</div>`;
+  }
+}
+
+/* ---- GROQ ---- */
+async function groqCall(msg,overKey){
+  const key=overKey||lg('api');
+  if(!key)throw new Error('Nema API ključa — podesi u Podešavanjima');
+  const model=lg('model','llama-3.3-70b-versatile');
+  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body:JSON.stringify({
+      model,max_tokens:400,
+      messages:[
+        {role:'system',content:sysPrompt+' Korisnikovo ime je '+uName+'. Odgovaraj kratko (max 2 rečenice).'},
+        {role:'user',content:msg}
+      ]
+    })
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+res.status);}
+  const d=await res.json();
+  return d.choices[0].message.content.trim();
+}
+
+/* ---- TTS ---- */
+function speak(txt){
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang=spLang;u.rate=spRate;
+  window.speechSynthesis.speak(u);
+}
+
+/* ---- MIC / STT ---- */
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    setPreview('❌ Ovaj browser ne podržava glasovne komande.\nKoristi Chrome ili Samsung Internet.');
+    return;
+  }
+  if(!rec){
+    rec=new SR();rec.lang=spLang;rec.continuous=false;rec.interimResults=false;
+    rec.onstart=()=>{listening=true;document.getElementById('micLbl').innerText='SLUŠAM... 🔴';document.getElementById('micBtn').classList.add('on');};
+    rec.onend=()=>{listening=false;document.getElementById('micLbl').innerText='DODIRNI I KAŽI KOMANDU';document.getElementById('micBtn').classList.remove('on');};
+    rec.onerror=(e)=>{listening=false;document.getElementById('micLbl').innerText='GREŠKA: '+e.error;document.getElementById('micBtn').classList.remove('on');};
+    rec.onresult=(e)=>{handleCmd(e.results[0][0].transcript.trim());};
+  }
+  listening?rec.stop():rec.start();
+}
+
+/* ---- COMMAND HANDLER ---- */
+async function handleCmd(txt){
+  setPreview('🎤 Komanda:\n"'+txt+'"\n\n⏳ Razmišljam...');
+  const lo=txt.toLowerCase();
+
+  /* VREME */
+  if(lo.includes('koliko je sati')||lo.includes('koje je vreme')||lo.includes('šta je vreme')){
+    const t=new Date().toLocaleTimeString('sr-RS',{hour:'2-digit',minute:'2-digit'});
+    setPreview('🕐 Sada je '+t);speak('Sada je '+t);return;
+  }
+  /* DATUM */
+  if(lo.includes('datum')||lo.includes('koji je dan')){
+    const d=new Date().toLocaleDateString('sr-RS',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    setPreview('📅 '+d);speak(d);return;
+  }
+  /* BELEŠKA */
+  if(lo.includes('beleška')||lo.includes('zapamti')||lo.includes('zabeleži')||lo.includes('napiši')){
+    const note=txt.replace(/beleška|zapamti|zabeleži|napiši/gi,'').trim();
+    if(note){
+      notes.push({text:note,date:new Date().toLocaleString('sr-RS')});
+      saveNotes();updateBadges();
+      setPreview('📝 Beleška sačuvana:\n"'+note+'"');
+      speak('Beleška sačuvana');return;
+    }
+  }
+  /* ALARM / PODSETNIK */
+  if(lo.includes('alarm')||lo.includes('podsetnik')||lo.includes('probudi')){
+    const info=txt.replace(/postavi|alarm|podsetnik|probudi me|za/gi,'').trim();
+    const tm=extractTime(lo);
+    const entry={text:info||'Alarm',date:tm?tm.toLocaleString('sr-RS'):'—',timestamp:tm?tm.getTime():null,type:'alarm'};
+    alarms.push(entry);saveAlarms();updateBadges();
+    if(tm){scheduleOne(entry,alarms.length-1);}
+    setPreview('⏰ Alarm postavljen'+(tm?' za '+fmt(tm):'')+':\n"'+(info||'Alarm')+'"');
+    speak('Alarm postavljen'+(tm?' za '+fmt(tm):''));return;
+  }
+  /* TERMIN */
+  if(lo.includes('termin')||lo.includes('zakaži')||lo.includes('sastanak')){
+    const info=txt.replace(/termin|zakaži|sastanak|dodaj|u kalendar/gi,'').trim();
+    const tm=extractTime(lo);
+    const entry={text:info||'Termin',date:tm?tm.toLocaleString('sr-RS'):'—',timestamp:tm?tm.getTime():null,type:'termin'};
+    alarms.push(entry);saveAlarms();updateBadges();
+    if(tm){scheduleOne(entry,alarms.length-1);}
+    setPreview('📅 Termin zakazan'+(tm?' za '+fmt(tm):'')+':\n"'+(info||'Termin')+'"');
+    speak('Termin zakazan'+(tm?' za '+fmt(tm):''));return;
+  }
+  /* PRIKAŽI */
+  if(lo.includes('pokaži beleške')||lo.includes('moje beleške')){showNotes();speak('Evo tvojih beleški');return;}
+  if(lo.includes('pokaži alarme')||lo.includes('moji alarmi')){showAlarms();speak('Evo tvojih alarma');return;}
+
+  /* GROQ AI */
+  if(!lg('api')){
+    setPreview('⚠️ Postavi Groq API ključ u Podešavanjima (dugme "'+uName+'" gore desno).');
+    speak('Postavi API ključ u podešavanjima');return;
+  }
+  try{
+    const r=await groqCall(txt);
+    setPreview('🤖 Luna:\n\n'+r);speak(r);
+  }catch(e){
+    setPreview('❌ Greška: '+e.message);speak('Greška pri komunikaciji');
+  }
+}
+
+/* ---- HELPERS ---- */
+function setPreview(txt){
+  document.getElementById('preview').innerText=txt;
+}
+function extractTime(lo){
+  const m=lo.match(/(\d{1,2})[:\s](\d{2})/);
+  if(!m)return null;
+  const h=parseInt(m[1]),mn=parseInt(m[2]);
+  const now=new Date();
+  const t=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,mn,0);
+  if(t<=now)t.setDate(t.getDate()+1);
+  return t;
+}
+function fmt(d){return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');}
+
+/* ---- NOTES ---- */
+function saveNotes(){localStorage.setItem('luna_notes',JSON.stringify(notes));}
+function showNotes(){
+  const p=document.getElementById('preview');
+  if(!notes.length){p.innerHTML='📝 <i>Nema beleški</i>';return;}
+  p.innerHTML=notes.map((n,i)=>`
+    <div class="li">
+      <div><div>${n.text}</div><div class="sub">${n.date}</div></div>
+      <div class="del" onclick="delNote(${i})">✕</div>
+    </div>`).join('');
+}
+function delNote(i){notes.splice(i,1);saveNotes();updateBadges();showNotes();}
+
+/* ---- ALARMS ---- */
+function saveAlarms(){localStorage.setItem('luna_alarms',JSON.stringify(alarms));}
+function showAlarms(){
+  const p=document.getElementById('preview');
+  if(!alarms.length){p.innerHTML='🔔 <i>Nema alarma</i>';return;}
+  p.innerHTML=alarms.map((a,i)=>`
+    <div class="li">
+      <div><div>${a.type==='termin'?'📅':'⏰'} ${a.text}</div><div class="sub">${a.date}</div></div>
+      <div class="del" onclick="delAlarm(${i})">✕</div>
+    </div>`).join('');
+}
+function delAlarm(i){alarms.splice(i,1);saveAlarms();updateBadges();showAlarms();}
+
+function updateBadges(){
+  document.getElementById('nBdg').innerText=notes.length;
+  document.getElementById('aBdg').innerText=alarms.length;
+}
+
+/* ---- ALARM SCHEDULING ---- */
+function scheduleAll(){alarms.forEach((a,i)=>{if(a.timestamp&&a.timestamp>Date.now())scheduleOne(a,i);});}
+function scheduleOne(entry,idx){
+  const delay=entry.timestamp-Date.now();
+  if(delay<=0)return;
+  setTimeout(()=>fireAlarm(entry),delay);
+}
+function checkAlarmsDue(){
+  const now=Date.now();
+  alarms.forEach(a=>{if(a.timestamp&&Math.abs(a.timestamp-now)<25000)fireAlarm(a);});
+}
+function fireAlarm(entry){
+  document.getElementById('aTitle').innerText=entry.type==='termin'?'📅 Termin!':'⏰ Alarm!';
+  document.getElementById('aDesc').innerText=entry.text;
+  document.getElementById('aRing').classList.add('show');
+  speak((entry.type==='termin'?'Termin: ':'Alarm: ')+entry.text);
+}
+function dismissAlarm(){
+  document.getElementById('aRing').classList.remove('show');
+  window.speechSynthesis.cancel();
+}
+
+/* ---- MODE ---- */
+function setMode(idx,name,sys){
+  for(let i=0;i<4;i++)document.getElementById('m'+i).classList.remove('mode-on');
+  document.getElementById('m'+idx).classList.add('mode-on');
+  document.getElementById('modeP').innerText=name;
+  sysPrompt=sys;
+  speak('Režim: '+name);
+}
+
+/* ---- AVATAR / MIC FILES ---- */
+document.getElementById('avaFile').addEventListener('change',function(){
+  const f=this.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    ls('ava',ev.target.result);
+    document.getElementById('avaDiv').innerHTML=`<img src="${ev.target.result}">`;
+  };
+  r.readAsDataURL(f);
+});
+document.getElementById('micFile').addEventListener('change',function(){
+  const f=this.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    ls('mic',ev.target.result);
+    document.getElementById('micInner').innerHTML=`<img src="${ev.target.result}">`;
+  };
+  r.readAsDataURL(f);
+});
+function resetAva(){localStorage.removeItem('luna_ava');document.getElementById('avaDiv').innerText='🤖';}
+function resetMic(){localStorage.removeItem('luna_mic');document.getElementById('micInner').innerText='🎙️';}
+</script>
+</body>
+</html>
