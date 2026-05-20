@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Luna Smart Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#dfe3ea;
+display:flex;
+justify-content:center;
+overflow:hidden;
+}
+
+.phone{
+width:100%;
+max-width:430px;
+height:100vh;
+background:#e5e7eb;
+overflow:hidden;
+position:relative;
+}
+
+/* HEADER */
+
+.header{
+height:105px;
+padding:12px 16px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+background:#f3f4f6;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.left-header{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.avatar{
+width:74px;
+height:74px;
+border-radius:50%;
+background:#dbe2ec;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+inset -5px -5px 10px rgba(255,255,255,.9),
+inset 5px 5px 10px rgba(0,0,0,.08),
+0 8px 18px rgba(0,0,0,.1);
+cursor:pointer;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.avatar i{
+font-size:34px;
+color:#94a3b8;
+}
+
+.header-title{
+font-size:34px;
+font-weight:900;
+color:#0f172a;
+line-height:1;
+}
+
+.header-sub{
+font-size:18px;
+font-weight:700;
+color:#94a3b8;
+margin-top:4px;
+}
+
+.right-header{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.circle-btn{
+width:58px;
+height:58px;
+border-radius:50%;
+background:#f3f4f6;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+-6px -6px 10px rgba(255,255,255,.9),
+6px 6px 10px rgba(0,0,0,.08);
+cursor:pointer;
+}
+
+.circle-btn i{
+font-size:22px;
+color:#64748b;
+}
+
+.sasa-btn{
+padding:18px 28px;
+border-radius:999px;
+background:#0ea5e9;
+color:white;
+font-weight:900;
+font-size:20px;
+cursor:pointer;
+box-shadow:0 8px 20px rgba(14,165,233,.35);
+}
+
+/* MAIN */
+
+.main{
+padding:16px;
+height:calc(100vh - 105px);
+overflow-y:auto;
+}
+
+.top-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.left-column{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+/* CARD */
+
+.card{
+position:relative;
+height:170px;
+border-radius:36px;
+background:#e5e7eb;
+display:flex;
+align-items:center;
+padding:20px;
+cursor:pointer;
+
+box-shadow:
+-10px -10px 20px rgba(255,255,255,.95),
+10px 10px 20px rgba(0,0,0,.08),
+inset -3px -3px 5px rgba(255,255,255,.8),
+inset 3px 3px 5px rgba(0,0,0,.05);
+
+transition:.2s;
+}
+
+.card:active{
+transform:scale(.98);
+}
+
+.icon-wrap{
+width:95px;
+height:95px;
+border-radius:50%;
+background:#f8fafc;
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:
+-6px -6px 12px rgba(255,255,255,.95),
+6px 6px 12px rgba(0,0,0,.08);
+}
+
+.icon-wrap i{
+font-size:40px;
+}
+
+.note-icon{
+color:#3b82f6;
+}
+
+.alarm-icon{
+color:#eab308;
+}
+
+.card-title{
+font-size:26px;
+font-weight:900;
+margin-left:18px;
+color:#0f172a;
+}
+
+/* BADGE */
+
+.badge{
+position:absolute;
+top:18px;
+right:18px;
+width:42px;
+height:42px;
+border-radius:50%;
+background:linear-gradient(145deg,#ff3b3b,#c10000);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:19px;
+font-weight:900;
+color:white;
+border:3px solid white;
+box-shadow:0 6px 12px rgba(255,0,0,.35);
+}
+
+/* PREVIEW */
+
+.preview{
+height:356px;
+border-radius:40px;
+padding:24px;
+overflow-y:auto;
+background:#f3f4f6;
+
+box-shadow:
+-10px -10px 20px rgba(255,255,255,.95),
+10px 10px 20px rgba(0,0,0,.08),
+inset -3px -3px 5px rgba(255,255,255,.8),
+inset 3px 3px 5px rgba(0,0,0,.05);
+}
+
+.preview h2{
+font-size:22px;
+font-weight:900;
+line-height:1.5;
+color:#0f172a;
+}
+
+/* MODES */
+
+.modes{
+margin-top:18px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+}
+
+.mode-btn{
+height:120px;
+border-radius:34px;
+background:#ececec;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+font-weight:900;
+font-size:15px;
+cursor:pointer;
+transition:.2s;
+
+box-shadow:
+-8px -8px 16px rgba(255,255,255,.95),
+8px 8px 16px rgba(0,0,0,.08),
+inset -2px -2px 4px rgba(255,255,255,.7),
+inset 2px 2px 4px rgba(0,0,0,.05);
+}
+
+.mode-btn span{
+font-size:34px;
+margin-bottom:10px;
+}
+
+.mode-btn.active{
+background:linear-gradient(145deg,#3b82f6,#2563eb);
+color:white;
+box-shadow:
+0 10px 20px rgba(37,99,235,.4),
+inset -4px -4px 8px rgba(255,255,255,.25),
+inset 4px 4px 8px rgba(0,0,0,.2);
+}
+
+/* MIC */
+
+.mic-section{
+margin-top:26px;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding-bottom:40px;
+}
+
+.mic{
+width:240px;
+height:240px;
+border-radius:50%;
+padding:10px;
+background:linear-gradient(135deg,#00d4ff,#ff00ff,#00d4ff);
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+0 15px 40px rgba(0,0,0,.15);
+cursor:pointer;
+}
+
+.mic-inner{
+width:100%;
+height:100%;
+border-radius:50%;
+background:#e5e7eb;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
+
+.mic-inner img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.mic-inner i{
+font-size:120px;
+color:#94a3b8;
+}
+
+.mic-text{
+margin-top:18px;
+font-size:15px;
+font-weight:900;
+letter-spacing:2px;
+color:#94a3b8;
+}
+
+.upload-btn{
+margin-top:24px;
+padding:18px 36px;
+border-radius:999px;
+background:linear-gradient(145deg,#2563eb,#3b82f6);
+color:white;
+font-size:18px;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 12px 24px rgba(37,99,235,.35);
+}
+
+/* SETTINGS */
+
+.settings{
+position:fixed;
+top:0;
+right:-100%;
+width:100%;
+max-width:430px;
+height:100vh;
+background:#f3f4f6;
+z-index:999;
+transition:.35s;
+overflow-y:auto;
+padding:20px;
+}
+
+.settings.active{
+right:0;
+}
+
+.settings-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:22px;
+}
+
+.settings-title{
+font-size:24px;
+font-weight:900;
+color:#0f172a;
+}
+
+.close-btn{
+font-size:28px;
+cursor:pointer;
+color:#64748b;
+}
+
+.setting-box{
+background:#e5e7eb;
+padding:18px;
+border-radius:28px;
+margin-bottom:18px;
+
+box-shadow:
+-8px -8px 16px rgba(255,255,255,.95),
+8px 8px 16px rgba(0,0,0,.08);
+}
+
+.setting-box h3{
+font-size:16px;
+font-weight:900;
+margin-bottom:16px;
+color:#0f172a;
+}
+
+.setting-box label{
+display:block;
+margin-bottom:10px;
+font-size:14px;
+font-weight:700;
+color:#334155;
+}
+
+.setting-box input[type="range"]{
+width:100%;
+}
+
+.setting-box input[type="color"]{
+width:100%;
+height:45px;
+border:none;
+border-radius:14px;
+cursor:pointer;
+}
+
+.setting-box button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:18px;
+font-weight:900;
+margin-top:10px;
+cursor:pointer;
+background:#2563eb;
+color:white;
+}
+
+/* LIST ITEMS */
+
+.list-item{
+background:#f8fafc;
+padding:16px;
+border-radius:22px;
+margin-bottom:12px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+box-shadow:
+-5px -5px 10px rgba(255,255,255,.9),
+5px 5px 10px rgba(0,0,0,.08);
+}
+
+.list-item span{
+font-weight:800;
+font-size:14px;
+color:#0f172a;
+flex:1;
+word-break:break-word;
+}
+
+.delete-btn{
+width:30px;
+height:30px;
+border-radius:50%;
+background:#ff0000;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:14px;
+cursor:pointer;
+flex-shrink:0;
+border:2px solid white;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<div class="header">
+
+<div class="left-header">
+
+<div class="avatar" onclick="document.getElementById('avatarInput').click()">
+<div id="avatarPreview">
+<i class="fa-solid fa-robot"></i>
+</div>
+</div>
+
+<div>
+<div class="header-title">Luna</div>
+<div class="header-sub">Smart AI Režim</div>
+</div>
+
+</div>
+
+<div class="right-header">
+
+<div class="circle-btn" onclick="toggleDarkMode()">
+<i class="fa-solid fa-moon"></i>
+</div>
+
+<div class="sasa-btn" onclick="openSettings()">
+Saša
+</div>
+
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="top-grid">
+
+<div class="left-column">
+
+<div class="card" onclick="showNotes()">
+
+<div class="icon-wrap">
+<i class="fa-solid fa-note-sticky note-icon"></i>
+</div>
+
+<div class="card-title">Beleške</div>
+
+<div class="badge" id="notesCount">0</div>
+
+</div>
+
+<div class="card" onclick="showAlarms()">
+
+<div class="icon-wrap">
+<i class="fa-solid fa-bell alarm-icon"></i>
+</div>
+
+<div class="card-title">Alarmi</div>
+
+<div class="badge" id="alarmsCount">0</div>
+
+</div>
+
+</div>
+
+<div class="preview" id="preview">
+
+<h2>
+Dobrodošao u Luna Smart Pro aplikaciju.
+</h2>
+
+</div>
+
+</div>
+
+<div class="modes">
+
+<div class="mode-btn active" onclick="changeMode(this)">
+<span>🧠</span>
+Pametna
+</div>
+
+<div class="mode-btn" onclick="changeMode(this)">
+<span>🤪</span>
+Šaljiva
+</div>
+
+<div class="mode-btn" onclick="changeMode(this)">
+<span>🔮</span>
+Sveznal
+</div>
+
+<div class="mode-btn" onclick="changeMode(this)">
+<span>💼</span>
+Profi
+</div>
+
+</div>
+
+<div class="mic-section">
+
+<div class="mic" onclick="startListening()">
+
+<div class="mic-inner" id="micImage">
+<i class="fa-solid fa-microphone"></i>
+</div>
+
+</div>
+
+<div class="mic-text" id="micStatus">
+DODIRNI I KAŽI KOMANDU
+</div>
+
+<div class="upload-btn" onclick="document.getElementById('micInput').click()">
+📸 Postavi sliku mikrofona
+</div>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="settings" id="settingsPanel">
+
+<div class="settings-top">
+<div class="settings-title">⚙️ Podešavanja</div>
+<div class="close-btn" onclick="closeSettings()">
+<i class="fa-solid fa-xmark"></i>
+</div>
+</div>
+
+<div class="setting-box">
+
+<h3>🎤 Mikrofon</h3>
+
+<label>Veličina mikrofona</label>
+<input type="range" min="180" max="300" value="240" id="micSize">
+
+</div>
+
+<div class="setting-box">
+
+<h3>🎨 Boje</h3>
+
+<label>Glavna boja</label>
+<input type="color" id="themeColor" value="#2563eb">
+
+</div>
+
+<div class="setting-box">
+
+<h3>🖼️ Slike</h3>
+
+<button onclick="document.getElementById('avatarInput').click()">
+Promeni Avatar
+</button>
+
+<button onclick="document.getElementById('micInput').click()">
+Promeni Mikrofon
+</button>
+
+</div>
+
+</div>
+
+<input type="file" id="avatarInput" class="hidden" accept="image/*">
+<input type="file" id="micInput" class="hidden" accept="image/*">
+
+</div>
+
+<script>
+
+let notes = [];
+let alarms = [];
+
+function openSettings(){
+document.getElementById('settingsPanel').classList.add('active');
+}
+
+function closeSettings(){
+document.getElementById('settingsPanel').classList.remove('active');
+}
+
+/* NOTES */
+
+function showNotes(){
+
+let html = '';
+
+if(notes.length===0){
+html='<h2>Nema beleški.</h2>';
+}else{
+
+notes.forEach((note,index)=>{
+
+html += `
+<div class="list-item">
+
+<span>${note}</span>
+
+<div class="delete-btn" onclick="deleteNote(${index})">
+<i class="fa-solid fa-xmark"></i>
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+document.getElementById('preview').innerHTML = html;
+}
+
+/* ALARMS */
+
+function showAlarms(){
+
+let html='';
+
+if(alarms.length===0){
+html='<h2>Nema alarma.</h2>';
+}else{
+
+alarms.forEach((alarm,index)=>{
+
+html += `
+<div class="list-item">
+
+<span>${alarm}</span>
+
+<div class="delete-btn" onclick="deleteAlarm(${index})">
+<i class="fa-solid fa-xmark"></i>
+</div>
+
+</div>
+`;
+
+});
+
+}
+
+document.getElementById('preview').innerHTML = html;
+}
+
+/* DELETE */
+
+function deleteNote(index){
+notes.splice(index,1);
+document.getElementById('notesCount').innerText=notes.length;
+showNotes();
+}
+
+function deleteAlarm(index){
+alarms.splice(index,1);
+document.getElementById('alarmsCount').innerText=alarms.length;
+showAlarms();
+}
+
+/* MODE */
+
+function changeMode(el){
+
+document.querySelectorAll('.mode-btn')
+.forEach(btn=>btn.classList.remove('active'));
+
+el.classList.add('active');
+
+}
+
+/* VOICE */
+
+function startListening(){
+
+const status = document.getElementById('micStatus');
+
+status.innerText = 'SLUŠAM...';
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert('Telefon ne podržava voice recognition');
+return;
+}
+
+const recognition = new SpeechRecognition();
+
+recognition.lang='sr-RS';
+
+recognition.start();
+
+recognition.onresult = function(event){
+
+let text = event.results[0][0].transcript.toLowerCase();
+
+status.innerText=text;
+
+processCommand(text);
+
+};
+
+recognition.onend = function(){
+
+setTimeout(()=>{
+status.innerText='DODIRNI I KAŽI KOMANDU';
+},2000);
+
+};
+
+}
+
+/* SMART AI */
+
+function processCommand(text){
+
+if(text.includes('beleška')){
+
+notes.push(text);
+
+document.getElementById('notesCount').innerText=notes.length;
+
+showNotes();
+
+speak('Beleška dodata');
+
+}
+
+else if(text.includes('alarm')){
+
+alarms.push(text);
+
+document.getElementById('alarmsCount').innerText=alarms.length;
+
+showAlarms();
+
+speak('Alarm dodat');
+
+}
+
+else{
+
+document.getElementById('preview').innerHTML=`
+<h2>${text}</h2>
+`;
+
+speak('Razumela sam');
+
+}
+
+}
+
+/* SPEAK */
+
+function speak(text){
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.lang='sr-RS';
+
+window.speechSynthesis.speak(speech);
+
+}
+
+/* DARK MODE */
+
+function toggleDarkMode(){
+
+document.body.classList.toggle('dark');
+
+}
+
+/* AVATAR */
+
+document.getElementById('avatarInput')
+.addEventListener('change',function(e){
+
+const file=e.target.files[0];
+
+if(!file) return;
+
+const reader = new FileReader();
+
+reader.onload=function(event){
+
+document.getElementById('avatarPreview').innerHTML=
+`<img src="${event.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* MIC IMAGE */
+
+document.getElementById('micInput')
+.addEventListener('change',function(e){
+
+const file=e.target.files[0];
+
+if(!file) return;
+
+const reader = new FileReader();
+
+reader.onload=function(event){
+
+document.getElementById('micImage').innerHTML=
+`<img src="${event.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* MIC SIZE */
+
+document.getElementById('micSize')
+.addEventListener('input',function(){
+
+document.querySelector('.mic').style.width=
+this.value+'px';
+
+document.querySelector('.mic').style.height=
+this.value+'px';
+
+});
+
+/* COLOR */
+
+document.getElementById('themeColor')
+.addEventListener('input',function(){
+
+document.querySelector('.sasa-btn').style.background=this.value;
+
+});
+
+</script>
+
+</body>
+</html>
