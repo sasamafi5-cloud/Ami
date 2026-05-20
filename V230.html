@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0">
+
+<title>Luna Smart Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
+:root{
+
+--main-bg:#eceef3;
+--card-bg:#f3f4f6;
+--dark-bg:#0f172a;
+
+--theme:#2563eb;
+--theme2:#60a5fa;
+
+--text:#111827;
+
+--shadow:
+0 10px 25px rgba(0,0,0,.10);
+
+--inset:
+inset 8px 8px 15px rgba(0,0,0,.08),
+inset -6px -6px 12px rgba(255,255,255,.9);
+
+--mic-size:155px;
+
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+
+background:#0f172a;
+
+display:flex;
+justify-content:center;
+
+overflow:hidden;
+}
+
+.phone{
+
+width:100%;
+max-width:430px;
+height:100vh;
+
+background:var(--main-bg);
+
+overflow:hidden;
+
+display:flex;
+flex-direction:column;
+
+position:relative;
+}
+
+/* HEADER */
+
+.header{
+
+height:88px;
+
+background:white;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:12px 14px;
+
+box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+
+.header-left{
+
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.avatar{
+
+width:52px;
+height:52px;
+
+border-radius:50%;
+
+background:#dbe4ef;
+
+overflow:hidden;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+}
+
+.avatar img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.avatar i{
+
+font-size:26px;
+color:#94a3b8;
+}
+
+.logo{
+
+display:flex;
+flex-direction:column;
+}
+
+.logo h1{
+
+font-size:26px;
+font-weight:800;
+
+color:#0f172a;
+line-height:1;
+}
+
+.logo span{
+
+font-size:13px;
+font-weight:700;
+
+color:#94a3b8;
+
+margin-top:3px;
+}
+
+.header-right{
+
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.theme-btn{
+
+width:48px;
+height:48px;
+
+border-radius:50%;
+
+background:#f3f4f6;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:var(--shadow);
+
+cursor:pointer;
+}
+
+.theme-btn i{
+
+font-size:18px;
+color:#64748b;
+}
+
+.sasa-btn{
+
+height:52px;
+
+padding:0 24px;
+
+border-radius:999px;
+
+background:#0284c7;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:18px;
+font-weight:800;
+
+color:white;
+
+box-shadow:
+0 10px 20px rgba(2,132,199,.35);
+
+cursor:pointer;
+}
+
+/* CONTENT */
+
+.content{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:12px;
+}
+
+/* TOP */
+
+.top-grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:10px;
+
+height:220px;
+}
+
+.left-grid{
+
+display:flex;
+flex-direction:column;
+
+gap:10px;
+}
+
+.card{
+
+background:#e7e9ef;
+
+border-radius:26px;
+
+padding:14px;
+
+position:relative;
+
+display:flex;
+align-items:center;
+
+cursor:pointer;
+
+box-shadow:var(--inset);
+}
+
+.card-icon{
+
+width:56px;
+height:56px;
+
+border-radius:50%;
+
+background:white;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+overflow:hidden;
+
+box-shadow:var(--shadow);
+}
+
+.card-icon img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.card-icon i{
+
+font-size:24px;
+}
+
+.card-title{
+
+font-size:18px;
+font-weight:800;
+
+margin-left:14px;
+
+color:#111827;
+}
+
+.badge{
+
+position:absolute;
+
+top:10px;
+right:10px;
+
+width:34px;
+height:34px;
+
+border-radius:50%;
+
+background:linear-gradient(135deg,#ef4444,#b91c1c);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:16px;
+font-weight:800;
+
+color:white;
+
+border:3px solid white;
+}
+
+.preview{
+
+background:#f8fafc;
+
+border-radius:26px;
+
+padding:14px;
+
+font-size:13px;
+font-weight:700;
+
+line-height:1.7;
+
+overflow-y:auto;
+
+color:#111827;
+
+box-shadow:var(--shadow);
+}
+
+/* MODES */
+
+.modes{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:8px;
+
+margin-top:12px;
+}
+
+.mode{
+
+height:88px;
+
+border:none;
+
+border-radius:24px;
+
+background:#ececec;
+
+font-size:11px;
+font-weight:800;
+
+cursor:pointer;
+
+box-shadow:var(--inset);
+}
+
+.mode.active{
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#60a5fa);
+
+color:white;
+
+box-shadow:
+0 12px 22px rgba(37,99,235,.35),
+inset 2px 2px 6px rgba(0,0,0,.2);
+}
+
+/* MICROPHONE */
+
+.mic-wrapper{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+margin-top:18px;
+
+padding-bottom:22px;
+}
+
+.mic{
+
+width:var(--mic-size);
+height:var(--mic-size);
+
+border-radius:50%;
+
+position:relative;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+overflow:hidden;
+
+background:#ececf1;
+
+cursor:pointer;
+
+box-shadow:
+0 18px 28px rgba(0,0,0,.12),
+inset -4px -4px 8px rgba(255,255,255,.9);
+}
+
+.ring{
+
+position:absolute;
+
+width:96%;
+height:96%;
+
+border-radius:50%;
+
+background:
+conic-gradient(
+#00d0ff,
+#9747ff,
+#ff00ff,
+#00d0ff);
+
+animation:rotate 4s linear infinite;
+}
+
+.mic-inner{
+
+position:relative;
+
+z-index:2;
+
+width:88%;
+height:88%;
+
+border-radius:50%;
+
+overflow:hidden;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:#ececf1;
+
+box-shadow:
+inset 4px 4px 10px rgba(0,0,0,.10),
+inset -4px -4px 10px rgba(255,255,255,.9);
+}
+
+.mic-inner img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+object-position:center;
+}
+
+.mic-inner i{
+
+font-size:72px;
+color:#94a3b8;
+}
+
+.status{
+
+margin-top:16px;
+
+font-size:13px;
+font-weight:800;
+
+letter-spacing:2px;
+
+color:#94a3b8;
+}
+
+.upload-btn{
+
+margin-top:16px;
+
+height:50px;
+
+padding:0 24px;
+
+border:none;
+
+border-radius:999px;
+
+background:#2563eb;
+
+color:white;
+
+font-size:16px;
+font-weight:800;
+
+cursor:pointer;
+
+box-shadow:
+0 10px 20px rgba(37,99,235,.35);
+}
+
+/* SETTINGS */
+
+.settings{
+
+position:fixed;
+
+top:0;
+right:-100%;
+
+width:100%;
+max-width:430px;
+height:100vh;
+
+background:#f8fafc;
+
+transition:.35s;
+
+z-index:999;
+
+overflow-y:auto;
+
+padding:16px;
+}
+
+.settings.active{
+right:0;
+}
+
+.settings-top{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+margin-bottom:18px;
+}
+
+.settings-top h2{
+
+font-size:24px;
+font-weight:800;
+}
+
+.close{
+
+font-size:24px;
+cursor:pointer;
+}
+
+.setting-card{
+
+background:white;
+
+border-radius:22px;
+
+padding:16px;
+
+margin-bottom:14px;
+
+box-shadow:var(--shadow);
+}
+
+.setting-card h3{
+
+font-size:15px;
+font-weight:800;
+
+margin-bottom:12px;
+}
+
+.setting-card label{
+
+font-size:13px;
+font-weight:700;
+
+display:block;
+
+margin-bottom:6px;
+}
+
+.setting-card input[type="range"]{
+
+width:100%;
+}
+
+.setting-card input[type="color"]{
+
+width:100%;
+height:46px;
+
+border:none;
+
+background:none;
+}
+
+.setting-card input[type="password"]{
+
+width:100%;
+
+height:48px;
+
+padding:12px;
+
+border-radius:14px;
+
+border:1px solid #d1d5db;
+
+font-size:14px;
+}
+
+.setting-btn{
+
+width:100%;
+
+height:48px;
+
+border:none;
+
+border-radius:14px;
+
+background:#2563eb;
+
+color:white;
+
+font-size:15px;
+font-weight:800;
+
+margin-top:10px;
+
+cursor:pointer;
+}
+
+/* DARK */
+
+.dark{
+background:#0f172a;
+}
+
+.dark .header{
+background:#111827;
+}
+
+.dark .logo h1,
+.dark .card-title,
+.dark .preview,
+.dark .setting-card{
+color:white;
+}
+
+.dark .logo span{
+color:#cbd5e1;
+}
+
+.dark .card,
+.dark .preview,
+.dark .setting-card,
+.dark .mic,
+.dark .mic-inner{
+background:#1e293b;
+}
+
+.dark .mode{
+background:#1e293b;
+color:white;
+}
+
+.dark .settings{
+background:#0f172a;
+}
+
+/* ANIMATIONS */
+
+@keyframes rotate{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+@keyframes pulse{
+
+50%{
+transform:scale(1.03);
+box-shadow:
+0 0 30px #00d0ff,
+0 0 55px #9747ff;
+}
+
+}
+
+.listening .mic{
+animation:pulse 1.2s infinite;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="phone" id="phone">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="header-left">
+
+<div class="avatar"
+onclick="uploadAvatar()"
+id="avatar">
+
+<i class="fa-solid fa-robot"></i>
+
+</div>
+
+<div class="logo">
+
+<h1>Luna</h1>
+
+<span id="modeText">
+Smart AI Režim
+</span>
+
+</div>
+
+</div>
+
+<div class="header-right">
+
+<div class="theme-btn"
+onclick="toggleTheme()">
+
+<i class="fa-solid fa-moon"></i>
+
+</div>
+
+<div class="sasa-btn"
+onclick="openSettings()">
+
+Saša
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CONTENT -->
+
+<div class="content"
+id="content">
+
+<div class="top-grid">
+
+<div class="left-grid">
+
+<div class="card">
+
+<div class="card-icon"
+id="noteIcon">
+
+<i class="fa-solid fa-note-sticky text-blue-500"></i>
+
+</div>
+
+<div class="card-title">
+Beleške
+</div>
+
+<div class="badge"
+id="noteBadge">
+0
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-icon"
+id="alarmIcon">
+
+<i class="fa-solid fa-bell text-yellow-500"></i>
+
+</div>
+
+<div class="card-title">
+Alarmi
+</div>
+
+<div class="badge"
+id="alarmBadge">
+0
+</div>
+
+</div>
+
+</div>
+
+<div class="preview"
+id="preview">
+
+Dobrodošao u Luna Smart Pro aplikaciju.
+
+</div>
+
+</div>
+
+<!-- MODES -->
+
+<div class="modes">
+
+<button class="mode active"
+onclick="setMode(this,'Pametna AI')">
+
+🧠<br>
+Pametna
+
+</button>
+
+<button class="mode"
+onclick="setMode(this,'Šaljiva AI')">
+
+🤪<br>
+Šaljiva
+
+</button>
+
+<button class="mode"
+onclick="setMode(this,'Sveznalica AI')">
+
+🔮<br>
+Sveznal
+
+</button>
+
+<button class="mode"
+onclick="setMode(this,'Profesionalna AI')">
+
+💼<br>
+Profi
+
+</button>
+
+</div>
+
+<!-- MIC -->
+
+<div class="mic-wrapper">
+
+<div class="mic"
+onclick="toggleListening()">
+
+<div class="ring"></div>
+
+<div class="mic-inner"
+id="micInner">
+
+<i class="fa-solid fa-microphone"></i>
+
+</div>
+
+</div>
+
+<div class="status"
+id="status">
+
+DODIRNI I KAŽI KOMANDU
+
+</div>
+
+<button class="upload-btn"
+onclick="uploadMic()">
+
+📸 Postavi sliku mikrofona
+
+</button>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="settings"
+id="settings">
+
+<div class="settings-top">
+
+<h2>
+⚙️ Podešavanja
+</h2>
+
+<div class="close"
+onclick="closeSettings()">
+
+<i class="fa-solid fa-xmark"></i>
+
+</div>
+
+</div>
+
+<!-- API -->
+
+<div class="setting-card">
+
+<h3>
+🔑 Groq API ključ
+</h3>
+
+<input type="password"
+id="apiKey"
+placeholder="gsk_...">
+
+<button class="setting-btn"
+onclick="saveApi()">
+
+Sačuvaj ključ
+
+</button>
+
+</div>
+
+<!-- COLORS -->
+
+<div class="setting-card">
+
+<h3>
+🎨 Boje aplikacije
+</h3>
+
+<label>
+Glavna tema
+</label>
+
+<input type="color"
+id="themeColor"
+value="#2563eb">
+
+<label>
+Boja dugmeta Saša
+</label>
+
+<input type="color"
+id="sasaColor"
+value="#0284c7">
+
+<label>
+Boja teksta
+</label>
+
+<input type="color"
+id="textColor"
+value="#111827">
+
+</div>
+
+<!-- MICROPHONE -->
+
+<div class="setting-card">
+
+<h3>
+🎤 Mikrofon
+</h3>
+
+<label>
+Veličina mikrofona
+</label>
+
+<input type="range"
+min="120"
+max="190"
+value="155"
+id="micRange">
+
+<label>
+Jačina glow efekta
+</label>
+
+<input type="range"
+min="0"
+max="100"
+value="35"
+id="glowRange">
+
+</div>
+
+<!-- SHADOWS -->
+
+<div class="setting-card">
+
+<h3>
+🌑 Senke i 3D
+</h3>
+
+<label>
+Dubina 3D efekta
+</label>
+
+<input type="range"
+min="0"
+max="30"
+value="10"
+id="depthRange">
+
+<label>
+Jačina spoljne senke
+</label>
+
+<input type="range"
+min="0"
+max="40"
+value="10"
+id="shadowRange">
+
+</div>
+
+<!-- IMAGES -->
+
+<div class="setting-card">
+
+<h3>
+🖼️ Slike aplikacije
+</h3>
+
+<button class="setting-btn"
+onclick="uploadAvatar()">
+
+🤖 Avatar
+
+</button>
+
+<button class="setting-btn"
+onclick="uploadMic()">
+
+🎤 Mikrofon
+
+</button>
+
+<button class="setting-btn"
+onclick="uploadNoteIcon()">
+
+📝 Beleške
+
+</button>
+
+<button class="setting-btn"
+onclick="uploadAlarmIcon()">
+
+🔔 Alarmi
+
+</button>
+
+</div>
+
+</div>
+
+<!-- FILE INPUTS -->
+
+<input type="file"
+id="avatarInput"
+accept="image/*"
+hidden>
+
+<input type="file"
+id="micInput"
+accept="image/*"
+hidden>
+
+<input type="file"
+id="noteInput"
+accept="image/*"
+hidden>
+
+<input type="file"
+id="alarmInput"
+accept="image/*"
+hidden>
+
+<script>
+
+/* SETTINGS */
+
+function openSettings(){
+
+document.getElementById('settings')
+.classList.add('active');
+
+}
+
+function closeSettings(){
+
+document.getElementById('settings')
+.classList.remove('active');
+
+}
+
+/* DARK MODE */
+
+function toggleTheme(){
+
+document.getElementById('phone')
+.classList.toggle('dark');
+
+}
+
+/* MODE */
+
+function setMode(btn,text){
+
+document.querySelectorAll('.mode')
+.forEach(el=>el.classList.remove('active'));
+
+btn.classList.add('active');
+
+document.getElementById('modeText')
+.innerText=text;
+
+}
+
+/* API */
+
+function saveApi(){
+
+const key=
+document.getElementById('apiKey').value;
+
+localStorage.setItem(
+'groq_key',
+key
+);
+
+alert('API ključ sačuvan');
+
+}
+
+/* AVATAR */
+
+function uploadAvatar(){
+
+document.getElementById('avatarInput')
+.click();
+
+}
+
+document.getElementById('avatarInput')
+.addEventListener('change',e=>{
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=ev=>{
+
+document.getElementById('avatar')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+localStorage.setItem(
+'avatar',
+ev.target.result
+);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* MICROPHONE */
+
+function uploadMic(){
+
+document.getElementById('micInput')
+.click();
+
+}
+
+document.getElementById('micInput')
+.addEventListener('change',e=>{
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=ev=>{
+
+document.getElementById('micInner')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+localStorage.setItem(
+'mic',
+ev.target.result
+);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* NOTE ICON */
+
+function uploadNoteIcon(){
+
+document.getElementById('noteInput')
+.click();
+
+}
+
+document.getElementById('noteInput')
+.addEventListener('change',e=>{
+
+const file=e.target.files[0];
+
+const reader=new FileReader();
+
+reader.onload=ev=>{
+
+document.getElementById('noteIcon')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+localStorage.setItem(
+'note',
+ev.target.result
+);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* ALARM ICON */
+
+function uploadAlarmIcon(){
+
+document.getElementById('alarmInput')
+.click();
+
+}
+
+document.getElementById('alarmInput')
+.addEventListener('change',e=>{
+
+const file=e.target.files[0];
+
+const reader=new FileReader();
+
+reader.onload=ev=>{
+
+document.getElementById('alarmIcon')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+localStorage.setItem(
+'alarm',
+ev.target.result
+);
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* SPEECH */
+
+function speak(text){
+
+const utter=
+new SpeechSynthesisUtterance(text);
+
+utter.lang='sr-RS';
+
+utter.rate=1;
+
+speechSynthesis.speak(utter);
+
+}
+
+/* VOICE */
+
+let recognition;
+let listening=false;
+
+function toggleListening(){
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+
+alert('Voice nije podržan');
+
+return;
+}
+
+if(!recognition){
+
+recognition=
+new SpeechRecognition();
+
+recognition.lang='sr-RS';
+
+recognition.continuous=false;
+
+recognition.interimResults=false;
+
+recognition.onstart=()=>{
+
+listening=true;
+
+document.getElementById('content')
+.classList.add('listening');
+
+document.getElementById('status')
+.innerText='SLUŠAM...';
+
+};
+
+recognition.onend=()=>{
+
+listening=false;
+
+document.getElementById('content')
+.classList.remove('listening');
+
+document.getElementById('status')
+.innerText=
+'DODIRNI I KAŽI KOMANDU';
+
+};
+
+recognition.onresult=e=>{
+
+const text=
+e.results[0][0].transcript;
+
+handleCommand(text);
+
+};
+
+}
+
+if(listening){
+
+recognition.stop();
+
+}else{
+
+recognition.start();
+
+}
+
+}
+
+/* COMMANDS */
+
+let notes=0;
+let alarms=0;
+
+function handleCommand(text){
+
+const preview=
+document.getElementById('preview');
+
+preview.innerHTML=
+`<b>Ti:</b> ${text}<br><br>`;
+
+const t=text.toLowerCase();
+
+if(t.includes('beleška')){
+
+notes++;
+
+document.getElementById('noteBadge')
+.innerText=notes;
+
+preview.innerHTML+=
+'📝 Beleška sačuvana';
+
+speak('Beleška sačuvana');
+
+return;
+}
+
+if(t.includes('alarm')){
+
+alarms++;
+
+document.getElementById('alarmBadge')
+.innerText=alarms;
+
+preview.innerHTML+=
+'⏰ Alarm dodat';
+
+speak('Alarm dodat');
+
+return;
+}
+
+preview.innerHTML+=
+'🤖 Luna razume komandu';
+
+speak('Razumela sam');
+
+}
+
+/* SETTINGS LIVE */
+
+document.getElementById('themeColor')
+.addEventListener('input',e=>{
+
+document.documentElement
+.style.setProperty(
+'--theme',
+e.target.value
+);
+
+});
+
+document.getElementById('sasaColor')
+.addEventListener('input',e=>{
+
+document.querySelector('.sasa-btn')
+.style.background=e.target.value;
+
+});
+
+document.getElementById('textColor')
+.addEventListener('input',e=>{
+
+document.documentElement
+.style.setProperty(
+'--text',
+e.target.value
+);
+
+document.querySelectorAll(
+'.card-title,.logo h1,.preview'
+).forEach(el=>{
+
+el.style.color=e.target.value;
+
+});
+
+});
+
+document.getElementById('micRange')
+.addEventListener('input',e=>{
+
+document.documentElement
+.style.setProperty(
+'--mic-size',
+e.target.value+'px'
+);
+
+});
+
+window.onload=()=>{
+
+const avatar=
+localStorage.getItem('avatar');
+
+if(avatar){
+
+document.getElementById('avatar')
+.innerHTML=
+`<img src="${avatar}">`;
+
+}
+
+const mic=
+localStorage.getItem('mic');
+
+if(mic){
+
+document.getElementById('micInner')
+.innerHTML=
+`<img src="${mic}">`;
+
+}
+
+const note=
+localStorage.getItem('note');
+
+if(note){
+
+document.getElementById('noteIcon')
+.innerHTML=
+`<img src="${note}">`;
+
+}
+
+const alarm=
+localStorage.getItem('alarm');
+
+if(alarm){
+
+document.getElementById('alarmIcon')
+.innerHTML=
+`<img src="${alarm}">`;
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
