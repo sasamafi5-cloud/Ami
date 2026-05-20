@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Luna Smart Pro</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+background:#0f172a;
+display:flex;
+justify-content:center;
+overflow:hidden;
+}
+
+.phone-frame{
+
+width:100%;
+max-width:430px;
+height:100vh;
+
+background:#eceef3;
+
+overflow:hidden;
+
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+
+.header{
+
+height:95px;
+
+background:white;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:14px;
+
+box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+
+.left-header{
+
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.avatar{
+
+width:58px;
+height:58px;
+
+border-radius:50%;
+
+background:#dbe4ef;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+overflow:hidden;
+
+cursor:pointer;
+}
+
+.avatar img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.avatar i{
+font-size:28px;
+color:#94a3b8;
+}
+
+.logo-title{
+
+font-size:30px;
+font-weight:800;
+line-height:1;
+
+color:#0f172a;
+}
+
+.logo-sub{
+
+font-size:15px;
+font-weight:700;
+
+color:#94a3b8;
+
+margin-top:4px;
+}
+
+.right-header{
+
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.theme-btn{
+
+width:54px;
+height:54px;
+
+border-radius:50%;
+
+background:#f1f5f9;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:
+0 8px 18px rgba(0,0,0,.08),
+inset -2px -2px 4px rgba(255,255,255,.9);
+
+cursor:pointer;
+}
+
+.theme-btn i{
+
+font-size:22px;
+color:#64748b;
+}
+
+.sasa-btn{
+
+height:58px;
+
+padding:0 28px;
+
+border-radius:999px;
+
+background:#0284c7;
+
+color:white;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:20px;
+font-weight:800;
+
+cursor:pointer;
+
+box-shadow:
+0 12px 20px rgba(2,132,199,.35);
+}
+
+/* HOME */
+
+.home{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:14px;
+}
+
+/* TOP */
+
+.top-grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:12px;
+
+height:260px;
+}
+
+.left-grid{
+
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.card-inset{
+
+background:#e6e8ed;
+
+border-radius:30px;
+
+padding:16px;
+
+position:relative;
+
+display:flex;
+align-items:center;
+
+cursor:pointer;
+
+box-shadow:
+inset 8px 8px 14px rgba(0,0,0,.08),
+inset -5px -5px 10px rgba(255,255,255,.9);
+}
+
+.icon-circle{
+
+width:64px;
+height:64px;
+
+border-radius:50%;
+
+background:white;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:
+0 10px 20px rgba(0,0,0,.08);
+}
+
+.icon-circle i{
+
+font-size:28px;
+}
+
+.card-title{
+
+font-size:20px;
+font-weight:800;
+
+margin-left:16px;
+
+color:#111827;
+}
+
+.red-badge{
+
+position:absolute;
+
+top:12px;
+right:12px;
+
+width:38px;
+height:38px;
+
+border-radius:50%;
+
+background:linear-gradient(135deg,#ef4444,#b91c1c);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:18px;
+font-weight:800;
+
+color:white;
+
+border:3px solid white;
+}
+
+.preview{
+
+background:#f5f5f7;
+
+border-radius:30px;
+
+padding:18px;
+
+overflow-y:auto;
+
+font-size:15px;
+font-weight:700;
+
+line-height:1.6;
+
+color:#111827;
+
+box-shadow:
+0 10px 20px rgba(0,0,0,.08),
+-4px -4px 8px rgba(255,255,255,.7);
+}
+
+/* MODES */
+
+.modes{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:10px;
+
+margin-top:14px;
+}
+
+.mode-btn{
+
+height:105px;
+
+border:none;
+
+border-radius:28px;
+
+background:#ececec;
+
+font-size:13px;
+font-weight:800;
+
+cursor:pointer;
+
+box-shadow:
+inset 6px 6px 12px rgba(0,0,0,.08),
+inset -4px -4px 8px rgba(255,255,255,.9);
+}
+
+.mode-btn.active{
+
+background:linear-gradient(135deg,#2563eb,#60a5fa);
+
+color:white;
+
+box-shadow:
+0 12px 22px rgba(37,99,235,.35),
+inset 2px 2px 6px rgba(0,0,0,.2);
+}
+
+/* MIC */
+
+.mic-wrapper{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+margin-top:24px;
+padding-bottom:28px;
+}
+
+.mic-container{
+
+width:180px;
+height:180px;
+
+border-radius:50%;
+
+position:relative;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+overflow:hidden;
+
+cursor:pointer;
+
+background:#ececf1;
+
+box-shadow:
+0 18px 28px rgba(0,0,0,.12),
+inset -4px -4px 8px rgba(255,255,255,.9);
+}
+
+.mic-ring{
+
+position:absolute;
+
+width:96%;
+height:96%;
+
+border-radius:50%;
+
+background:
+conic-gradient(
+#00d0ff,
+#9747ff,
+#ff00ff,
+#00d0ff);
+
+animation:ringRotate 4s linear infinite;
+}
+
+.mic-inner{
+
+position:relative;
+
+z-index:2;
+
+width:88%;
+height:88%;
+
+border-radius:50%;
+
+overflow:hidden;
+
+background:#ececf1;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+box-shadow:
+inset 4px 4px 10px rgba(0,0,0,.10),
+inset -4px -4px 10px rgba(255,255,255,.9);
+}
+
+.mic-inner img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+object-position:center center;
+}
+
+.mic-inner i{
+
+font-size:80px;
+color:#94a3b8;
+}
+
+.mic-status{
+
+margin-top:16px;
+
+font-size:15px;
+font-weight:800;
+
+letter-spacing:2px;
+
+color:#94a3b8;
+}
+
+.settings-btn{
+
+margin-top:20px;
+
+padding:16px 28px;
+
+border:none;
+
+border-radius:999px;
+
+background:#2563eb;
+
+color:white;
+
+font-size:18px;
+font-weight:800;
+
+cursor:pointer;
+
+box-shadow:
+0 12px 24px rgba(37,99,235,.35);
+}
+
+/* SETTINGS */
+
+.settings{
+
+position:fixed;
+
+top:0;
+right:-100%;
+
+width:100%;
+max-width:430px;
+height:100vh;
+
+background:#f8fafc;
+
+z-index:999;
+
+transition:.35s;
+
+padding:18px;
+
+overflow-y:auto;
+}
+
+.settings.active{
+right:0;
+}
+
+.settings-top{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+margin-bottom:20px;
+}
+
+.settings-title{
+
+font-size:24px;
+font-weight:800;
+}
+
+.close-btn{
+
+font-size:24px;
+cursor:pointer;
+}
+
+.setting-card{
+
+background:white;
+
+border-radius:24px;
+
+padding:18px;
+
+margin-bottom:16px;
+
+box-shadow:
+0 10px 20px rgba(0,0,0,.08);
+}
+
+.setting-card h3{
+
+font-size:16px;
+font-weight:800;
+
+margin-bottom:12px;
+}
+
+.setting-card input{
+
+width:100%;
+
+padding:14px;
+
+border-radius:14px;
+
+border:1px solid #d1d5db;
+
+font-size:15px;
+}
+
+.setting-card button{
+
+margin-top:12px;
+
+width:100%;
+
+height:48px;
+
+border:none;
+
+border-radius:14px;
+
+background:#2563eb;
+
+color:white;
+
+font-weight:800;
+
+font-size:16px;
+
+cursor:pointer;
+}
+
+/* DARK MODE */
+
+.dark{
+
+background:#0f172a;
+}
+
+.dark .header{
+background:#111827;
+}
+
+.dark .logo-title,
+.dark .card-title,
+.dark .preview{
+color:white;
+}
+
+.dark .logo-sub{
+color:#cbd5e1;
+}
+
+.dark .card-inset{
+background:#1e293b;
+}
+
+.dark .preview{
+background:#1e293b;
+}
+
+.dark .mode-btn{
+background:#1e293b;
+color:white;
+}
+
+.dark .mic-container,
+.dark .mic-inner{
+background:#1e293b;
+}
+
+/* ANIMATIONS */
+
+@keyframes ringRotate{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+@keyframes pulse{
+
+50%{
+transform:scale(1.03);
+box-shadow:
+0 0 35px #00d0ff,
+0 0 55px #9747ff;
+}
+
+}
+
+.listening .mic-container{
+animation:pulse 1.2s infinite;
+}
+
+/* MOBILE */
+
+@media(max-width:430px){
+
+.logo-title{
+font-size:26px;
+}
+
+.card-title{
+font-size:17px;
+}
+
+.mode-btn{
+height:92px;
+font-size:12px;
+}
+
+.mic-container{
+width:165px;
+height:165px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="phone-frame" id="phone">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="left-header">
+
+<div class="avatar" onclick="uploadAvatar()">
+<i class="fa-solid fa-robot"></i>
+</div>
+
+<div>
+
+<div class="logo-title">Luna</div>
+
+<div class="logo-sub" id="modeText">
+Smart AI Režim
+</div>
+
+</div>
+
+</div>
+
+<div class="right-header">
+
+<div class="theme-btn" onclick="toggleTheme()">
+<i class="fa-solid fa-moon"></i>
+</div>
+
+<div class="sasa-btn" onclick="openSettings()">
+Saša
+</div>
+
+</div>
+
+</div>
+
+<!-- HOME -->
+
+<div class="home" id="home">
+
+<div class="top-grid">
+
+<div class="left-grid">
+
+<div class="card-inset">
+
+<div class="icon-circle">
+<i class="fa-solid fa-note-sticky text-blue-500"></i>
+</div>
+
+<div class="card-title">
+Beleške
+</div>
+
+<div class="red-badge" id="noteCount">
+0
+</div>
+
+</div>
+
+<div class="card-inset">
+
+<div class="icon-circle">
+<i class="fa-solid fa-bell text-yellow-500"></i>
+</div>
+
+<div class="card-title">
+Alarmi
+</div>
+
+<div class="red-badge" id="alarmCount">
+0
+</div>
+
+</div>
+
+</div>
+
+<div class="preview" id="preview">
+
+Dobrodošao u Luna Smart Pro aplikaciju.
+
+</div>
+
+</div>
+
+<!-- MODES -->
+
+<div class="modes">
+
+<button class="mode-btn active"
+onclick="setMode(this,'Pametna AI')">
+🧠<br>Pametna
+</button>
+
+<button class="mode-btn"
+onclick="setMode(this,'Šaljiva AI')">
+🤪<br>Šaljiva
+</button>
+
+<button class="mode-btn"
+onclick="setMode(this,'Sveznalica AI')">
+🔮<br>Sveznal
+</button>
+
+<button class="mode-btn"
+onclick="setMode(this,'Profesionalna AI')">
+💼<br>Profi
+</button>
+
+</div>
+
+<!-- MICROPHONE -->
+
+<div class="mic-wrapper">
+
+<div class="mic-container"
+onclick="toggleListening()">
+
+<div class="mic-ring"></div>
+
+<div class="mic-inner" id="micInner">
+
+<i class="fa-solid fa-microphone"></i>
+
+</div>
+
+</div>
+
+<div class="mic-status" id="micStatus">
+DODIRNI I KAŽI KOMANDU
+</div>
+
+<button class="settings-btn"
+onclick="uploadMic()">
+
+📸 Postavi sliku mikrofona
+
+</button>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="settings" id="settings">
+
+<div class="settings-top">
+
+<div class="settings-title">
+⚙️ Podešavanja
+</div>
+
+<div class="close-btn"
+onclick="closeSettings()">
+
+<i class="fa-solid fa-xmark"></i>
+
+</div>
+
+</div>
+
+<div class="setting-card">
+
+<h3>Groq AI API ključ</h3>
+
+<input type="password"
+id="apiKey"
+placeholder="gsk_...">
+
+<button onclick="saveApiKey()">
+Sačuvaj ključ
+</button>
+
+</div>
+
+<div class="setting-card">
+
+<h3>Funkcije sekretarice</h3>
+
+<p style="line-height:1.8;font-weight:600;">
+
+✔️ Glasovno prepoznavanje<br>
+✔️ AI razgovor<br>
+✔️ Alarmi<br>
+✔️ Beleške<br>
+✔️ Dark mode<br>
+✔️ AI glas<br>
+✔️ Lokalno čuvanje podataka<br>
+
+</p>
+
+</div>
+
+</div>
+
+<input type="file"
+id="micUpload"
+accept="image/*"
+hidden>
+
+<input type="file"
+id="avatarUpload"
+accept="image/*"
+hidden>
+
+<script>
+
+let recognition;
+
+let listening=false;
+
+let notes=[];
+
+let alarms=[];
+
+/* SETTINGS */
+
+function openSettings(){
+
+document.getElementById('settings')
+.classList.add('active');
+
+}
+
+function closeSettings(){
+
+document.getElementById('settings')
+.classList.remove('active');
+
+}
+
+/* THEME */
+
+function toggleTheme(){
+
+document.getElementById('phone')
+.classList.toggle('dark');
+
+}
+
+/* MODE */
+
+function setMode(btn,text){
+
+document.querySelectorAll('.mode-btn')
+.forEach(b=>b.classList.remove('active'));
+
+btn.classList.add('active');
+
+document.getElementById('modeText')
+.innerText=text;
+
+}
+
+/* MIC IMAGE */
+
+function uploadMic(){
+
+document.getElementById('micUpload')
+.click();
+
+}
+
+document.getElementById('micUpload')
+.addEventListener('change',function(e){
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(ev){
+
+document.getElementById('micInner')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* AVATAR */
+
+function uploadAvatar(){
+
+document.getElementById('avatarUpload')
+.click();
+
+}
+
+document.getElementById('avatarUpload')
+.addEventListener('change',function(e){
+
+const file=e.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(ev){
+
+document.querySelector('.avatar')
+.innerHTML=
+`<img src="${ev.target.result}">`;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+/* AI KEY */
+
+function saveApiKey(){
+
+const key=
+document.getElementById('apiKey').value;
+
+localStorage.setItem('groq_key',key);
+
+alert('API ključ sačuvan');
+
+}
+
+/* SPEECH */
+
+function speak(text){
+
+const speech=
+new SpeechSynthesisUtterance(text);
+
+speech.lang='sr-RS';
+
+speech.rate=1;
+
+speechSynthesis.speak(speech);
+
+}
+
+/* LISTENING */
+
+function toggleListening(){
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+
+alert('Telefon ne podržava voice.');
+
+return;
+}
+
+if(!recognition){
+
+recognition=new SpeechRecognition();
+
+recognition.lang='sr-RS';
+
+recognition.continuous=false;
+
+recognition.interimResults=false;
+
+recognition.onstart=()=>{
+
+listening=true;
+
+document.getElementById('home')
+.classList.add('listening');
+
+document.getElementById('micStatus')
+.innerText='SLUŠAM...';
+
+};
+
+recognition.onend=()=>{
+
+listening=false;
+
+document.getElementById('home')
+.classList.remove('listening');
+
+document.getElementById('micStatus')
+.innerText=
+'DODIRNI I KAŽI KOMANDU';
+
+};
+
+recognition.onresult=(e)=>{
+
+const text=
+e.results[0][0].transcript;
+
+handleCommand(text);
+
+};
+
+}
+
+if(listening){
+
+recognition.stop();
+
+}else{
+
+recognition.start();
+
+}
+
+}
+
+/* COMMANDS */
+
+function handleCommand(text){
+
+const lower=text.toLowerCase();
+
+document.getElementById('preview')
+.innerHTML=
+`<b>Ti:</b> ${text}<br><br>`;
+
+if(lower.includes('beleška')){
+
+notes.push(text);
+
+document.getElementById('noteCount')
+.innerText=notes.length;
+
+document.getElementById('preview')
+.innerHTML+=
+`✔️ Beleška sačuvana`;
+
+speak('Beleška je sačuvana');
+
+return;
+}
+
+if(lower.includes('alarm')){
+
+alarms.push(text);
+
+document.getElementById('alarmCount')
+.innerText=alarms.length;
+
+document.getElementById('preview')
+.innerHTML+=
+`⏰ Alarm dodat`;
+
+speak('Alarm dodat');
+
+return;
+}
+
+document.getElementById('preview')
+.innerHTML+=
+`🤖 Luna odgovara...`;
+
+speak('Razumela sam komandu');
+
+}
+
+/* LOAD */
+
+window.onload=()=>{
+
+const key=
+localStorage.getItem('groq_key');
+
+if(key){
+
+document.getElementById('apiKey')
+.value=key;
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
