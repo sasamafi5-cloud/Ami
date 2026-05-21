@@ -1,0 +1,143 @@
+export default function GroceryAIApp() { const products = [ { name: 'Eggs 10pcs', price: '1,69€', discount: '-15%', store: 'Idea', image: '🥚' }, { name: 'Oranges 1kg', price: '1,39€', discount: '-18%', store: 'Maxi', image: '🍊' }, { name: 'Yogurt 1kg', price: '1,19€', discount: '-12%', store: 'Shop & Save', image: '🥛' }, ];
+
+const cart = [ { name: 'Apples', qty: '1kg', price: '1,37€', icon: '🍎' }, { name: 'Bananas', qty: '1kg', price: '0,87€', icon: '🍌' }, { name: 'Milk', qty: '1L', price: '1,13€', icon: '🥛' }, ];
+
+return ( <div className="min-h-screen bg-black flex items-center justify-center p-4 overflow-hidden"> <div className="w-full max-w-sm rounded-[40px] bg-gradient-to-b from-[#020814] via-[#03152f] to-black border border-blue-500/20 shadow-[0_0_60px_rgba(0,140,255,0.35)] overflow-hidden relative"> <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,140,255,0.25),transparent_60%)]" />
+
+<div className="relative z-10 p-6 space-y-5">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-white tracking-tight">
+          Grocery<span className="text-blue-500">AI</span>
+        </h1>
+        <button className="w-11 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl text-white text-xl hover:scale-105 transition">
+          🔔
+        </button>
+      </div>
+
+      <div className="grid grid-cols-[1fr_140px] gap-3 items-center">
+        <div>
+          <h2 className="text-white text-5xl font-bold leading-tight">
+            Hello,
+            <br />
+            Marko!
+          </h2>
+          <p className="text-blue-100/80 mt-3 text-lg">
+            I can help you shop smarter.
+          </p>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full blur-3xl bg-blue-500/30 animate-pulse" />
+          <img
+            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop"
+            alt="AI Avatar"
+            className="relative w-40 h-40 object-cover rounded-full border-4 border-blue-500/40 shadow-[0_0_30px_rgba(0,140,255,0.7)]"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-blue-500/20 bg-white/5 backdrop-blur-2xl p-5 shadow-[0_0_30px_rgba(0,120,255,0.2)]">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(0,140,255,0.7)]">
+            🎤
+          </div>
+
+          <div className="flex-1">
+            <div className="flex gap-1 items-center mb-2">
+              {[1,2,3,4,5,6,7,8].map((i) => (
+                <div
+                  key={i}
+                  className="w-1 rounded-full bg-blue-400 animate-pulse"
+                  style={{ height: `${12 + i * 3}px` }}
+                />
+              ))}
+            </div>
+            <p className="text-white text-xl">Tap to talk</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-white text-3xl font-semibold">AI Suggestions</h3>
+          <button className="text-blue-400">See all</button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          {products.map((item) => (
+            <div
+              key={item.name}
+              className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-3 shadow-[0_0_20px_rgba(0,140,255,0.12)] hover:scale-[1.03] transition"
+            >
+              <div className="text-6xl text-center mb-3">{item.image}</div>
+              <h4 className="text-white text-sm font-medium leading-tight min-h-[38px]">
+                {item.name}
+              </h4>
+              <div className="flex items-end justify-between mt-3">
+                <span className="text-white text-xl font-bold">{item.price}</span>
+                <span className="text-yellow-400 text-sm font-bold">{item.discount}</span>
+              </div>
+              <div className="mt-2 text-blue-200/70 text-sm">{item.store}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[30px] border border-blue-500/20 bg-black/40 backdrop-blur-2xl p-5 shadow-[0_0_30px_rgba(0,120,255,0.15)]">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-white text-3xl font-semibold">Your Cart</h3>
+          <span className="text-blue-300">3 items</span>
+        </div>
+
+        <div className="space-y-4">
+          {cart.map((item) => (
+            <div
+              key={item.name}
+              className="flex items-center justify-between rounded-2xl bg-white/5 border border-white/5 p-4"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-3xl shadow-inner">
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="text-white text-lg font-medium">{item.name}</p>
+                  <p className="text-blue-100/60">{item.qty}</p>
+                </div>
+              </div>
+
+              <span className="text-white text-2xl font-bold">{item.price}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex items-center justify-between">
+          <div>
+            <p className="text-blue-100/70">Total</p>
+            <h2 className="text-white text-5xl font-bold">3,37€</h2>
+          </div>
+
+          <button className="px-8 py-5 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-400 text-white text-xl font-semibold shadow-[0_0_30px_rgba(0,120,255,0.7)] hover:scale-105 transition">
+            Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div className="relative z-10 border-t border-white/10 bg-black/40 backdrop-blur-2xl px-4 py-5 flex items-center justify-between text-white">
+      {['🏠', '🔎', '💧', '🛒', '👤'].map((icon, index) => (
+        <button
+          key={index}
+          className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition ${
+            index === 0
+              ? 'bg-blue-600 shadow-[0_0_20px_rgba(0,120,255,0.7)]'
+              : 'bg-white/5 border border-white/5'
+          }`}
+        >
+          {icon}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+); }
