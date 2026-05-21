@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryAI — Premium Jarvis Assistant (2035)</title>
+    <style>
+        :root {
+            --bg-color: #030712;
+            --neon-blue: #00d2ff;
+            --neon-purple: #9d4edd;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(0, 210, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 210, 255, 0.07) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(157, 78, 221, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Navigacija */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(3, 7, 18, 0.7);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo span {
+            color: var(--neon-blue);
+            -webkit-text-fill-color: initial;
+        }
+
+        /* Hero Sekcija */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5rem 5% 8rem 5%;
+            min-height: 85vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 650px;
+        }
+
+        .badge {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.8rem;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero-content h1 span {
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Dugmad */
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #0052d4, #00d2ff);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.6);
+        }
+
+        /* Desna strana - Telefon Maketa */
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .phone-mockup {
+            width: 330px;
+            height: 670px;
+            border-radius: 45px;
+            border: 4px solid rgba(255, 255, 255, 0.12);
+            background: #090d16;
+            box-shadow: 
+                0 0 60px rgba(0, 210, 255, 0.15),
+                inset 0 0 25px rgba(255,255,255,0.03);
+            padding: 12px;
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .phone-mockup:hover {
+            transform: scale(1.04) rotate(-1deg);
+        }
+
+        /* Ekran telefona na bazi priložene slike */
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 35px;
+            background: #050811;
+            padding: 25px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+        }
+
+        .ui-header {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .ui-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: -5px;
+        }
+
+        /* 3D Glassmorphism Avatar Panel */
+        .ui-avatar-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .ui-avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%);
+            border-radius: 50%;
+            margin: 0 auto 12px auto;
+            position: relative;
+            border: 2px dashed var(--neon-blue);
+            animation: pulse 4s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ui-avatar-placeholder::before {
+            content: "🤖";
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 10px var(--neon-blue));
+        }
+
+        .ui-wave {
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .ui-wave span {
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to top, var(--neon-blue), var(--neon-purple));
+            border-radius: 10px;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .ui-wave span:nth-child(2) { animation-delay: 0.15s; }
+        .ui-wave span:nth-child(3) { animation-delay: 0.3s; }
+        .ui-wave span:nth-child(4) { animation-delay: 0.45s; }
+        .ui-wave span:nth-child(5) { animation-delay: 0.6s; }
+
+        /* Premium Kartice Proizvoda */
+        .ui-card-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--neon-blue);
+            margin-bottom: -5px;
+        }
+
+        .ui-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-left: 4px solid var(--neon-blue);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .ui-card.purple {
+            border-left-color: var(--neon-purple);
+        }
+
+        .ui-card-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .ui-card-info span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ui-card-price {
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .ui-card-price .discount {
+            font-size: 0.75rem;
+            color: #ff4757;
+            display: block;
+        }
+
+        /* Pozadinski Glow krugovi */
+        .glow-circle {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(rgba(0, 210, 255, 0.12), transparent 65%);
+            z-index: 1;
+            top: 10%;
+        }
+
+        /* Karakteristike / Specifikacije */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 5%;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            font-weight: 800;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255,255,255,0.03);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--glass-border);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.08);
+        }
+
+        .icon-box {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Animacije */
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.3); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(0, 210, 255, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Responzivnost za mobilne uređaje */
+        @media (max-width: 968px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 3rem;
+                gap: 5rem;
+            }
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            .phone-mockup {
+                width: 300px;
+                height: 610px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Grocery<span>AI</span></div>
+        <div>
+            <a href="#" class="cta-btn" style="padding: 0.6rem 1.6rem; font-size: 0.9rem;">Preuzmi APK</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">Futuristički AI Asistent — Kvantni Režim</div>
+            <h1>Pametna Kupovina Namirnica Iz <span>Godine 2035</span></h1>
+            <p>Iskusite luksuzni 3D Jarvis ekosistem optimizovan za Samsung S20 Ultra. Razgovarajte prirodno sa inteligentnim glasovnim avatarom, skenirajte bar-kodove i upravljajte budžetom — potpuno OFFLINE i lokalno na vašem uređaju.</p>
+            <a href="#features" class="cta-btn">Sistemske Opcije</a>
+        </div>
+
+        <div class="hero-visual">
+            <div class="glow-circle"></div>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="ui-header">Sistem Aktivan Korisnik: Saša</div>
+                    <div class="ui-title">Zdravo, Saša! 👋</div>
+                    
+                    <div class="ui-avatar-box">
+                        <div class="ui-avatar-placeholder"></div>
+                        <div style="font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px;">JARVIS AI AVATAR</div>
+                        <div style="font-size: 0.75rem; color: var(--neon-blue); margin-top: 3px; font-weight: 500;">Slušam glasovne komande...</div>
+                        <div class="ui-wave">
+                            <span style="height: 60%; animation-duration: 0.8s;"></span>
+                            <span style="height: 100%; animation-duration: 1.1s;"></span>
+                            <span style="height: 40%; animation-duration: 0.7s;"></span>
+                            <span style="height: 85%; animation-duration: 1.3s;"></span>
+                            <span style="height: 50%; animation-duration: 0.9s;"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-card-label">Pametni Predlozi</div>
+                    
+                    <div class="ui-card">
+                        <div class="ui-card-info">
+                            <h4>Sveža Jaja (10 kom)</h4>
+                            <span>Najjeftinije u: Idea</span>
+                        </div>
+                        <div class="ui-card-price">
+                            1,69€
+                            <span class="discount">-15% Akcija</span>
+                        </div>
+                    </div>
+
+                    <div class="ui-card purple">
+                        <div class="ui-card-info">
+                            <h4>Pomorandže (1kg)</h4>
+                            <span>Najjeftinije u: Maxi</span>
+                        </div>
+                        <div class="ui-card-price">
+                            1,39€
+                            <span class="discount">-18% Popust</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Premium Specifikacije</h2>
+        <div class="grid">
+            <div class="feature-card">
+                <div class="icon-box">🎙️</div>
+                <h3>Glasovni 3D Avatar</h3>
+                <p>AI devojka sa realističnim face-animacijama koja pomera usne u realnom vremenu, prepoznaje kontekst govora i odgovara na opšta pitanja.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box">💎</div>
+                <h3>Glassmorphism UI</h3>
+                <p>Kombinacija dizajna inspirisana Tesla, Jarvis i Apple interfejsom. Prefinjene senke, neonski glow efekti i ultra glatke 60FPS animacije.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box">🛡️</div>
+                <h3>100% Offline Rad</h3>
+                <p>Kompletna istorija četovanja, liste, cene i AI generisane slike skladište se lokalno na telefonu (Isar/SQLite) i rade savršeno bez interneta.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box">🔄</div>
+                <h3>Automatska Sinhronizacija</h3>
+                <p>U pozadini skenira cene sa internet marketa i čim se detektuje mreža automatski ažurira baze bez ikakvog gubitka podataka.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 4rem 2rem; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.04); background: #02050c;">
+        © 2026 GroceryAI Ekosistem. Razvijeno u Flutter-u za Android OS.
+    </footer>
+
+</body>
+</html>
