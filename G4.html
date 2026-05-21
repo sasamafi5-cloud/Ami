@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GroceryAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      overflow-x: hidden;
+    }.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.glow {
+  box-shadow: 0 0 30px rgba(0,120,255,0.4);
+}
+
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scaleY(0.4); opacity: .4; }
+  50% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0.4); opacity: .4; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="min-h-screen flex items-center justify-center p-2 bg-black">
+    <div class="w-full max-w-sm rounded-[40px] overflow-hidden border border-blue-500/20 bg-gradient-to-b from-[#020814] via-[#03152f] to-black glow"><div class="p-5">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-4xl font-bold text-white">
+        Grocery<span class="text-blue-500">AI</span>
+      </h1>
+
+      <button class="w-12 h-12 rounded-2xl glass text-white text-xl">
+        🔔
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3 mb-5">
+      <div class="flex-1">
+        <h2 class="text-white text-5xl font-bold leading-tight">
+          Hello,<br/>Marko!
+        </h2>
+
+        <p class="text-white/70 text-lg mt-2">
+          I can help you shop smarter.
+        </p>
+      </div>
+
+      <div class="relative">
+        <div class="absolute inset-0 bg-blue-500/30 blur-3xl rounded-full"></div>
+
+        <img
+          id="avatar"
+          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop"
+          class="relative w-40 h-40 rounded-full object-cover border-4 border-blue-500/30 glow"
+        />
+      </div>
+    </div>
+
+    <label class="block mb-5">
+      <input type="file" id="avatarUpload" class="hidden" accept="image/*">
+      <div class="glass rounded-3xl p-5 cursor-pointer">
+        <div class="flex items-center gap-4">
+          <div id="micButton" class="w-20 h-20 rounded-3xl bg-blue-600 flex items-center justify-center text-4xl glow">
+            🎤
+          </div>
+
+          <div class="flex-1">
+            <div class="flex items-end gap-1 h-10 mb-2">
+              <div class="w-1 h-3 bg-blue-400 rounded-full pulse"></div>
+              <div class="w-1 h-6 bg-blue-400 rounded-full pulse"></div>
+              <div class="w-1 h-10 bg-blue-400 rounded-full pulse"></div>
+              <div class="w-1 h-6 bg-blue-400 rounded-full pulse"></div>
+              <div class="w-1 h-8 bg-blue-400 rounded-full pulse"></div>
+              <div class="w-1 h-4 bg-blue-400 rounded-full pulse"></div>
+            </div>
+
+            <p id="voiceText" class="text-white text-xl">
+              Tap to talk
+            </p>
+          </div>
+        </div>
+      </div>
+    </label>
+
+    <div class="glass rounded-[30px] p-4 mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-white text-3xl font-semibold">AI Suggestions</h3>
+        <button class="text-blue-400">See all</button>
+      </div>
+
+      <div id="products" class="grid grid-cols-3 gap-3"></div>
+    </div>
+
+    <div class="glass rounded-[30px] p-5">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white text-3xl font-semibold">Your Cart</h3>
+        <span class="text-blue-300">Offline Saved</span>
+      </div>
+
+      <div id="cartItems" class="space-y-3"></div>
+
+      <div class="mt-6 flex items-center justify-between gap-4">
+        <div>
+          <p class="text-white/60">Total</p>
+          <h2 id="total" class="text-white text-5xl font-bold">0€</h2>
+        </div>
+
+        <button onclick="addRandomItem()" class="px-8 py-5 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-400 text-white text-xl font-bold glow">
+          Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10 bg-black/40 p-4 flex items-center justify-between">
+    <button class="flex flex-col items-center text-blue-400">
+      <div class="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-2xl glow">🏠</div>
+      <span class="mt-2 text-sm">Home</span>
+    </button>
+
+    <button class="flex flex-col items-center text-white/60">
+      <div class="w-14 h-14 rounded-2xl glass flex items-center justify-center text-2xl">🔎</div>
+      <span class="mt-2 text-sm">Search</span>
+    </button>
+
+    <button class="flex flex-col items-center text-white/60">
+      <div class="w-14 h-14 rounded-2xl glass flex items-center justify-center text-2xl">💰</div>
+      <span class="mt-2 text-sm">Deals</span>
+    </button>
+
+    <button class="flex flex-col items-center text-white/60">
+      <div class="w-14 h-14 rounded-2xl glass flex items-center justify-center text-2xl">🛒</div>
+      <span class="mt-2 text-sm">Cart</span>
+    </button>
+
+    <button class="flex flex-col items-center text-white/60">
+      <div class="w-14 h-14 rounded-2xl glass flex items-center justify-center text-2xl">👤</div>
+      <span class="mt-2 text-sm">Profile</span>
+    </button>
+  </div>
+</div>
+
+  </div>  <script>
+    const products = [
+      { name: 'Eggs 10pcs', price: '1,69€', discount: '-15%', image: '🥚', store: 'Idea' },
+      { name: 'Oranges 1kg', price: '1,39€', discount: '-18%', image: '🍊', store: 'Maxi' },
+      { name: 'Yogurt 1kg', price: '1,19€', discount: '-12%', image: '🥛', store: 'Shop & Save' }
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('grocery_cart')) || [
+      { name: 'Apples', qty: '1kg', price: 1.37, icon: '🍎' },
+      { name: 'Bananas', qty: '1kg', price: 0.87, icon: '🍌' },
+      { name: 'Milk', qty: '1L', price: 1.13, icon: '🥛' }
+    ];
+
+    function renderProducts() {
+      const container = document.getElementById('products');
+
+      container.innerHTML = products.map(item => `
+        <div class="rounded-[25px] glass p-3">
+          <div class="h-28 rounded-2xl bg-white/5 flex items-center justify-center text-6xl mb-3">
+            ${item.image}
+          </div>
+
+          <h4 class="text-white text-sm min-h-[40px]">${item.name}</h4>
+
+          <div class="flex justify-between mt-2">
+            <span class="text-white font-bold">${item.price}</span>
+            <span class="text-yellow-400">${item.discount}</span>
+          </div>
+
+          <div class="text-blue-200/70 text-sm mt-1">${item.store}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderCart() {
+      const cartContainer = document.getElementById('cartItems');
+      const totalElement = document.getElementById('total');
+
+      let total = 0;
+
+      cartContainer.innerHTML = cart.map(item => {
+        total += item.price;
+
+        return `
+          <div class="rounded-[24px] glass p-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-4xl">
+                ${item.icon}
+              </div>
+
+              <div>
+                <p class="text-white text-xl font-medium">${item.name}</p>
+                <p class="text-white/50">${item.qty}</p>
+              </div>
+            </div>
+
+            <div class="text-white text-2xl font-bold">
+              ${item.price.toFixed(2).replace('.', ',')}€
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      totalElement.innerText = total.toFixed(2).replace('.', ',') + '€';
+
+      localStorage.setItem('grocery_cart', JSON.stringify(cart));
+    }
+
+    function addRandomItem() {
+      const items = [
+        { name: 'Tomatoes', qty: '1kg', price: 1.29, icon: '🍅' },
+        { name: 'Chicken', qty: '1kg', price: 5.49, icon: '🍗' },
+        { name: 'Lemons', qty: '1kg', price: 0.99, icon: '🍋' }
+      ];
+
+      const random = items[Math.floor(Math.random() * items.length)];
+      cart.push(random);
+      renderCart();
+    }
+
+    const micButton = document.getElementById('micButton');
+    const voiceText = document.getElementById('voiceText');
+
+    let listening = false;
+
+    micButton.addEventListener('click', () => {
+      listening = !listening;
+
+      if (listening) {
+        voiceText.innerText = 'Listening... Ask me anything';
+        micButton.classList.add('scale-110');
+
+        if ('webkitSpeechRecognition' in window) {
+          const recognition = new webkitSpeechRecognition();
+          recognition.lang = 'en-US';
+
+          recognition.onresult = function(event) {
+            voiceText.innerText = event.results[0][0].transcript;
+          };
+
+          recognition.start();
+        }
+      } else {
+        voiceText.innerText = 'Tap to talk';
+        micButton.classList.remove('scale-110');
+      }
+    });
+
+    document.getElementById('avatarUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          document.getElementById('avatar').src = event.target.result;
+          localStorage.setItem('avatar_image', event.target.result);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+
+    const savedAvatar = localStorage.getItem('avatar_image');
+
+    if (savedAvatar) {
+      document.getElementById('avatar').src = savedAvatar;
+    }
+
+    renderProducts();
+    renderCart();
+  </script></body>
+</html>
