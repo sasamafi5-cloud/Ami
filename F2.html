@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GroceryAI • 2035</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px); border: 1px solid rgba(148, 163, 184, 0.3); }
+    .neon { box-shadow: 0 0 20px #22d3ee; }
+    .avatar-float { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    .emoji { font-size: 52px; line-height: 1; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen pb-24">
+
+  <div class="max-w-xl mx-auto px-4 pt-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Grocery<span class="text-cyan-400">AI</span></h1>
+      <button onclick="updatePrices()" class="bg-emerald-600 hover:bg-emerald-700 px-5 py-2 rounded-2xl text-sm font-semibold flex items-center gap-2">
+        🔄 Ažuriraj cene
+      </button>
+    </div>
+
+    <!-- AVATAR + POZDRAV -->
+    <div class="flex gap-5 items-center mb-8">
+      <div class="flex-1">
+        <h2 class="text-2xl font-semibold">Zdravo, Marko! 👋</h2>
+        <p class="text-cyan-400">Šta želiš danas?</p>
+      </div>
+      <img id="avatarImg" src="https://picsum.photos/id/1015/600/600" 
+           class="w-36 h-36 rounded-3xl object-cover avatar-float neon border-4 border-cyan-400/50" alt="AI">
+    </div>
+
+    <!-- VOICE + CHAT -->
+    <div class="glass rounded-3xl p-5 mb-8">
+      <button onclick="startVoice()" 
+              class="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-5 rounded-2xl text-xl font-semibold flex items-center justify-center gap-3">
+        🎤 Pričaj sa AI sekretaricom
+      </button>
+      <div class="mt-4 flex gap-2">
+        <input id="chatInput" type="text" placeholder="Napiši poruku AI-ju..." 
+               class="flex-1 bg-zinc-900 border border-white/20 rounded-2xl px-5 py-4">
+        <button onclick="sendChatMessage()" class="px-6 bg-white/10 hover:bg-white/20 rounded-2xl">Pošalji</button>
+      </div>
+    </div>
+
+    <!-- AI PREDLOZI -->
+    <h3 class="text-lg font-semibold mb-4">AI Predlozi • Najbolje cene</h3>
+    <div class="grid grid-cols-2 gap-3" id="suggestions"></div>
+
+    <!-- KORPA -->
+    <h3 class="text-lg font-semibold mt-10 mb-4">Tvoja korpa <span id="cart-count" class="text-cyan-400">(0)</span></h3>
+    <div id="cart" class="glass rounded-3xl p-5 space-y-4 min-h-[180px]"></div>
+
+    <div class="mt-8 flex justify-between items-center">
+      <div>
+        <p class="text-gray-400">Ukupno</p>
+        <p id="total" class="text-4xl font-bold text-cyan-400">0 RSD</p>
+      </div>
+      <button onclick="checkout()" class="bg-gradient-to-r from-emerald-500 to-cyan-500 px-12 py-5 rounded-3xl font-bold">Završi kupovinu</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/10 py-3">
+    <div class="max-w-xl mx-auto flex justify-around text-3xl">
+      <button class="text-cyan-400">🏠</button>
+      <button onclick="showSearch()">🔍</button>
+      <button onclick="startVoice()">🎤</button>
+      <button>🛒</button>
+      <button onclick="showProfile()">👤</button>
+    </div>
+  </nav>
+
+  <script>
+    let products = [
+      { name: "Jaja 10kom", price: 179, store: "Lidl", emoji: "🥚" },
+      { name: "Pomorandže 1kg", price: 149, store: "Maxi", emoji: "🍊" },
+      { name: "Jogurt 1kg", price: 125, store: "Idea", emoji: "🥛" },
+      { name: "Jabuke 1kg", price: 89, store: "Univerexport", emoji: "🍎" },
+      { name: "Banane 1kg", price: 95, store: "Lidl", emoji: "🍌" },
+      { name: "Mleko 1L", price: 98, store: "Idea", emoji: "🥛" },
+      { name: "Piletina 1kg", price: 489, store: "Maxi", emoji: "🍗" },
+      { name: "Paradajz 1kg", price: 129, store: "Lidl", emoji: "🍅" },
+      { name: "Hleb 500g", price: 65, store: "Univerexport", emoji: "🍞" }
+    ];
+
+    let cart = [];
+    let total = 0;
+
+    function renderSuggestions() {
+      const container = document.getElementById('suggestions');
+      container.innerHTML = '';
+      products.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'glass rounded-3xl p-4 text-center cursor-pointer';
+        div.innerHTML = `
+          <div class="emoji mx-auto">${p.emoji}</div>
+          <p class="mt-2 font-medium">${p.name}</p>
+          <p class="text-cyan-400 font-bold">${p.price} RSD</p>
+          <p class="text-xs text-gray-400">${p.store}</p>
+          <button onclick="addToCart(${i}); event.stopImmediatePropagation()" 
+                  class="mt-4 w-full py-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-sm">Dodaj</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addToCart(i) {
+      cart.push(products[i]);
+      total += products[i].price;
+      renderCart();
+    }
+
+    function renderCart() {
+      const el = document.getElementById('cart');
+      el.innerHTML = cart.length === 0 ? '<p class="text-center text-gray-500 py-10">Korpa je prazna...</p>' : '';
+      
+      cart.forEach((item, i) => {
+        el.innerHTML += `
+          <div class="flex items-center gap-4 bg-zinc-900/60 rounded-2xl p-3">
+            <span class="text-4xl">${item.emoji}</span>
+            <div class="flex-1">
+              <p>${item.name}</p>
+              <p class="text-xs text-gray-400">${item.store}</p>
+            </div>
+            <p class="font-bold">${item.price} RSD</p>
+            <button onclick="removeFromCart(${i})" class="text-red-400 text-2xl">✕</button>
+          </div>
+        `;
+      });
+      document.getElementById('total').textContent = total + " RSD";
+      document.getElementById('cart-count').textContent = `(${cart.length})`;
+    }
+
+    function removeFromCart(i) {
+      total -= cart[i].price;
+      cart.splice(i, 1);
+      renderCart();
+    }
+
+    function startVoice() {
+      const responses = [
+        "Dobro jutro Marko! Danas su najjeftinije pomorandže u Lidlu.",
+        "Želiš li predlog za večeru? Mogu da ti predložim recept.",
+        "Cene su ažurirane. Šta da dodam u korpu?"
+      ];
+      alert("🤖 AI Sekretarica: " + responses[Math.floor(Math.random() * responses.length)]);
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      if (input.value.trim()) {
+        alert("📨 Ti: " + input.value + "\n\n🤖 AI: Razumeo sam. Dodajem u korpu ili tražim najbolju cenu?");
+        input.value = '';
+      }
+    }
+
+    function updatePrices() {
+      alert("✅ Cene su uspešno ažurirane iz kataloga Lidl, Idea, Maxi i Univerexport.");
+    }
+
+    function showSearch() {
+      alert("🔍 Pretraga namirnica (u pravoj aplikaciji bi ovde bio search bar)");
+    }
+
+    function showProfile() {
+      alert("👤 Profil • Istorija kupovine • Podešavanja");
+    }
+
+    function checkout() {
+      if (cart.length === 0) return alert("Korpa je prazna!");
+      alert(`✅ Kupovina uspešno završena!\nUkupno: ${total} RSD`);
+      cart = []; total = 0; renderCart();
+    }
+
+    window.onload = () => {
+      renderSuggestions();
+      renderCart();
+    };
+  </script>
+</body>
+</html>
