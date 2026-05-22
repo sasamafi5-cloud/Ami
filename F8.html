@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GroceryAI • 2035</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(28px); border: 1px solid rgba(148, 163, 184, 0.4); }
+    .neon { box-shadow: 0 0 35px #22d3ee, 0 0 60px #c026d3; }
+    .avatar-float { animation: float 3.8s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .emoji { font-size: 58px; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen pb-24">
+
+  <div class="max-w-xl mx-auto px-4 pt-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">GroceryAI</h1>
+      <button onclick="updatePrices()" class="bg-emerald-600 px-5 py-2 rounded-2xl text-sm font-semibold neon">🔄 Ažuriraj</button>
+    </div>
+
+    <!-- HOME TAB - Tvoje česte namirnice -->
+    <div id="tab-home" class="tab-content active">
+      <div class="flex gap-6 items-center mb-8">
+        <div class="flex-1">
+          <h2 class="text-3xl font-semibold">Zdravo, Marko! 👋</h2>
+          <p class="text-cyan-400">Tvoje česte namirnice</p>
+        </div>
+        <img id="avatarImg" src="https://picsum.photos/id/1015/600/600" 
+             class="w-40 h-40 rounded-3xl object-cover avatar-float neon border-4 border-cyan-400/60" alt="AI">
+      </div>
+
+      <h3 class="text-lg font-semibold mb-4">🛍️ Najčešće kupuješ</h3>
+      <div class="grid grid-cols-2 gap-4" id="frequentGrid"></div>
+
+      <button onclick="startVoiceRecognition()" class="w-full mt-10 glass rounded-3xl py-7 flex items-center justify-center gap-4 text-xl font-semibold neon">
+        🎤 Pričaj sa AI
+      </button>
+    </div>
+
+    <!-- OSTALI TABOVI -->
+    <div id="tab-search" class="tab-content">
+      <div class="glass rounded-3xl p-2 mb-6">
+        <input id="searchInput" type="text" placeholder="Pretraži namirnice..." class="w-full bg-transparent px-5 py-4 focus:outline-none text-lg" onkeyup="searchProducts()">
+      </div>
+      <div class="grid grid-cols-2 gap-3" id="productsGrid"></div>
+    </div>
+
+    <div id="tab-cart" class="tab-content">
+      <h3 class="text-xl font-semibold mb-4">Tvoja korpa <span id="cart-count" class="text-cyan-400">(0)</span></h3>
+      <div id="cart" class="glass rounded-3xl p-5 space-y-4 min-h-[300px]"></div>
+      <div class="mt-8 flex justify-between items-center">
+        <div>
+          <p class="text-gray-400">Ukupno</p>
+          <p id="total" class="text-4xl font-bold text-cyan-400">0 RSD</p>
+        </div>
+        <button onclick="checkout()" class="bg-gradient-to-r from-cyan-500 to-purple-600 px-12 py-6 rounded-3xl font-bold">Završi kupovinu</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/10 py-3">
+    <div class="max-w-xl mx-auto flex justify-around text-3xl">
+      <button onclick="switchTab(0)" class="nav-btn active">🏠</button>
+      <button onclick="switchTab(1)" class="nav-btn">🔍</button>
+      <button onclick="startVoiceRecognition()" class="nav-btn">🎤</button>
+      <button onclick="switchTab(2)" class="nav-btn">🛒</button>
+      <button onclick="switchTab(3)" class="nav-btn">👤</button>
+    </div>
+  </nav>
+
+  <script>
+    let products = [
+      { name: "Brašno 1kg", price: 75, store: "Idea", emoji: "🌾" },
+      { name: "Šećer 1kg", price: 95, store: "Maxi", emoji: "🧂" },
+      { name: "Keks 300g", price: 89, store: "Lidl", emoji: "🍪" },
+      { name: "Bombone 500g", price: 120, store: "Univerexport", emoji: "🍬" },
+      { name: "Eurokrem 1kg", price: 289, store: "Maxi", emoji: "🍫" },
+      { name: "Paradajz pire 500g", price: 85, store: "Lidl", emoji: "🍅" },
+      { name: "Kafa 100g", price: 189, store: "Idea", emoji: "☕" },
+      { name: "Pasta za zube", price: 135, store: "Lidl", emoji: "🦷" },
+      { name: "Toalet papir 10kom", price: 189, store: "Maxi", emoji: "🧻" },
+      { name: "Kobasice 500g", price: 245, store: "Univerexport", emoji: "🌭" },
+      { name: "Mleveno meso 1kg", price: 450, store: "Maxi", emoji: "🥩" },
+      { name: "Piletina 1kg", price: 489, store: "Lidl", emoji: "🍗" },
+      { name: "Pileća šunka 200g", price: 189, store: "Idea", emoji: "🥓" },
+      { name: "Pileća salama 200g", price: 179, store: "Maxi", emoji: "🥓" },
+      { name: "Svinjsko meso 1kg", price: 650, store: "Univerexport", emoji: "🥩" },
+      { name: "Jaja 10kom", price: 179, store: "Lidl", emoji: "🥚" },
+      { name: "Mleko 1L", price: 98, store: "Idea", emoji: "🥛" },
+      { name: "Sir beli 400g", price: 245, store: "Maxi", emoji: "🧀" },
+      { name: "Jogurt 1kg", price: 125, store: "Lidl", emoji: "🥛" },
+      { name: "Ulje 1L", price: 139, store: "Idea", emoji: "🛢️" },
+      { name: "Pileća viršla 500g", price: 220, store: "Maxi", emoji: "🌭" },
+      { name: "Banane 1kg", price: 95, store: "Lidl", emoji: "🍌" },
+      { name: "Grožđe 1kg", price: 149, store: "Univerexport", emoji: "🍇" },
+      { name: "Krompir 2kg", price: 120, store: "Idea", emoji: "🥔" },
+      { name: "Jabuke 1kg", price: 89, store: "Maxi", emoji: "🍎" },
+      { name: "Pasulj 1kg", price: 135, store: "Lidl", emoji: "🫘" },
+      { name: "Spanać 500g", price: 95, store: "Idea", emoji: "🥬" },
+      { name: "Kvasac", price: 45, store: "Univerexport", emoji: "🍞" },
+      { name: "Prašak za pecivo", price: 55, store: "Maxi", emoji: "🥐" },
+      { name: "Juneće meso 1kg", price: 899, store: "Lidl", emoji: "🥩" }
+    ];
+
+    let cart = [];
+    let total = 0;
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e2937;color:white;padding:16px 24px;border-radius:9999px;border:1px solid #22d3ee;z-index:1000;';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(['tab-home','tab-search','tab-cart','tab-recipes','tab-profile'][tab] || 'tab-home').classList.add('active');
+    }
+
+    function renderFrequent() {
+      const container = document.getElementById('frequentGrid');
+      container.innerHTML = '';
+      products.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'glass rounded-3xl p-5 text-center cursor-pointer';
+        div.innerHTML = `
+          <div class="emoji mx-auto">${p.emoji}</div>
+          <p class="mt-3 font-medium">${p.name}</p>
+          <p class="text-cyan-400 font-bold">${p.price} RSD</p>
+          <button onclick="addToCart(${i}); event.stopImmediatePropagation()" 
+                  class="mt-5 w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-sm font-semibold">Dodaj u korpu</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addToCart(i) {
+      cart.push(products[i]);
+      total += products[i].price;
+      showToast(`✅ Dodato: ${products[i].name}`);
+    }
+
+    function startVoiceRecognition() {
+      showToast("🎤 AI: Reci mi šta da dodam u korpu...");
+    }
+
+    function updatePrices() {
+      showToast("✅ Cene su ažurirane");
+    }
+
+    window.onload = () => {
+      renderFrequent();
+    };
+  </script>
+</body>
+</html>
