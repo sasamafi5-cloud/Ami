@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GroceryAI • 2035</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(28px); border: 1px solid rgba(148, 163, 184, 0.4); }
+    .neon { box-shadow: 0 0 35px #22d3ee, 0 0 60px #c026d3; }
+    .avatar-float { animation: float 3.8s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .emoji { font-size: 42px; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen pb-24">
+
+  <div class="max-w-xl mx-auto px-4 pt-6">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">GroceryAI</h1>
+      <button onclick="updatePrices()" class="bg-emerald-600 px-5 py-2 rounded-2xl text-sm font-semibold neon">🔄 Ažuriraj</button>
+    </div>
+
+    <!-- HOME -->
+    <div id="tab-home" class="tab-content active">
+      <div class="flex gap-6 items-center mb-8">
+        <div class="flex-1">
+          <h2 class="text-3xl font-semibold">Zdravo, Aleksandra! 👋</h2>
+          <p class="text-cyan-400">Tvoje najčešće namirnice</p>
+        </div>
+        <img id="avatarImg" src="https://picsum.photos/id/1015/600/600" 
+             class="w-32 h-32 rounded-3xl object-cover avatar-float neon border-4 border-cyan-400/60 cursor-pointer" 
+             alt="Avatar" onclick="document.getElementById('avatarUpload').click()">
+      </div>
+
+      <h3 class="text-lg font-semibold mb-4">🛍️ Najčešće kupuješ</h3>
+      <div class="grid grid-cols-3 gap-3" id="frequentGrid"></div>
+
+      <button onclick="startVoiceRecognition()" class="w-full mt-10 glass rounded-3xl py-7 flex items-center justify-center gap-4 text-xl font-semibold neon">
+        🎤 Pričaj sa AI
+      </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div id="tab-search" class="tab-content">
+      <div class="glass rounded-3xl p-2 mb-6">
+        <input id="searchInput" type="text" placeholder="Pretraži namirnice..." class="w-full bg-transparent px-5 py-4 focus:outline-none text-lg" onkeyup="searchProducts()">
+      </div>
+      <div class="grid grid-cols-3 gap-3" id="productsGrid"></div>
+    </div>
+
+    <!-- CART -->
+    <div id="tab-cart" class="tab-content">
+      <h3 class="text-xl font-semibold mb-4">Tvoja korpa <span id="cart-count" class="text-cyan-400">(0)</span></h3>
+      <div id="cart" class="glass rounded-3xl p-5 space-y-4 min-h-[300px]"></div>
+      <div class="mt-8 flex justify-between items-center">
+        <div>
+          <p class="text-gray-400">Ukupno</p>
+          <p id="total" class="text-4xl font-bold text-cyan-400">0 RSD</p>
+        </div>
+        <button onclick="checkout()" class="bg-gradient-to-r from-cyan-500 to-purple-600 px-12 py-6 rounded-3xl font-bold">Završi kupovinu</button>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="tab-profile" class="tab-content">
+      <div class="glass rounded-3xl p-8 text-center">
+        <h2 class="text-2xl font-semibold mb-6">Tvoj Profil</h2>
+        <img id="profileAvatar" src="https://picsum.photos/id/1015/600/600" 
+             class="w-48 h-48 mx-auto rounded-3xl object-cover border-4 border-cyan-400 mb-6 cursor-pointer"
+             onclick="document.getElementById('avatarUpload').click()">
+        <input type="file" id="avatarUpload" accept="image/*" class="hidden" onchange="changeAvatar(this)">
+        <p class="text-cyan-400">Klikni na sliku da promeniš avatar</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/10 py-3">
+    <div class="max-w-xl mx-auto flex justify-around text-3xl">
+      <button onclick="switchTab(0)" class="nav-btn active">🏠</button>
+      <button onclick="switchTab(1)" class="nav-btn">🔍</button>
+      <button onclick="startVoiceRecognition()" class="nav-btn text-4xl">🎤</button>
+      <button onclick="switchTab(2)" class="nav-btn">🛒</button>
+      <button onclick="switchTab(3)" class="nav-btn">👤</button>
+    </div>
+  </nav>
+
+  <script>
+    let products = [
+      { name: "Brašno 1kg", price: 75, emoji: "🌾" },
+      { name: "Šećer 1kg", price: 95, emoji: "🧂" },
+      { name: "Keks 300g", price: 89, emoji: "🍪" },
+      { name: "Bombone 500g", price: 120, emoji: "🍬" },
+      { name: "Eurokrem 1kg", price: 289, emoji: "🍫" },
+      { name: "Mleko 1L", price: 98, emoji: "🥛" },
+      { name: "Banane 1kg", price: 95, emoji: "🍌" },
+      { name: "Jaja 10kom", price: 179, emoji: "🥚" },
+      { name: "Piletina 1kg", price: 489, emoji: "🍗" },
+      { name: "Jabuke 1kg", price: 89, emoji: "🍎" }
+    ];
+
+    let cart = [];
+    let total = 0;
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e2937;color:white;padding:16px 24px;border-radius:9999px;border:1px solid #22d3ee;z-index:1000;';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach((el, i) => el.classList.toggle('active', i === tab));
+      document.getElementById(['tab-home','tab-search','tab-cart','tab-profile'][tab]).classList.add('active');
+    }
+
+    function changeAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('avatarImg').src = e.target.result;
+          document.getElementById('profileAvatar').src = e.target.result;
+          showToast("✅ Avatar promenjen!");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function renderFrequent() {
+      const container = document.getElementById('frequentGrid');
+      container.innerHTML = '';
+      products.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'glass rounded-3xl p-4 text-center cursor-pointer';
+        div.innerHTML = `
+          <div class="emoji mx-auto">${p.emoji}</div>
+          <p class="mt-2 font-medium text-sm">${p.name}</p>
+          <p class="text-cyan-400 font-bold">${p.price} RSD</p>
+          <button onclick="addToCart(${i}); event.stopImmediatePropagation()" class="mt-4 w-full py-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl text-xs">Dodaj</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addToCart(i) {
+      cart.push(products[i]);
+      total += products[i].price;
+      showToast(`✅ Dodato: ${products[i].name}`);
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart');
+      container.innerHTML = '';
+      document.getElementById('cart-count').textContent = `(${cart.length})`;
+      document.getElementById('total').textContent = total + " RSD";
+
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center glass rounded-2xl p-4";
+        div.innerHTML = `<span>${item.emoji} \( {item.name}</span><span class="text-cyan-400"> \){item.price} RSD</span>`;
+        container.appendChild(div);
+      });
+    }
+
+    function startVoiceRecognition() {
+      if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        showToast("❌ Tvoj browser ne podržava mikrofon");
+        return;
+      }
+
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'sr-RS';
+      recognition.interimResults = false;
+
+      showToast("🎤 Slušam... (reci npr. 'dodaj mleko' ili '2 banane')");
+
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript.toLowerCase();
+        showToast(`👂 Čula sam: "${text}"`);
+
+        let added = false;
+        products.forEach(product => {
+          if (text.includes(product.name.toLowerCase().split(' ')[0])) {
+            let qty = 1;
+            const num = text.match(/\d+/);
+            if (num) qty = parseInt(num[0]);
+            
+            for (let i = 0; i < qty; i++) {
+              cart.push(product);
+              total += product.price;
+            }
+            showToast(`✅ Dodato: ${qty} × ${product.name}`);
+            added = true;
+            renderCart();
+          }
+        });
+
+        if (!added) showToast("🤔 Nisam razumela tu namirnicu");
+      };
+
+      recognition.onerror = () => showToast("❌ Greška pri slušanju. Pokušaj ponovo.");
+      recognition.start();
+    }
+
+    function checkout() {
+      if (cart.length === 0) return showToast("Korpa je prazna!");
+      showToast(`🎉 Kupovina završena! Ukupno: ${total} RSD`);
+      cart = [];
+      total = 0;
+      renderCart();
+    }
+
+    function updatePrices() { showToast("✅ Cene su ažurirane"); }
+
+    function searchProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('productsGrid');
+      container.innerHTML = '';
+      products.filter(p => p.name.toLowerCase().includes(query)).forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'glass rounded-3xl p-4 text-center';
+        div.innerHTML = `
+          <div class="emoji mx-auto">${p.emoji}</div>
+          <p class="mt-2 font-medium text-sm">${p.name}</p>
+          <p class="text-cyan-400 font-bold">${p.price} RSD</p>
+          <button onclick="addToCart(${products.indexOf(p)})" class="mt-4 w-full py-2 bg-cyan-500 rounded-2xl text-xs">Dodaj</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.onload = () => {
+      renderFrequent();
+      renderCart();
+    };
+  </script>
+</body>
+</html>
