@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="sr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GroceryAI • 2035</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+    .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(148, 163, 184, 0.2); }
+    .neon { box-shadow: 0 0 25px #22d3ee, 0 0 45px #c026d3; }
+    .avatar-float { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .tab-content { display: none; height: calc(100vh - 120px); }
+    .tab-content.active { display: flex; flex-direction: column; justify-content: space-between; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen select-none">
+
+  <div class="max-w-xl mx-auto px-4 pt-3 h-screen flex flex-col justify-between pb-24">
+
+    <div id="tab-home" class="tab-content active">
+      
+      <div class="flex gap-3 items-center mb-3 justify-between bg-white/5 p-3 rounded-3xl border border-white/10 relative h-56">
+        <div class="flex flex-col justify-between h-full py-2 flex-1">
+          <h1 class="text-lg font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">GroceryAI</h1>
+          <div>
+            <h2 class="text-xl font-semibold leading-snug text-gray-100">Zdravo,<br>Aleksandra!</h2>
+            <p class="text-[11px] text-cyan-400 mt-1">Tvoje namirnice</p>
+          </div>
+        </div>
+        <div class="w-44 h-48 flex items-center justify-center overflow-hidden rounded-2xl bg-black/20 border-2 border-cyan-400/60 neon avatar-float">
+          <img id="avatarImg" src="https://picsum.photos/id/1015/600/600" 
+               class="w-full h-full object-cover cursor-pointer" 
+               alt="Avatar" onclick="document.getElementById('avatarUpload').click()">
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto no-scrollbar pr-1">
+        <div class="grid grid-cols-4 gap-2" id="frequentGrid">
+          </div>
+      </div>
+      
+    </div>
+
+    <div id="tab-search" class="tab-content">
+      <div class="flex flex-col h-full pt-2">
+        <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">GroceryAI</h1>
+        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Unesi naziv namirnice..." class="w-full glass rounded-xl px-4 py-3 text-sm mb-3 outline-none border border-cyan-500/30">
+        <div class="grid grid-cols-4 gap-2 overflow-y-auto no-scrollbar flex-1" id="searchGrid"></div>
+      </div>
+    </div>
+
+    <div id="tab-cart" class="tab-content pt-2">
+      <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">GroceryAI</h1>
+      <h3 class="text-base font-semibold mb-2">Tvoja korpa <span id="cart-count" class="text-cyan-400">(0)</span></h3>
+      <div id="cart" class="glass rounded-2xl p-3 space-y-2 flex-1 overflow-y-auto no-scrollbar mb-3"></div>
+      <div class="flex justify-between items-center bg-white/5 p-3 rounded-2xl">
+        <div>
+          <p class="text-xs text-gray-400">Ukupno</p>
+          <p id="total" class="text-2xl font-bold text-cyan-400">0 RSD</p>
+        </div>
+        <button onclick="checkout()" class="bg-gradient-to-r from-cyan-500 to-purple-600 px-6 py-3 rounded-xl font-bold text-sm">Završi</button>
+      </div>
+    </div>
+
+    <div id="tab-profile" class="tab-content pt-2">
+      <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-2">GroceryAI</h1>
+      <div class="glass rounded-2xl p-4 text-center overflow-y-auto no-scrollbar flex-1 flex flex-col justify-between">
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Podešavanja</h2>
+          <img id="profileAvatar" src="https://picsum.photos/id/1015/600/600" 
+               class="w-32 h-20 mx-auto rounded-xl object-cover border-2 border-cyan-400 mb-4 cursor-pointer"
+               onclick="document.getElementById('avatarUpload').click()">
+          
+          <input type="file" id="avatarUpload" accept="image/*" class="hidden" onchange="changeAvatar(this)">
+          <input type="file" id="micUpload" accept="image/*" class="hidden" onchange="changeMicIcon(this)">
+
+          <button onclick="updatePrices()" class="w-full bg-emerald-600 py-3 rounded-xl text-xs font-semibold mb-3">🔄 Ažuriraj sisteme</button>
+
+          <button onclick="document.getElementById('micUpload').click()" class="w-full bg-slate-800 border border-dashed border-cyan-500 py-2.5 rounded-xl text-xs font-medium text-cyan-400 mb-4">
+            🖼️ Ubaci sliku mikrofona iz galerije
+          </button>
+        </div>
+
+        <div>
+          <p class="text-xs text-gray-400 mb-2">Model sekretarice</p>
+          <div class="flex gap-2">
+            <button onclick="setMode('simple')" id="btn-simple" class="flex-1 py-2 rounded-xl text-xs font-semibold">Simple AI</button>
+            <button onclick="setMode('groq')" id="btn-groq" class="flex-1 py-2 rounded-xl text-xs font-semibold">Groq AI</button>
+          </div>
+          <div id="groqSection" class="mt-3 hidden">
+            <input id="groqKey" type="password" placeholder="Groq API Key" class="w-full glass rounded-xl px-3 py-2 text-xs outline-none">
+            <button onclick="saveGroqKey()" class="mt-2 w-full py-2 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl text-xs font-semibold">Sačuvaj</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="fixed bottom-0 left-0 right-0 glass border-t border-white/10 py-2 z-50">
+    <div class="max-w-xl mx-auto flex justify-around text-2xl">
+      <button onclick="switchTab(0)" class="nav-btn active opacity-100">🏠</button>
+      <button onclick="switchTab(1)" class="nav-btn opacity-50">🔍</button>
+      <button onclick="startVoiceRecognition()" class="nav-btn text-3xl opacity-100 mic-container flex items-center justify-center w-10 h-10">
+        <span class="mic-icon">🎤</span>
+      </button>
+      <button onclick="switchTab(2)" class="nav-btn opacity-50">🛒</button>
+      <button onclick="switchTab(3)" class="nav-btn opacity-50">👤</button>
+    </div>
+  </nav>
+
+  <div id="addModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="glass rounded-3xl p-4 w-full max-w-sm">
+      <h3 class="text-base font-bold mb-3">Dodaj u najčešće namirnice</h3>
+      <div id="modalList" class="space-y-1 max-h-60 overflow-y-auto no-scrollbar mb-4"></div>
+      <button onclick="closeAddModal()" class="w-full bg-slate-800 py-2 rounded-xl text-xs font-semibold">Zatvori</button>
+    </div>
+  </div>
+
+  <script>
+    let currentMode = localStorage.getItem('voiceMode') || 'simple';
+    let groqApiKey = localStorage.getItem('groqApiKey') || '';
+    let customMicDataUrl = localStorage.getItem('customMicIcon') || null;
+    
+    // BAZA PODATAKA SA PREKO 100 NAMIRNICA
+    let products = [
+      { id: 1, name: "Mleko", basePrice: 98, emoji: "🥛", unit: "L", keywords: ["mlek", "mljek"] },
+      { id: 2, name: "Banane", basePrice: 95, emoji: "🍌", unit: "kg", keywords: ["banan"] },
+      { id: 3, name: "Jaja", basePrice: 18, emoji: "🥚", unit: "kom", keywords: ["jaj", "jai"] },
+      { id: 4, name: "Krompir", basePrice: 60, emoji: "🥔", unit: "kg", keywords: ["krompir", "krumpir"] },
+      { id: 5, name: "Jabuke", basePrice: 89, emoji: "🍎", unit: "kg", keywords: ["jabuk"] },
+      { id: 6, name: "Piletina", basePrice: 489, emoji: "🍗", unit: "kg", keywords: ["pilet", "pile", "belo meso"] },
+      { id: 7, name: "Šećer", basePrice: 95, emoji: "🧂", unit: "kg", keywords: ["šećer", "secer"] },
+      { id: 8, name: "Keks", basePrice: 89, emoji: "🍪", unit: "kom", keywords: ["keks", "plazma"] },
+      { id: 9, name: "Brašno", basePrice: 75, emoji: "🌾", unit: "kg", keywords: ["brašn", "brasn"] },
+      { id: 10, name: "Mandarine", basePrice: 160, emoji: "🍊", unit: "kg", keywords: ["mandarin"] },
+      { id: 11, name: "Hleb Sava", basePrice: 54, emoji: "🍞", unit: "kom", keywords: ["hleb", "hljeb", "kruh"] },
+      { id: 12, name: "Ulje suncokret", basePrice: 175, emoji: "🌻", unit: "L", keywords: ["ulje", "zejtin"] },
+      { id: 13, name: "Kafa", basePrice: 240, emoji: "☕", unit: "kom", keywords: ["kaf", "grand"] },
+      { id: 14, name: "Jagode", basePrice: 320, emoji: "🍓", unit: "kg", keywords: ["jagod"] },
+      { id: 15, name: "Paradajz", basePrice: 180, emoji: "🍅", unit: "kg", keywords: ["paradajz", "rajčica"] },
+      { id: 16, name: "Krastavac", basePrice: 130, emoji: "🥒", unit: "kg", keywords: ["krastavac"] },
+      { id: 17, name: "Crni luk", basePrice: 70, emoji: "🧅", unit: "kg", keywords: ["luk", "crni luk"] },
+      { id: 18, name: "Beli luk", basePrice: 40, emoji: "🧄", unit: "kom", keywords: ["beli luk"] },
+      { id: 19, name: "Šargarepa", basePrice: 90, emoji: "🥕", unit: "kg", keywords: ["šargarep", "mrkva"] },
+      { id: 20, name: "Limun", basePrice: 150, emoji: "🍋", unit: "kg", keywords: ["limun"] },
+      { id: 21, name: "Narandže", basePrice: 140, emoji: "🍊", unit: "kg", keywords: ["narandž", "naranča"] },
+      { id: 22, name: "Lubenica", basePrice: 60, emoji: "🍉", unit: "kg", keywords: ["lubenic"] },
+      { id: 23, name: "Grožđe", basePrice: 250, emoji: "🍇", unit: "kg", keywords: ["grožđ", "grozde"] },
+      { id: 24, name: "Trešnje", basePrice: 350, emoji: "🍒", unit: "kg", keywords: ["trešnj"] },
+      { id: 25, name: "Breskve", basePrice: 190, emoji: "🍑", unit: "kg", keywords: ["breskv"] },
+      { id: 26, name: "Ananas", basePrice: 220, emoji: "🍍", unit: "kom", keywords: ["ananas"] },
+      { id: 27, name: "Kivi", basePrice: 200, emoji: "🥝", unit: "kg", keywords: ["kivi"] },
+      { id: 28, name: "Avokado", basePrice: 150, emoji: "🥑", unit: "kom", keywords: ["avokado"] },
+      { id: 29, name: "Paprika", basePrice: 220, emoji: "🫑", unit: "kg", keywords: ["paprik"] },
+      { id: 30, name: "Kukuruz", basePrice: 80, emoji: "🌽", unit: "kom", keywords: ["kukuruz"] },
+      { id: 31, name: "Brokoli", basePrice: 290, emoji: "🥦", unit: "kg", keywords: ["brokoli"] },
+      { id: 32, name: "Spanać", basePrice: 160, emoji: "🥬", unit: "kg", keywords: ["spanać", "spanac"] },
+      { id: 33, name: "Pečurke", basePrice: 150, emoji: "🍄", unit: "pak", keywords: ["ničurk", "sampinjoni"] },
+      { id: 34, name: "Svinjski but", basePrice: 650, emoji: "🥩", unit: "kg", keywords: ["svinj", "but", "krmenadl"] },
+      { id: 35, name: "Junetina", basePrice: 950, emoji: "🍖", unit: "kg", keywords: ["junet", "goved"] },
+      { id: 36, name: "Mleveno meso", basePrice: 700, emoji: "🥩", unit: "kg", keywords: ["mleveno"] },
+      { id: 37, name: "Slanina", basePrice: 850, emoji: "🥓", unit: "kg", keywords: ["slanin"] },
+      { id: 38, name: "Kobasica", basePrice: 550, emoji: "🌭", unit: "kg", keywords: ["kobas"] },
+      { id: 39, name: "Stišnjena šunka", basePrice: 800, emoji: "🐷", unit: "kg", keywords: ["šunk", "sunka"] },
+      { id: 40, name: "Salama", basePrice: 450, emoji: "🥖", unit: "kg", keywords: ["salam", "parizer"] },
+      { id: 41, name: "Sveža riba", basePrice: 690, emoji: "🐟", unit: "kg", keywords: ["riba", "pastrmka"] },
+      { id: 42, name: "Tunjevina konzerve", basePrice: 160, emoji: "🥫", unit: "kom", keywords: ["tunj", "tuna"] },
+      { id: 43, name: "Jogurt", basePrice: 140, emoji: "🥛", unit: "L", keywords: ["jogurt"] },
+      { id: 44, name: "Kisela pavlaka", basePrice: 85, emoji: "🥣", unit: "kom", keywords: ["pavlak"] },
+      { id: 45, name: "Svež sir", basePrice: 450, emoji: "🧀", unit: "kg", keywords: ["sir", "domaci sir"] },
+      { id: 46, name: "Kačkavalj", basePrice: 990, emoji: "🧀", unit: "kg", keywords: ["kačkavalj", "kackavalj"] },
+      { id: 47, name: "Maslac", basePrice: 320, emoji: "🧈", unit: "kom", keywords: ["maslac", "puter"] },
+      { id: 48, name: "Margarin", basePrice: 100, emoji: "🧈", unit: "kom", keywords: ["margarin"] },
+      { id: 49, name: "Čokoladno mleko", basePrice: 80, emoji: "🧋", unit: "kom", keywords: ["čokoladno", "cokoladno mleko"] },
+      { id: 50, name: "Tost hleb", basePrice: 120, emoji: "🍞", unit: "kom", keywords: ["tost"] },
+      { id: 51, name: "Kifle", basePrice: 25, emoji: "🥐", unit: "kom", keywords: ["kifl"] },
+      { id: 52, name: "Griz", basePrice: 85, emoji: "🥣", unit: "kom", keywords: ["griz"] },
+      { id: 53, name: "Pirinač", basePrice: 160, emoji: "🍚", unit: "kg", keywords: ["pirinač", "riza", "oriz"] },
+      { id: 54, name: "Ovsene pahuljice", basePrice: 110, emoji: "🥣", unit: "kom", keywords: ["pahulj", "ovsene"] },
+      { id: 55, name: "Špagete", basePrice: 90, emoji: "🍝", unit: "pak", keywords: ["špaget", "spaget", "makaron", "testenina"] },
+      { id: 56, name: "Čokolada", basePrice: 120, emoji: "🍫", unit: "kom", keywords: ["čokolad", "cokolada"] },
+      { id: 57, name: "Sladoled", basePrice: 450, emoji: "🍦", unit: "kut", keywords: ["sladoled"] },
+      { id: 58, name: "Čips", basePrice: 110, emoji: "🥔", unit: "kom", keywords: ["čips", "cips"] },
+      { id: 59, name: "Smoki", basePrice: 50, emoji: "🥜", unit: "kom", keywords: ["smoki"] },
+      { id: 60, name: "Štapići", basePrice: 45, emoji: "🥨", unit: "kom", keywords: ["štapić", "stapici"] },
+      { id: 61, name: "Kikiriki", basePrice: 180, emoji: "🥜", unit: "pak", keywords: ["kikiriki"] },
+      { id: 62, name: "Bonbone", basePrice: 95, emoji: "🍬", unit: "pak", keywords: ["bonbon", "bombone"] },
+      { id: 63, name: "Nutela", basePrice: 460, emoji: "🍯", unit: "kom", keywords: ["nutel", "krem"] },
+      { id: 64, name: "Džem od šljiva", basePrice: 280, emoji: "🍯", unit: "kom", keywords: ["džem", "dzem"] },
+      { id: 65, name: "Med", basePrice: 900, emoji: "🍯", unit: "kom", keywords: ["med"] },
+      { id: 66, name: "Mineralna voda", basePrice: 65, emoji: "💧", unit: "L", keywords: ["voda", "kisela"] },
+      { id: 67, name: "Koka Kola", basePrice: 140, emoji: "🥤", unit: "L", keywords: ["kola", "coca cola", "koka kola"] },
+      { id: 68, name: "Sok narandža", basePrice: 160, emoji: "🧃", unit: "L", keywords: ["sok", "next"] },
+      { id: 69, name: "Pivo", basePrice: 85, emoji: "🍺", unit: "kom", keywords: ["pivo", "zajecarsko", "jelen"] },
+      { id: 70, name: "Belo vino", basePrice: 450, emoji: "🍾", unit: "kom", keywords: ["vino", "belo vino"] },
+      { id: 71, name: "Crno vino", basePrice: 520, emoji: "🍷", unit: "kom", keywords: ["crno vino"] },
+      { id: 72, name: "Čaj", basePrice: 110, emoji: "🫖", unit: "kut", keywords: ["čaj", "caj", "kamilica"] },
+      { id: 73, name: "So", basePrice: 55, emoji: "🧂", unit: "kg", keywords: ["so", "sol"] },
+      { id: 74, name: "Vegeta", basePrice: 210, emoji: "🧂", unit: "kom", keywords: ["vegeta", "začin"] },
+      { id: 75, name: "Biber", basePrice: 45, emoji: "🫙", unit: "kom", keywords: ["biber"] },
+      { id: 76, name: "Sirće", basePrice: 90, emoji: "🍾", unit: "L", keywords: ["sirće", "sirce", "ocat"] },
+      { id: 77, name: "Majonez", basePrice: 140, emoji: "🧴", unit: "kom", keywords: ["majonez"] },
+      { id: 78, name: "Kečap", basePrice: 130, emoji: "🍅", unit: "kom", keywords: ["kečap", "kecap"] },
+      { id: 79, name: "Senf", basePrice: 95, emoji: "🫙", unit: "kom", keywords: ["senf"] },
+      { id: 80, name: "Suva supa", basePrice: 45, emoji: "🥣", unit: "kom", keywords: ["supa", "podravka"] },
+      { id: 81, name: "Toalet papir", basePrice: 340, emoji: "🧻", unit: "pak", keywords: ["toalet", "papir", "perfex"] },
+      { id: 82, name: "Kapsule za veš", basePrice: 890, emoji: "🧺", unit: "pak", keywords: ["ariel", "kapsule", "prasak"] },
+      { id: 83, name: "Omekšivač", basePrice: 420, emoji: "🧴", unit: "L", keywords: ["omekšivač", "lenor"] },
+      { id: 84, name: "Tečnost za sudove", basePrice: 180, emoji: "🧴", unit: "kom", keywords: ["fairy", "sudove"] },
+      { id: 85, name: "Šampon za kosu", basePrice: 350, emoji: "🧴", unit: "kom", keywords: ["šampon", "sampon"] },
+      { id: 86, name: "Tečni sapun", basePrice: 150, emoji: "🧼", unit: "kom", keywords: ["sapun"] },
+      { id: 87, name: "Pasta za zube", basePrice: 220, emoji: "🪥", unit: "kom", keywords: ["pasta", "kolgejt"] },
+      { id: 88, name: "Gillette pena", basePrice: 310, emoji: "🪒", unit: "kom", keywords: ["pena", "brijanj"] },
+      { id: 89, name: "Dezodorans", basePrice: 290, emoji: "💨", unit: "kom", keywords: ["nivea", "dezodorans", "reksona"] },
+      { id: 90, name: "Sjaj za sudove", basePrice: 250, emoji: "✨", unit: "kom", keywords: ["sjaj"] },
+      { id: 91, name: "Kuhinjski ubrusi", basePrice: 160, emoji: "🧻", unit: "pak", keywords: ["ubrus"] },
+      { id: 92, name: "Vlažne maramice", basePrice: 120, emoji: "🧻", unit: "pak", keywords: ["vlažne", "maramice"] },
+      { id: 93, name: "Aksel protiv masnoće", basePrice: 280, emoji: "🧼", unit: "kom", keywords: ["aksel", "odmascivac"] },
+      { id: 94, name: "Domestos", basePrice: 240, emoji: "🧼", unit: "kom", keywords: ["domestos"] },
+      { id: 95, name: "Kesa za smeće", basePrice: 110, emoji: "🗑️", unit: "pak", keywords: ["kese", "smece"] },
+      { id: 96, name: "Hrana za mačke", basePrice: 85, emoji: "🐈", unit: "kom", keywords: ["viskas", "macke", "gourmet"] },
+      { id: 97, name: "Hrana za pse", basePrice: 180, emoji: "🐕", unit: "kom", keywords: ["pedigre", "pse"] },
+      { id: 98, name: "Baterije AA", basePrice: 290, emoji: "🔋", unit: "pak", keywords: ["baterije", "duracell"] },
+      { id: 99, name: "Sijalica LED", basePrice: 150, emoji: "💡", unit: "kom", keywords: ["sijalica"] },
+      { id: 100, name: "Alu folija", basePrice: 140, emoji: "🪙", unit: "kom", keywords: ["folija", "alu"] },
+      { id: 101, name: "Šibice", basePrice: 10, emoji: "🔥", unit: "kom", keywords: ["šibice", "sibice"] }
+    ];
+
+    let frequentIds = JSON.parse(localStorage.getItem('frequentIds')) || [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13];
+
+    const serbianNumbers = {
+      "jedan": 1, "jedno": 1, "jedna": 1, "kilo": 1, "kilogram": 1, "litar": 1, "litra": 1,
+      "dva": 2, "dve": 2, "dvije": 2, "para": 2,
+      "tri": 3, "četiri": 4, "cetri": 4, "pet": 5,
+      "šest": 6, "sest": 6, "sedam": 7, "osam": 8, "devet": 9, "deset": 10
+    };
+
+    let cart = [];
+    let total = 0;
+
+    function speakAndShow(textMessage, textToSpeak = "", runVoice = true) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e2937;color:white;padding:12px 20px;border-radius:9999px;border:1px solid #22d3ee;z-index:1000;box-shadow: 0 4px 12px rgba(0,0,0,0.5);text-align:center;max-width:90%;font-size:13px;';
+      toast.textContent = textMessage;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+
+      if (runVoice && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const phrase = textToSpeak || textMessage;
+        const cleanPhrase = phrase.replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, "");
+        const utterance = new SpeechSynthesisUtterance(cleanPhrase);
+        utterance.lang = 'sr-RS';
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function switchTab(tab) {
+      const tabs = ['tab-home', 'tab-search', 'tab-cart', 'tab-profile'];
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach((el, i) => {
+        if(i !== 2) {
+          el.classList.toggle('active', i === tab);
+          el.style.opacity = i === tab ? "1" : "0.5";
+        }
+      });
+      const targetTab = document.getElementById(tabs[tab]);
+      if(targetTab) targetTab.classList.add('active');
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      localStorage.setItem('voiceMode', mode);
+      document.getElementById('btn-simple').className = `flex-1 py-2 rounded-xl text-xs font-semibold ${mode === 'simple' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-gray-400'}`;
+      document.getElementById('btn-groq').className = `flex-1 py-2 rounded-xl text-xs font-semibold ${mode === 'groq' ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-gray-400'}`;
+      document.getElementById('groqSection').classList.toggle('hidden', mode !== 'groq');
+    }
+
+    function saveGroqKey() {
+      groqApiKey = document.getElementById('groqKey').value.trim();
+      if (groqApiKey) {
+        localStorage.setItem('groqApiKey', groqApiKey);
+        speakAndShow("Ključ je sačuvan!");
+      }
+    }
+
+    function changeAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('avatarImg').src = e.target.result;
+          document.getElementById('profileAvatar').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function changeMicIcon(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          customMicDataUrl = e.target.result;
+          localStorage.setItem('customMicIcon', customMicDataUrl);
+          applyMicIcons();
+          speakAndShow("Sličica mikrofona je promenjena!");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function applyMicIcons() {
+      if (customMicDataUrl) {
+        document.querySelectorAll('.mic-icon').forEach(el => {
+          el.innerHTML = `<img src="${customMicDataUrl}" class="w-full h-full object-contain rounded-full" alt="Mic" />`;
+          el.className = "mic-icon w-6 h-6 flex items-center justify-center";
+        });
+      }
+    }
+
+    function renderFrequent() {
+      const container = document.getElementById('frequentGrid');
+      container.innerHTML = '';
+      
+      products.forEach((p) => {
+        if (frequentIds.includes(p.id)) {
+          const div = document.createElement('div');
+          div.className = 'glass rounded-2xl p-2 text-center cursor-pointer flex flex-col justify-between items-center h-24 relative border border-white/5 hover:border-cyan-500/30 transition-all';
+          div.onclick = () => addDynamicToCart(p.id, 1);
+          div.innerHTML = `
+            <button onclick="removeIdFromFrequent(${p.id}); event.stopPropagation();" class="absolute top-1 right-1.5 text-gray-500 hover:text-red-400 text-sm font-bold p-0.5 leading-none transition-colors">×</button>
+            <div class="text-4xl my-auto select-none filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]">${p.emoji}</div>
+            <div class="w-full">
+              <p class="font-medium text-[10px] truncate text-gray-300">${p.name}</p>
+              <p class="text-cyan-400 font-bold text-[9px]">${p.basePrice} RSD</p>
+            </div>
+          `;
+          container.appendChild(div);
+        }
+      });
+
+      const addBtn = document.createElement('div');
+      addBtn.className = 'glass rounded-2xl p-2 text-center cursor-pointer flex items-center justify-center h-24 border border-dashed border-gray-600 hover:border-cyan-400/60 transition-all';
+      addBtn.onclick = () => openAddModal();
+      addBtn.innerHTML = `<span class="text-2xl text-gray-400 hover:text-cyan-400 transition-colors">➕</span>`;
+      container.appendChild(addBtn);
+    }
+
+    function removeIdFromFrequent(id) {
+      frequentIds = frequentIds.filter(fId => fId !== id);
+      localStorage.setItem('frequentIds', JSON.stringify(frequentIds));
+      renderFrequent();
+    }
+
+    function openAddModal() {
+      const modal = document.getElementById('addModal');
+      const list = document.getElementById('modalList');
+      list.innerHTML = '';
+      
+      products.forEach(p => {
+        if (!frequentIds.includes(p.id)) {
+          const div = document.createElement('div');
+          div.className = 'flex justify-between items-center p-2 bg-white/5 rounded-xl border border-white/5 cursor-pointer hover:bg-cyan-500/20 mb-1';
+          div.onclick = () => {
+            frequentIds.push(p.id);
+            localStorage.setItem('frequentIds', JSON.stringify(frequentIds));
+            renderFrequent();
+            closeAddModal();
+          };
+          div.innerHTML = `<span class="text-sm">${p.emoji} ${p.name}</span> <span class="text-xs text-cyan-400 font-semibold">Dodaj</span>`;
+          list.appendChild(div);
+        }
+      });
+      
+      if(list.children.length === 0) {
+        list.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">Sve namirnice su već na prvoj strani.</p>`;
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    document.getElementById('addModal').onclick = function(e) {
+      if(e.target === this) closeAddModal();
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('searchGrid');
+      container.innerHTML = '';
+      
+      products.forEach((p) => {
+        if(p.name.toLowerCase().includes(query) || p.keywords.some(k => k.includes(query))) {
+          const div = document.createElement('div');
+          div.className = 'glass rounded-2xl p-2 text-center flex flex-col justify-between items-center h-24';
+          div.onclick = () => addDynamicToCart(p.id, 1);
+          div.innerHTML = `
+            <div class="text-3xl my-auto">${p.emoji}</div>
+            <div>
+              <p class="font-medium text-[10px] truncate text-gray-200">${p.name}</p>
+              <p class="text-cyan-400 font-bold text-[9px]">${p.basePrice} RSD</p>
+            </div>
+          `;
+          container.appendChild(div);
+        }
+      });
+    }
+
+    function addDynamicToCart(productId, quantity) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const finalName = `${quantity} ${product.unit} ${product.name}`;
+      const finalPrice = product.basePrice * quantity;
+      const existingIndex = cart.findIndex(item => item.displayName === finalName);
+      
+      if (existingIndex !== -1) {
+         cart[existingIndex].calculatedPrice += finalPrice;
+         cart[existingIndex].countMarker += 1;
+      } else {
+         cart.push({
+           productId: product.id,
+           displayName: finalName,
+           calculatedPrice: finalPrice,
+           emoji: product.emoji,
+           countMarker: 1
+         });
+      }
+      
+      recalculateTotal();
+      speakAndShow(`Dodato: ${product.name}`);
+    }
+
+    function recalculateTotal() {
+      total = cart.reduce((acc, item) => acc + item.calculatedPrice, 0);
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart');
+      container.innerHTML = '';
+      
+      document.getElementById('cart-count').textContent = `(${cart.length})`;
+      document.getElementById('total').textContent = total + " RSD";
+
+      if(cart.length === 0) {
+        container.innerHTML = `<p class="text-gray-400 text-center pt-8 text-xs">Tvoja korpa je prazna.</p>`;
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center glass rounded-xl p-3 text-sm";
+        const multiplierText = item.countMarker > 1 ? ` <span class="text-[10px] text-gray-400">(x${item.countMarker})</span>` : '';
+        div.innerHTML = `
+          <span class="flex items-center gap-2">
+            <span class="text-xl">${item.emoji || '🛒'}</span>
+            <span class="font-semibold text-cyan-400">${item.displayName} ${multiplierText}</span>
+          </span>
+          <div class="flex items-center gap-3">
+            <span class="text-white font-bold text-xs">${item.calculatedPrice} RSD</span>
+            <button onclick="removeFromCart(${index}); event.stopPropagation();" class="text-red-400 text-xs">❌</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      recalculateTotal();
+    }
+
+    async function startVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'sr-RS';
+      recognition.interimResults = false;
+      speakAndShow("Slušam...", "", false);
+
+      recognition.onresult = async (event) => {
+        let text = event.results[0][0].transcript.toLowerCase().trim();
+        if(!text) return;
+
+        if (currentMode === 'groq' && groqApiKey) {
+          await processWithGroq(text);
+        } else {
+          processSimpleLongText(text);
+        }
+      };
+      recognition.start();
+    }
+
+    function processSimpleLongText(text) {
+      const cleanText = text.replace(/\b(i|treba|mi|kupi|dodaj|molim|te|sa|od)\b/g, " ");
+      const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+      let addedItemsSummary = [];
+      let pendingQuantity = null;
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        let currentQty = null;
+        if (serbianNumbers[word]) currentQty = serbianNumbers[word];
+        else if (/^\d+$/.test(word)) currentQty = parseInt(word);
+
+        if (currentQty !== null) {
+          pendingQuantity = currentQty;
+          continue;
+        }
+
+        if (["l", "litar", "litra", "litara", "kg", "kilo", "kilogram", "kilograma", "kom", "komada"].includes(word)) continue;
+
+        let matchedProduct = products.find(p => p.keywords.some(keyword => word.includes(keyword)));
+        if (matchedProduct) {
+          const finalQty = pendingQuantity !== null ? pendingQuantity : 1;
+          addDynamicToCart(matchedProduct.id, finalQty);
+          addedItemsSummary.push(`${finalQty}x ${matchedProduct.name}`);
+          pendingQuantity = null;
+        }
+      }
+      if (addedItemsSummary.length > 0) speakAndShow(`Upisano: ${addedItemsSummary.join(",
