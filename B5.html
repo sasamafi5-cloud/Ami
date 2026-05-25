@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moj budžet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #eef1f7; }
+    .neumorphism {
+      background: #eef1f7;
+      box-shadow: 8px 8px 16px #d1d5db, -8px -8px 16px #ffffff;
+      border-radius: 20px;
+    }
+    .glow { box-shadow: 0 0 20px rgba(147, 112, 219, 0.4); }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Glavna kartica -->
+  <section class="neumorphism p-6 mb-6 glow">
+    <h2 class="text-lg font-semibold">Ukupan saldo</h2>
+    <p id="saldo" class="text-3xl font-bold text-purple-600">0 RSD</p>
+    <p id="prihodi" class="text-green-600">Prihodi: 0 RSD</p>
+    <p id="rashodi" class="text-red-500">Rashodi: 0 RSD</p>
+  </section>
+
+  <!-- Forma za unos -->
+  <section class="neumorphism p-6 mb-6">
+    <h3 class="font-semibold mb-4">Dodaj transakciju</h3>
+    <form id="forma" class="space-y-4">
+      <select id="tip" class="w-full p-2 border rounded">
+        <option value="prihod">Prihod</option>
+        <option value="rashod">Rashod</option>
+      </select>
+      <input id="iznos" type="number" placeholder="Iznos (RSD)" class="w-full p-2 border rounded" required />
+      <input id="opis" type="text" placeholder="Opis" class="w-full p-2 border rounded" />
+      <input id="datum" type="date" class="w-full p-2 border rounded" required />
+      <button type="submit" class="w-full p-2 bg-purple-600 text-white rounded glow">Dodaj</button>
+    </form>
+  </section>
+
+  <!-- Kalendar troškova -->
+  <section class="neumorphism p-6 mb-6">
+    <h3 class="font-semibold mb-4">Kalendar troškova</h3>
+    <div id="kalendar" class="space-y-4"></div>
+  </section>
+
+  <!-- Podešavanja -->
+  <section class="neumorphism p-6 mb-6">
+    <h3 class="font-semibold mb-4">Podešavanja</h3>
+    <div class="space-y-4">
+      <label>Tema:
+        <select id="tema" class="w-full p-2 border rounded">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="auto">Auto</option>
+        </select>
+      </label>
+      <label>Valuta:
+        <select id="valuta" class="w-full p-2 border rounded">
+          <option value="RSD">RSD</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+      </label>
+      <button onclick="exportPDF()" class="w-full p-2 bg-purple-600 text-white rounded glow">Export PDF</button>
+      <button onclick="backupData()" class="w-full p-2 bg-purple-600 text-white rounded glow">Backup</button>
+      <button onclick="restoreData()" class="w-full p-2 bg-purple-600 text-white rounded glow">Restore</button>
+    </div>
+  </section>
+
+  <script>
+    let saldo = 0;
+    let ukupniPrihodi = 0;
+    let ukupniRashodi = 0;
+    let transakcijePoDanima = {};
+
+    const saldoEl = document.getElementById("saldo");
+    const prihodiEl = document.getElementById("prihodi");
+    const rashodiEl = document.getElementById("rashodi");
+    const forma = document.getElementById("forma");
+    const kalendarEl = document.getElementById("kalendar");
+
+    forma.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const tip = document.getElementById("tip").value;
+      const iznos = parseFloat(document.getElementById("iznos").value);
+      const opis = document.getElementById("opis").value || "Bez opisa";
+      const datum = document.getElementById("datum").value;
+
+      if (tip === "prihod") {
+        saldo += iznos;
+        ukupniPrihodi += iznos;
+      } else {
+        saldo -= iznos;
+        ukupniRashodi += iznos;
+      }
+
+      // Ažuriranje prikaza
+      saldoEl.textContent = saldo + " RSD";
+      prihodiEl.textContent = "Prihodi: " + ukupniPrihodi + " RSD";
+      rashodiEl.textContent = "Rashodi: " + ukupniRashodi + " RSD";
+
+      // Dodavanje u transakcije po danima
+      if (!transakcijePoDanima[datum]) {
+        transakcijePoDanima[datum] = [];
+      }
+      transakcijePoDanima[datum].push({ tip, iznos, opis });
+
+      // Ažuriranje kalendara
+      prikaziKalendar();
+
+      // Čuvanje offline
+      sacuvajPodatke();
+
+      forma.reset();
+    });
+
+    function prikaziKalendar() {
+      kalendarEl.innerHTML = "";
+      for (const datum in transakcijePoDanima) {
+        const danDiv = document.createElement("div");
+        danDiv.className = "p-4 neumorphism";
+        const ukupno = transakcijePoDanima[datum].reduce((sum, t) => sum + (t.tip === "prihod" ? t.iznos : -t.iznos), 0);
+        const boja = ukupno >= 0 ? "text-green-600" : "text-red-500";
+        danDiv.innerHTML = `<h4 class="font-semibold">${datum}</h4><p class="${boja}">Saldo tog dana: ${ukupno} RSD</p>`;
+        
+        const lista = document.createElement("ul");
+        lista.className = "mt-2 space-y-1";
+        transakcijePoDanima[datum].forEach(t => {
+          const li = document.createElement("li");
+          li.className = "flex justify-between";
+          li.innerHTML = `<span>${t.opis}</span><span class="${t.tip === 'prihod' ? 'text-green-600' : 'text-red-500'}">${t.tip === 'prihod' ? '+' : '-'}${t.iznos} RSD</span>`;
+          lista.appendChild(li);
+        });
+        danDiv.appendChild(lista);
+        kalendarEl.appendChild(danDiv);
+      }
+    }
+
+    // Offline čuvanje
+    function sacuvajPodatke() {
+      localStorage.setItem("transakcijePoDanima", JSON.stringify(transakcijePoDanima));
+      localStorage.setItem("saldo", saldo);
+      localStorage.setItem("prihodi", ukupniPrihodi);
+      localStorage.setItem("rashodi", ukupniRashodi);
+    }
+
+    function ucitajPodatke() {
+      const podaci = localStorage.getItem("transakcijePoDanima");
+      if (podaci) {
+        transakcijePoDanima = JSON.parse(podaci);
+        saldo = parseFloat(localStorage.getItem("saldo")) || 0;
+        ukupniPrihodi = parseFloat(localStorage.getItem("prihodi")) || 0;
+        ukupniRashodi = parseFloat(localStorage.getItem("rashodi")) || 0;
+        saldoEl.textContent = saldo + " RSD";
+        prihodiEl.textContent = "Prihodi: " + ukupniPrihodi + " RSD";
+        rashodiEl.textContent = "Rashodi: " + ukupniRashodi + " RSD";
+        prikaziKalendar();
+      }
+    }
+
+    // Backup/restore
+    function backupData() {
+      const blob = new Blob([JSON.stringify(transakcijePoDanima)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "moj_budzet_backup.json";
+      a.click();
+    }
+
+    function restoreData() {
+      alert("Ovde bi se dodao upload fajla i učitavanje
