@@ -1,0 +1,151 @@
+export default function PremiumBudgetApp() { return ( <div className="min-h-screen bg-[#eef1f7] text-gray-800 flex items-center justify-center p-4"> <div className="w-full max-w-[430px] rounded-[40px] bg-[#eef1f7] shadow-2xl p-5 border border-white/40"> {/* Header */} <div className="flex items-center justify-between mb-6"> <div> <p className="text-sm text-gray-500">Dobrodošao 👋</p> <h1 className="text-2xl font-bold">Moj budžet</h1> </div>
+
+<div className="w-14 h-14 rounded-2xl bg-[#eef1f7] shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff] flex items-center justify-center text-2xl">
+        🤖
+      </div>
+    </div>
+
+    {/* Balance Card */}
+    <div className="rounded-[32px] p-6 bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-2xl relative overflow-hidden mb-6">
+      <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+
+      <p className="text-sm opacity-80">Ukupan saldo</p>
+
+      <h2 className="text-4xl font-bold mt-2">
+        124.850 <span className="text-lg">RSD</span>
+      </h2>
+
+      <div className="flex gap-4 mt-6">
+        <div className="flex-1 rounded-2xl bg-white/10 backdrop-blur-md p-4">
+          <p className="text-xs opacity-80">Prihodi</p>
+          <h3 className="text-lg font-bold text-green-300">+145.300</h3>
+        </div>
+
+        <div className="flex-1 rounded-2xl bg-white/10 backdrop-blur-md p-4">
+          <p className="text-xs opacity-80">Rashodi</p>
+          <h3 className="text-lg font-bold text-red-300">-20.450</h3>
+        </div>
+      </div>
+    </div>
+
+    {/* Statistics */}
+    <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="rounded-[28px] p-5 bg-[#eef1f7] shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]">
+        <p className="text-sm text-gray-500">Štednja</p>
+        <h3 className="text-2xl font-bold mt-2">72%</h3>
+
+        <div className="w-full h-3 rounded-full bg-gray-200 mt-4 overflow-hidden">
+          <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-violet-500 to-indigo-500" />
+        </div>
+      </div>
+
+      <div className="rounded-[28px] p-5 bg-[#eef1f7] shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]">
+        <p className="text-sm text-gray-500">Troškovi</p>
+        <h3 className="text-2xl font-bold mt-2">20.450</h3>
+
+        <div className="mt-4 flex gap-2">
+          <div className="h-16 flex-1 rounded-xl bg-violet-300" />
+          <div className="h-10 flex-1 rounded-xl bg-indigo-300 mt-6" />
+          <div className="h-20 flex-1 rounded-xl bg-purple-400" />
+          <div className="h-14 flex-1 rounded-xl bg-pink-300 mt-6" />
+        </div>
+      </div>
+    </div>
+
+    {/* Transactions */}
+    <div className="rounded-[32px] p-5 bg-[#eef1f7] shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff] mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-bold">Transakcije</h3>
+        <button className="text-violet-600 text-sm">Vidi sve</button>
+      </div>
+
+      <div className="space-y-4">
+        {[
+          {
+            icon: '🛒',
+            name: 'Maxi',
+            price: '-1.250 RSD',
+            color: 'text-red-500',
+          },
+          {
+            icon: '⛽',
+            name: 'Gorivo',
+            price: '-5.000 RSD',
+            color: 'text-red-500',
+          },
+          {
+            icon: '💰',
+            name: 'Plata',
+            price: '+145.300 RSD',
+            color: 'text-green-500',
+          },
+        ].map((item, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-between rounded-2xl p-4 bg-[#eef1f7] shadow-[5px_5px_10px_#d1d9e6,-5px_-5px_10px_#ffffff]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl bg-white shadow">
+                {item.icon}
+              </div>
+
+              <div>
+                <h4 className="font-semibold">{item.name}</h4>
+                <p className="text-sm text-gray-500">Danas</p>
+              </div>
+            </div>
+
+            <p className={`font-bold ${item.color}`}>{item.price}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* AI Avatar */}
+    <div className="rounded-[32px] p-5 bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-2xl mb-24 relative overflow-hidden">
+      <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+
+      <div className="flex items-center gap-4 relative z-10">
+        <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-xl flex items-center justify-center text-4xl animate-bounce">
+          🤖
+        </div>
+
+        <div>
+          <h3 className="text-xl font-bold">AI Asistent</h3>
+          <p className="text-sm opacity-80 mt-1">
+            Danas si potrošio manje nego juče 👌
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Bottom Navigation */}
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[390px] max-w-[95%] rounded-[30px] p-4 bg-white/70 backdrop-blur-xl shadow-2xl border border-white/50 flex items-center justify-around">
+      <button className="flex flex-col items-center text-violet-600">
+        <span className="text-2xl">🏠</span>
+        <span className="text-xs mt-1">Početna</span>
+      </button>
+
+      <button className="flex flex-col items-center text-gray-500">
+        <span className="text-2xl">📊</span>
+        <span className="text-xs mt-1">Statistika</span>
+      </button>
+
+      <button className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white text-3xl shadow-2xl -mt-10">
+        +
+      </button>
+
+      <button className="flex flex-col items-center text-gray-500">
+        <span className="text-2xl">💳</span>
+        <span className="text-xs mt-1">Kartice</span>
+      </button>
+
+      <button className="flex flex-col items-center text-gray-500">
+        <span className="text-2xl">👤</span>
+        <span className="text-xs mt-1">Profil</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+); }
