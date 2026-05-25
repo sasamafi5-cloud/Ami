@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Moj budžet | Premium Fintech</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #eef1f7;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Theme Variables */
+    :root {
+      --bg-primary: #eef1f7;
+      --bg-card: #ffffffcc;
+      --text-primary: #1a1f2e;
+      --text-secondary: #5b677b;
+      --shadow-sm: 12px 12px 24px #d0d3da, -8px -8px 18px #ffffff;
+      --shadow-inset: inset 6px 6px 12px #d0d3da, inset -6px -6px 12px #ffffff;
+      --accent: #7c3aed;
+      --accent-grad: linear-gradient(135deg, #a855f7, #7c3aed);
+      --success: #10b981;
+      --danger: #ef4444;
+      --glass: rgba(255, 255, 255, 0.4);
+      --border-radius: 28px;
+    }
+
+    body.dark {
+      --bg-primary: #0f1117;
+      --bg-card: #1e1f2ccc;
+      --text-primary: #f0f3fa;
+      --text-secondary: #9ca3af;
+      --shadow-sm: 12px 12px 24px #080b12, -8px -8px 18px #1e212a;
+      --shadow-inset: inset 6px 6px 12px #080b12, inset -6px -6px 12px #262a36;
+      --glass: rgba(30, 31, 44, 0.6);
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    /* neumorphism containers */
+    .neumorph {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(2px);
+    }
+
+    .neumorph-inset {
+      background: var(--bg-primary);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-inset);
+    }
+
+    button, .nav-item, .fab {
+      cursor: pointer;
+      background: var(--bg-card);
+      border: none;
+      box-shadow: var(--shadow-sm);
+      border-radius: 60px;
+      transition: all 0.2s ease;
+    }
+
+    button:active, .nav-item:active {
+      transform: scale(0.96);
+      box-shadow: var(--shadow-inset);
+    }
+
+    /* layout */
+    .app-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* bottom nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 460px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 60px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 16px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 8px 12px;
+      border-radius: 40px;
+      gap: 4px;
+    }
+
+    .nav-item.active {
+      background: var(--accent-grad);
+      color: white;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 60px;
+      background: var(--accent-grad);
+      color: white;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 101;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+    }
+
+    /* modal glass */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(30px);
+      border-radius: 48px;
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 16px 18px;
+      border: none;
+      background: var(--bg-primary);
+      border-radius: 32px;
+      font-size: 16px;
+      box-shadow: var(--shadow-inset);
+      color: var(--text-primary);
+    }
+
+    .toggle-switch {
+      display: flex;
+      background: var(--bg-primary);
+      border-radius: 60px;
+      padding: 6px;
+      box-shadow: var(--shadow-inset);
+    }
+
+    .toggle-option {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-radius: 60px;
+      font-weight: 600;
+    }
+
+    .toggle-option.active {
+      background: var(--accent-grad);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* avatar drag */
+    .avatar-drag {
+      position: fixed;
+      bottom: 140px;
+      right: 20px;
+      width: 70px;
+      height: 70px;
+      z-index: 99;
+      cursor: move;
+      transition: none;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+    }
+
+    .avatar-circle {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #a855f7, #7c3aed);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.3), var(--shadow-sm);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px);}
+      50% { transform: translateY(-8px);}
+      100% { transform: translateY(0px);}
+    }
+
+    .ai-message {
+      position: fixed;
+      bottom: 220px;
+      right: 100px;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 28px;
+      padding: 12px 18px;
+      max-width: 200px;
+      font-size: 13px;
+      box-shadow: var(--shadow-sm);
+      z-index: 98;
+      color: var(--text-primary);
+      border-left: 4px solid #a855f7;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 12px;
+      background: var(--accent-grad);
+    }
+
+    /* chart containers */
+    canvas { max-height: 200px; width: 100%; }
+    .scroll-x { overflow-x: auto; display: flex; gap: 12px; padding: 4px 0; }
+    .category-pill { background: var(--bg-card); padding: 10px 18px; border-radius: 40px; font-size: 14px; white-space: nowrap; box-shadow: var(--shadow-sm);}
+
+    .blinking { animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+
+<script type="text/babel">
+  const { useState, useEffect, useRef } = React;
+
+  // Storage keys
+  const STORAGE_KEY = 'moj_budzet_data';
+
+  const defaultData = {
+    transactions: [
+      { id: '1', amount: 45300, type: 'income', category: 'Plata', date: '2025-05-20', time: '09:00', desc: 'Plata maj' },
+      { id: '2', amount: 1250, type: 'expense', category: 'Hrana', date: '2025-05-20', time: '12:30', desc: 'Prodavnica Maxi' },
+      { id: '3', amount: 350, type: 'expense', category: 'Zabava', date: '2025-05-20', time: '18:00', desc: 'Kafić Time' },
+      { id: '4', amount: 2200, type: 'expense', category: 'Gorivo', date: '2025-05-19', time: '08:15', desc: 'Gorivo NIS' },
+      { id: '5', amount: 620, type: 'expense', category: 'Zdravlje', date: '2025-05-19', time: '14:20', desc: 'Apoteka Benu' },
+      { id: '6', amount: 1890, type: 'expense', category: 'Kupovina', date: '2025-05-19', time: '19:40', desc: 'Online kupovina' },
+      { id: '7', amount: 1750, type: 'expense', category: 'Hrana', date: '2025-05-18', time: '21:00', desc: 'Restoran Toro' }
+    ],
+    budgets: { Hrana: 20000, Gorivo: 10000, Zabava: 8000, Kupovina: 12000, Zdravlje: 5000, Racuni: 15000, Putovanja: 20000, Ostalo: 5000 },
+    goals: { Telefon: { target: 80000, saved: 25000 }, Putovanje: { target: 120000, saved: 45000 } }
+  };
+
+  const saveData = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const loadData = () => JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultData;
+
+  // Main App
+  const App = () => {
+    const [activeTab, setActiveTab] = useState('home');
+    const [data, setData] = useState(loadData);
+    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState('expense');
+    const [newTransaction, setNewTransaction] = useState({ amount: '', category: 'Hrana', date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString('sr-RS', {hour:'2-digit', minute:'2-digit'}), desc: '', type: 'expense', payment: 'Keš' });
+    const [hideBalance, setHideBalance] = useState(false);
+    const [theme, setTheme] = useState('light');
+    const [avatarPos, setAvatarPos] = useState({ x: null, y: null });
+    const [avatarScale, setAvatarScale] = useState(1);
+    const [avatarOpacity, setAvatarOpacity] = useState(1);
+    const [avatarWidth, setAvatarWidth] = useState(70);
+    const [aiMessage, setAiMessage] = useState("👋 Zdravo! Kako štedimo danas?");
+    const [showAIControls, setShowAIControls] = useState(false);
+
+    useEffect(() => {
+      saveData(data);
+      if (theme === 'dark') document.body.classList.add('dark');
+      else document.body.classList.remove('dark');
+    }, [data, theme]);
+
+    useEffect(() => {
+      const detectSystem = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (theme === 'auto') setTheme(detectSystem ? 'dark' : 'light');
+    }, [theme]);
+
+    const totalIncome = data.transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+    const totalExpense = data.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+    const balance = totalIncome - totalExpense;
+
+    const addTransaction = () => {
+      const amt = parseFloat(newTransaction.amount);
+      if (isNaN(amt) || amt <= 0) return;
+      const newId = Date.now().toString();
+      const tx = { ...newTransaction, amount: amt, id: newId };
+      setData(prev => ({ ...prev, transactions: [tx, ...prev.transactions] }));
+      setShowModal(false);
+      setNewTransaction({ amount: '', category: 'Hrana', date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString('sr-RS', {hour:'2-digit', minute:'2-digit'}), desc: '', type: 'expense', payment: 'Keš' });
+      if (navigator.vibrate) navigator.vibrate(50);
+      // AI feedback
+      if (tx.type === 'expense' && amt > 3000) setAiMessage("⚠️ Veća potrošnja! Razmisli o budžetu.");
+      else setAiMessage("✅ Transakcija sačuvana! Odlično.");
+      setTimeout(() => setAiMessage("💡 Savet: Prati svoje limite."), 3000);
+    };
+
+    const getCategoryExpense = () => {
+      const expenseMap = {};
+      data.transactions.filter(t => t.type === 'expense').forEach(t => { expenseMap[t.category] = (expenseMap[t.category] || 0) + t.amount; });
+      return expenseMap;
+    };
+
+    const categorySpending = getCategoryExpense();
+    const recentTransactions = data.transactions.slice(0, 6);
+
+    // Render Dashboard
+    const Dashboard = () => (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><h2 style={{ fontWeight: 600 }}>Pozdrav, 👋</h2><p style={{ color: 'var(--text-secondary)' }}>{new Date().toLocaleDateString('sr-RS', { weekday:'long', day:'numeric', month:'long' })}</p></div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} className="neumorph" style={{ padding: 12, borderRadius: 60 }}><i className="fas fa-moon"></i></button>
+            <button className="neumorph" style={{ padding: 12, borderRadius: 60 }}><i className="fas fa-bell"></i></button>
+          </div>
+        </div>
+
+        <div className="neumorph" style={{ padding: 24, textAlign: 'center', position: 'relative' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Ukupan saldo</p>
+          <h1 style={{ fontSize: 48, fontWeight: 700, letterSpacing: -1 }}>{hideBalance ? '••••••' : `${balance.toLocaleString()} RSD`}</h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+            <div><span style={{ color: '#10b981' }}>▲ Prihodi</span><br/><strong>{totalIncome.toLocaleString()} RSD</strong></div>
+            <div><span style={{ color: '#ef4444' }}>▼ Rashodi</span><br/><strong>{totalExpense.toLocaleString()} RSD</strong></div>
+          </div>
+          <button onClick={() => setHideBalance(!hideBalance)} style={{ position: 'absolute', right: 20, top: 20, background: 'transparent', boxShadow: 'none' }}><i className="fas fa-eye-slash"></i></button>
+          <div className="progress-bar" style={{ marginTop: 20 }}><div className="progress-fill" style={{ width: `${(totalExpense/(totalIncome||1))*100}%` }}></div></div>
+        </div>
+
+        <div className="neumorph" style={{ padding: 20 }}>
+          <h3>📊 Dnevni pregled</h3>
+          <canvas id="weeklyChart" style={{ height: 180, width: '100%' }}></canvas>
+        </div>
+
+        <div>
+          <h3 style={{ marginBottom: 12 }}>📋 Nedavne transakcije</h3>
+          {recentTransactions.map(tx => (
+            <div key={tx.id} className="neumorph" style={{ padding: 16, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
+              <div><i className={`fas ${tx.type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down'}`} style={{ color: tx.type === 'income' ? '#10b981' : '#ef4444' }}></i> <strong>{tx.category}</strong><br/><span style={{ fontSize: 12 }}>{tx.date}</span></div>
+              <div style={{ color: tx.type === 'income' ? '#10b981' : '#ef4444', fontWeight: 700 }}>{tx.type === 'income' ? '+' : '-'}{tx.amount.toLocaleString()} RSD</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="scroll-x">
+          {Object.entries(categorySpending).slice(0,5).map(([cat, amt]) => (<div key={cat} className="category-pill">{cat}: {amt.toLocaleString()} RSD</div>))}
+        </div>
+      </div>
+    );
+
+    useEffect(() => {
+      if (activeTab === 'home') {
+        const ctx = document.getElementById('weeklyChart')?.getContext('2d');
+        if (ctx && window.weeklyChartInstance) window.weeklyChartInstance.destroy();
+        if (ctx) {
+          window.weeklyChartInstance = new Chart(ctx, { type: 'line', data: { labels: ['Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub', 'Ned'], datasets: [{ label: 'Potrošnja (RSD)', data: [1200, 2450, 800, 3600, 1890, 520, 430], borderColor: '#a855f7', tension: 0.3, fill: true, backgroundColor: 'rgba(168,85,247,0.1)' }] }, options: { responsive: true, maintainAspectRatio: true } });
+        }
+      }
+    }, [activeTab]);
+
+    const StatsView = () => {
+      const pieRef = useRef();
+      useEffect(() => {
+        if (pieRef.current && window.pieChart) window.pieChart.destroy();
+        if (pieRef.current) {
+          window.pieChart = new Chart(pieRef.current, { type: 'doughnut', data: { labels: Object.keys(categorySpending), datasets: [{ data: Object.values(categorySpending), backgroundColor: ['#a855f7','#f97316','#10b981','#ef4444','#3b82f6'] }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+        }
+      }, [categorySpending]);
+      return (<div className="neumorph" style={{ padding: 20 }}><h3>Statistika rashoda</h3><canvas ref={pieRef} style={{ height: 200 }}></canvas><div style={{ marginTop: 20 }}><p>💡 AI Savet: {Object.keys(categorySpending)[0] ? `Najviše trošiš na ${Object.keys(categorySpending)[0]}.` : 'Unesi transakcije za analizu.'}</p></div></div>);
+    };
+
+    const BudgetView = () => (
+      <div style={{ gap: 20, display: 'flex', flexDirection: 'column' }}>
+        <h3>🎯 Mesečni budžeti</h3>
+        {Object.entries(data.budgets).map(([cat, limit]) => {
+          const spent = categorySpending[cat] || 0;
+          const percent = (spent/limit)*100;
+          return (<div key={cat} className="neumorph" style={{ padding: 16 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{cat}</span><span>{spent.toLocaleString()} / {limit.toLocaleString()} RSD</span></div><div className="progress-bar" style={{ marginTop: 8 }}><div className="progress-fill" style={{ width: `${Math.min(percent,100)}%`, background: percent > 90 ? '#ef4444' : '#a855f7' }}></div></div></div>);
+        })}
+      </div>
+    );
+
+    const GoalsView = () => (
+      <div><h3>🎯 Ciljevi štednje</h3>{Object.entries(data.goals).map(([name, g]) => (<div key={name} className="neumorph" style={{ padding: 16, marginTop: 12 }}><h4>{name}</h4><div>Ušteđeno: {g.saved.toLocaleString()} / {g.target.toLocaleString()} RSD</div><div className="progress-bar"><div className="progress-fill" style={{ width: `${(g.saved/g.target)*100}%` }}></div></div><p>Preostalo meseci: ~{Math.ceil((g.target - g.saved)/10000)}</p></div>))}</div>
+    );
+
+    const CalendarView = () => {
+      const txByDate = data.transactions.reduce((acc, t) => { acc[t.date] = [...(acc[t.date]||[]), t]; return acc; }, {});
+      return (<div><h3>📅 Kalendar troškova</h3>{Object.keys(txByDate).slice(0,7).map(date => (<div key={date} className="neumorph" style={{ padding: 12, marginTop: 8 }}><strong>{date}</strong> - ukupno: {txByDate[date].reduce((s,t)=>s+(t.type==='expense'?t.amount:0),0).toLocaleString()} RSD<div>{txByDate[date].map(t=> <div key={t.id}>• {t.category} {t.amount} RSD</div>)}</div></div>))}</div>);
+    };
+
+    const ProfileView = () => (<div className="neumorph" style={{ padding: 24, textAlign: 'center' }}><i className="fas fa-user-circle" style={{ fontSize: 80, color: '#a855f7' }}></i><h3>Finansijski Score: 782</h3><p>Broj transakcija: {data.transactions.length}</p><p>Premium korisnik ⭐</p><button className="neumorph" style={{ padding: 12, marginTop: 12 }} onClick={()=>{if(confirm('Export podataka?')) alert('Demo export CSV')}}><i className="fas fa-download"></i> Export PDF/Excel</button></div>);
+
+    const renderScreen = () => {
+      if (activeTab === 'home') return <Dashboard/>;
+      if (activeTab === 'stats') return <StatsView/>;
+      if (activeTab === 'budget') return <BudgetView/>;
+      if (activeTab === 'profile') return <ProfileView/>;
+      return <Dashboard/>;
+    };
+
+    // Avatar drag
+    const handleDrag = (e) => {
+      const avatarDiv = document.getElementById('avatar-drag-id');
+      if (avatarDiv && e.touches) {
+        const touch = e.touches[0];
+        avatarDiv.style.position = 'fixed';
+        avatarDiv.style.left = `${touch.clientX - 35}px`;
+        avatarDiv.style.top = `${touch.clientY - 35}px`;
+        avatarDiv.style.right = 'auto';
+        avatarDiv.style.bottom = 'auto';
+        setAvatarPos({ x: touch.clientX, y: touch.clientY });
+      }
+    };
+
+    return (
+      <div className="app-container">
+        {renderScreen()}
+
+        <div className="bottom-nav">
+          {['home', 'stats', 'budget', 'profile'].map(tab => (
+            <button key={tab} className={`nav-item ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}><i className={`fas ${tab==='home'?'fa-chart-line':tab==='stats'?'fa-chart-pie':tab==='budget'?'fa-wallet':'fa-user'}`}></i><span>{tab==='home'?'Početna':tab==='stats'?'Statistika':tab==='budget'?'Budžet':'Profil'}</span></button>
+          ))}
+        </div>
+
+        <button className="fab" onClick={() => { setModalType('expense'); setShowModal(true); }}><i className="fas fa-plus"></i></button>
+
+        {/* AI Avatar draggable */}
+        <div id="avatar-drag-id" className="avatar-drag" style={{ transform: `scale(${avatarScale})`, opacity: avatarOpacity, width: avatarWidth, height: avatarWidth, touchAction: 'none', cursor: 'grab' }} onTouchMove={handleDrag} onTouchStart={(e) => e.preventDefault()} onClick={() => setShowAIControls(!showAIControls)}>
+          <div className="avatar-circle"><i className="fas fa-robot"></i></div>
+        </div>
+        {aiMessage && <div className="ai-message">{aiMessage}</div>}
+        {showAIControls && (<div className="modal-overlay" onClick={()=>setShowAIControls(false)}><div className="modal-card" onClick={e=>e.stopPropagation()}><h4>AI Asistent opcije</h4><label>Veličina: </label><input type="range" min="40" max="120" value={avatarWidth} onChange={e=>setAvatarWidth(e.target.value)}/><label>Transparentnost: </label><input type="range" min="0.2" max="1" step="0.01" value={avatarOpacity} onChange={e=>setAvatarOpacity(e.target.value)}/><label>Skala: </label><input type="range" min="0.5" max="1.5" step="0.01" value={avatarScale} onChange={e=>setAvatarScale(e.target.value)}/><button onClick={()=>setAiMessage("🤖 Pametno! Štednja je ključna.")}>Savet</button></div></div>)}
+
+        {showModal && (<div className="modal-overlay" onClick={()=>setShowModal(false)}><div className="modal-card" onClick={e=>e.stopPropagation()}><h3>Nova transakcija</h3><div className="toggle-switch" style={{ marginBottom: 20 }}><div className={`toggle-option ${newTransaction.type === 'expense' ? 'active' : ''}`} onClick={()=>setNewTransaction({...newTransaction, type:'expense'})}>Rashod</div><div className={`toggle-option ${newTransaction.type === 'income' ? 'active' : ''}`} onClick={()=>setNewTransaction({...newTransaction, type:'income'})}>Prihod</div></div><div className="input-group"><input type="number" placeholder="Iznos" value={newTransaction.amount} onChange={e=>setNewTransaction({...newTransaction, amount:e.target.value})} /></div><div className="input-group"><select value={newTransaction.category} onChange={e=>setNewTransaction({...newTransaction, category:e.target.value})}><option>Hrana</option><option>Gorivo</option><option>Zabava</option><option>Kupovina</option><option>Zdravlje</option><option>Računi</option><option>Putovanja</option><option>Ostalo</option></select></div><div className="input-group"><input type="date" value={newTransaction.date} onChange={e=>setNewTransaction({...newTransaction, date:e.target.value})} /></div><div className="input-group"><input type="text" placeholder="Opis" value={newTransaction.desc} onChange={e=>setNewTransaction({...newTransaction, desc:e.target.value})} /></div><button className="neumorph" style={{ width: '100%', padding: 16, background: 'var(--accent-grad)', color:'white' }} onClick={addTransaction}>Sačuvaj</button></div></div>)}
+      </div>
+    );
+  };
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
