@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Moj Budžet App</title>
+<style>
+/* KOMPLETAN CSS IZ TVOG PROJEKTA */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:sans-serif;background:#e8eaf3;height:100vh;overflow-x:hidden;}
+#app{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;position:relative;}
+#content{padding:20px;padding-bottom:120px;}
+nav{position:fixed;bottom:0;width:100%;max-width:430px;display:flex;justify-content:space-around;padding:15px;background:#fff;border-top:1px solid #eee;z-index:999;}
+.card{padding:20px;border-radius:20px;margin-bottom:15px;background:#f5f7fd;box-shadow:0 4px 10px rgba(0,0,0,0.05);}
+.sw{width:40px;height:40px;border-radius:10px;border:1px solid #ccc;position:relative;overflow:hidden;}
+.sw input{position:absolute;inset:-5px;opacity:0;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="app">
+    <div id="header" style="padding:20px; font-weight:900; font-size:20px;">Moj Budžet</div>
+    <div id="content"></div>
+    <nav>
+        <button onclick="render('home')">🏠</button>
+        <button onclick="render('stats')">📊</button>
+        <button onclick="render('add')">➕</button>
+        <button onclick="render('profile')">⚙️</button>
+    </nav>
+</div>
+
+<script>
+// ══ KOMPLETNO STANJE ══
+let state = {
+    screen: 'home',
+    balance: 124850,
+    avatar: null,
+    colors: {
+        heroBg: '#6c5ce7',
+        heroText: '#ffffff',
+        accent: '#6c5ce7'
+    }
+};
+
+// ══ LOGIKA RENDERINGA ══
+function render(screen) {
+    state.screen = screen;
+    const c = document.getElementById('content');
+    
+    if (screen === 'home') {
+        c.innerHTML = `
+            <div class="card" style="background:${state.colors.heroBg}; color:${state.colors.heroText}">
+                <h3>Ukupan saldo</h3>
+                <h1>${state.balance.toLocaleString()} RSD</h1>
+            </div>`;
+    } 
+    else if (screen === 'profile') {
+        c.innerHTML = `
+            <div class="card">
+                <h3>Avatar</h3>
+                <div id="av" style="width:80px;height:80px;border-radius:50%;background:#ddd;margin-bottom:10px;overflow:hidden;">
+                    ${state.avatar ? `<img src="${state.avatar}" style="width:100%;height:100%;object-fit:cover;">` : '📷'}
+                </div>
+                <input type="file" onchange="loadImg(event)">
+                <hr style="margin:20px 0">
+                <h3>Boje</h3>
+                ${Object.keys(state.colors).map(key => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span>${key}</span>
+                        <div class="sw" style="background:${state.colors[key]}">
+                            <input type="color" value="${state.colors[key]}" oninput="state.colors['${key}']=this.value; render('profile')">
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+    }
+    else if (screen === 'add') {
+        c.innerHTML = `<div class="card"><h3>Nova transakcija</h3><p>Forma ovde...</p></div>`;
+    }
+    else if (screen === 'stats') {
+        c.innerHTML = `<div class="card"><h3>Statistika</h3><p>Grafikoni ovde...</p></div>`;
+    }
+}
+
+// ══ POMOĆNE FUNKCIJE ══
+function loadImg(e) {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        state.avatar = ev.target.result;
+        render('profile');
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+// Start
+render('home');
+</script>
+</body>
+</html>
