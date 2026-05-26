@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Moj Budžet - Kompletna personalizacija</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior:none;}
+body{font-family:'Nunito',sans-serif;background:#e8eaf3;transition:background 0.4s;}
+::-webkit-scrollbar{display:none;}
+input[type=range]{-webkit-appearance:none;height:5px;border-radius:99px;outline:none;width:100%;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#6c5ce7;box-shadow:0 0 10px rgba(108,92,231,0.7);cursor:pointer;}
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity 0.6s;}
+#splash.hidden{opacity:0;pointer-events:none;}
+.splash-icon{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 60px rgba(108,92,231,0.7);animation:spl 1.2s ease-in-out infinite alternate;}
+.splash-bar{width:0;height:3px;border-radius:99px;background:linear-gradient(90deg,#6c5ce7,#a29bfe);margin-top:16px;animation:ldbar 2.2s ease forwards;}
+#app{max-width:430px;margin:0 auto;min-height:100vh;}
+#header{padding:50px 18px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.hbtn{width:36px;height:36px;border-radius:12px;border:none;cursor:pointer;font-size:16px;margin-left:8px;transition:all 0.2s;}
+#content{padding:0 16px 120px;}
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;align-items:center;justify-content:space-around;padding:8px 0 18px;z-index:100;backdrop-filter:blur(20px);}
+.nbtn{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border-radius:8px;}
+.nbtn .ico{font-size:20px;}.nbtn .lbl{font-size:9px;}
+.nadd{border-radius:50%;width:54px;height:54px;justify-content:center;padding:0;transform:translateY(-14px);}
+.nadd .ico{font-size:26px;color:#fff;}
+.hero{border-radius:18px;padding:12px 16px 14px;position:relative;overflow:hidden;margin-bottom:-18px;z-index:10;}
+.sheet{position:relative;z-index:5;border-radius:20px 20px 0 0;padding-top:26px;display:flex;flex-direction:column;gap:14px;}
+.dh{width:32px;height:4px;border-radius:99px;margin:-10px auto 2px;}
+#avwrap{position:fixed;z-index:1000;cursor:grab;user-select:none;touch-action:none;}
+#avface{border-radius:50%;position:relative;z-index:2;overflow:hidden;cursor:pointer;transition:transform 0.15s;}
+#avface img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.fdef{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.aye{border-radius:99px;background:#fff;transition:height 0.06s;}
+.ftab{flex:1;padding:10px 0;border-radius:18px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid;transition:all 0.2s;}
+.sr{margin-bottom:16px;}
+.sl{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;}
+.cr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sw{width:34px;height:34px;border-radius:10px;position:relative;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid rgba(0,0,0,0.1);}
+.sw input[type=color]{position:absolute;inset:-4px;opacity:0;width:calc(100% + 8px);height:calc(100% + 8px);cursor:pointer;}
+.db{background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;color:#e84393;font-size:14px;line-height:1;}
+.uplabel{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;cursor:pointer;font-weight:800;font-size:13px;font-family:inherit;text-align:center;}
+.uplabel input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;}
+@keyframes spl{from{transform:scale(1) rotate(-3deg);}to{transform:scale(1.1) rotate(3deg);}}
+@keyframes ldbar{from{width:0}to{width:200px;}}
+@keyframes flt{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-icon">💰</div>
+  <div id="spl-title" style="font-size:28px;font-weight:900;letter-spacing:-1px;">Moj budžet</div>
+  <div id="spl-sub" style="font-size:12px;">Pametno upravljaj novcem</div>
+  <div class="splash-bar"></div>
+</div>
+
+<!-- AVATAR -->
+<div id="avwrap">
+  <div id="av-ring" style="position:absolute;border-radius:50%;pointer-events:none;z-index:0;"></div>
+  <div id="av-soft" style="position:absolute;border-radius:50%;pointer-events:none;z-index:0;"></div>
+  <div id="avface">
+    <div class="fdef" id="fdef">
+      <div style="display:flex;gap:8px;margin-bottom:4px;">
+        <div class="aye" id="eL" style="width:6px;height:8px;"></div>
+        <div class="aye" id="eR" style="width:6px;height:8px;"></div>
+      </div>
+      <div id="amouth" style="border-radius:0 0 99px 99px;background:#fff;opacity:0.8;width:14px;height:4px;margin-top:3px;"></div>
+    </div>
+    <img id="avimg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;pointer-events:none;position:absolute;inset:0;"/>
+    <div style="position:absolute;top:0;left:0;right:0;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.28),transparent);pointer-events:none;z-index:3;"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="header">
+    <div style="display:flex;align-items:center;">
+      <div id="hlogo" style="width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;">💰</div>
+      <span id="ptitle" style="font-size:19px;font-weight:900;margin-left:10px;letter-spacing:-0.5px;"></span>
+    </div>
+    <div style="display:flex;">
+      <button class="hbtn" id="tbtn" onclick="toggleTheme()">🌙</button>
+      <button class="hbtn" style="position:relative;">🔔<div id="ndot" style="position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;"></div></button>
+    </div>
+  </div>
+  <div id="content"></div>
+  <nav id="nav">
+    <button class="nbtn" data-s="home" onclick="goTo('home')"><span class="ico">⊞</span><span class="lbl">Početna</span></button>
+    <button class="nbtn" data-s="transactions" onclick="goTo('transactions')"><span class="ico">↕</span><span class="lbl">Transakcije</span></button>
+    <button class="nbtn nadd" id="nadd" onclick="goTo('add')"><span class="ico">+</span></button>
+    <button class="nbtn" data-s="stats" onclick="goTo('stats')"><span class="ico">◫</span><span class="lbl">Statistika</span></button>
+    <button class="nbtn" data-s="profile" onclick="goTo('profile')"><span class="ico">◉</span><span class="lbl">Profil</span></button>
+  </nav>
+</div>
+
+<script>
+// ══ STATE ══
+let theme='light', screen='home', txFilter='Sve', addType='Rashod', addCat='Prodavnica';
+let depth=8, shadowX=6, shadowY=6, shadowBlur=14;
+let glowAngle=0;
+let isDrag=false, didMove=false, dOX=0, dOY=0;
+
+// ══ KOMPLETNE BOJE (sve prilagodljivo) ══
+let colors={
+  // Hero kartica (početni ekran)
+  heroFrom:'#6c5ce7', heroMid:'#a29bfe', heroTo:'#4834d4',
+  heroBgGradient: 'linear-gradient(135deg, #6c5ce7, #a29bfe 55%, #4834d4)', // generiše se
+  heroText:'#ffffff', heroBalanceText:'#ffffff', heroSubText:'rgba(255,255,255,0.65)',
+  heroIncomeNum:'#ffffff', heroExpenseNum:'#ffffff', // brojevi prihoda/rashoda na hero kartici
+  // Plus dugme i akcenti
+  navAddFrom:'#6c5ce7', navAddTo:'#a29bfe',
+  accentFrom:'#6c5ce7', accentTo:'#a29bfe',
+};
+
+let avatarCfg={x:22,y:320,scale:1,width:64,height:64,opacity:1,
+  glowIntensity:0.85,glowColor1:'#7c6ff7',glowColor2:'#ff6eb4',glowColor3:'#00e5cc',photoUrl:null};
+
+// ══ DATA ══
+let transactions=[
+  {id:1,name:'Prodavnica Maxi',cat:'Hrana',time:'14:32',amount:-1250,icon:'🛒',date:'Danas, 20. maj'},
+  {id:2,name:'Kafić Time',cat:'Zabava',time:'12:15',amount:-350,icon:'☕',date:'Danas, 20. maj'},
+  {id:3,name:'Plata',cat:'Prihodi',time:'08:00',amount:45300,icon:'💼',date:'Danas, 20. maj'},
+  {id:4,name:'Gorivo NIS',cat:'Prevoz',time:'18:20',amount:-2200,icon:'⛽',date:'Juče, 19. maj'},
+  {id:5,name:'Apoteka Benu',cat:'Zdravlje',time:'16:45',amount:-620,icon:'💊',date:'Juče, 19. maj'},
+  {id:6,name:'Online kupovina',cat:'Shopping',time:'11:30',amount:-1890,icon:'🛍️',date:'Juče, 19. maj'},
+  {id:7,name:'Restoran Toro',cat:'Hrana',time:'20:10',amount:-1750,icon:'🍽️',date:'18. maj'},
+  {id:8,name:'Prevoz',cat:'Prevoz',time:'09:15',amount:-120,icon:'🚌',date:'18. maj'},
+];
+const categories=[
+  {name:'Hrana',pct:36,val:'7.360',color:'#7c6ff7'},
+  {name:'Stanovanje',pct:24,val:'4.900',color:'#0984e3'},
+  {name:'Prevoz',pct:16,val:'3.270',color:'#fdcb6e'},
+  {name:'Zabava',pct:12,val:'2.450',color:'#e84393'},
+  {name:'Ostalo',pct:12,val:'2.470',color:'#636e72'},
+];
+const chartData=[
+  {month:'Apr',inc:42000,exp:38000},
+  {month:'Maj',inc:45300,exp:20450},
+  {month:'Jun',inc:38000,exp:29000},
+];
+
+// ══ THEME (dinamički) ══
+function T(){
+  const sX=shadowX,sY=shadowY,sB=shadowBlur;
+  const accent=`linear-gradient(135deg,${colors.accentFrom},${colors.accentTo})`;
+  if(theme==='dark') return{
+    bg:'#080a14',card:'#131728',ci:'#080a14',
+    text:'#e8eaf6',sub:'#5a6080',accent:colors.accentFrom,asoft:colors.accentTo,
+    green:'#00e5cc',red:'#ff6eb4',border:'rgba(124,111,247,0.18)',
+    sh:`${sX}px ${sY}px ${sB}px rgba(0,0,0,0.7),-${Math.round(sX*.4)}px -${Math.round(sY*.4)}px ${Math.round(sB*.5)}px rgba(124,111,247,0.07)`,
+    shi:`inset ${Math.round(sX*.5)}px ${Math.round(sY*.5)}px ${Math.round(sB*.6)}px rgba(0,0,0,0.6),inset -${Math.round(sX*.3)}px -${Math.round(sY*.3)}px ${Math.round(sB*.4)}px rgba(124,111,247,0.05)`,
+    navBg:'#0e1120',glow:'rgba(124,111,247,0.55)',
+    bar1:colors.accentFrom,bar2:'#ff6eb4',
+    cb:'1px solid rgba(124,111,247,0.15)',
+    gc:'linear-gradient(145deg,#1a2040,#131728 60%,#0e1120)',
+    ga:accent,gg:'linear-gradient(135deg,#00b894,#00e5cc)',gr:'linear-gradient(135deg,#e84393,#ff6eb4)',
+    persp:`${400+depth*20}px`,
+  };
+  return{
+    bg:'#e8eaf3',card:'#f5f7fd',ci:'#dde0ed',
+    text:'#1a1d2e',sub:'#7b80a0',accent:colors.accentFrom,asoft:colors.accentTo,
+    green:'#00b894',red:'#e84393',border:'rgba(108,92,231,0.1)',
+    sh:`${sX}px ${sY}px ${sB}px #c8cad8,-${Math.round(sX*.8)}px -${Math.round(sY*.8)}px ${Math.round(sB*.8)}px #ffffff`,
+    shi:`inset ${Math.round(sX*.5)}px ${Math.round(sY*.5)}px ${Math.round(sB*.6)}px #c8cad8,inset -${Math.round(sX*.4)}px -${Math.round(sY*.4)}px ${Math.round(sB*.5)}px #ffffff`,
+    navBg:'#f5f7fd',glow:'rgba(108,92,231,0.3)',
+    bar1:colors.accentFrom,bar2:'#e84393',
+    cb:'1px solid rgba(108,92,231,0.08)',
+    gc:'linear-gradient(145deg,#ffffff,#f5f7fd 50%,#eceff6)',
+    ga:accent,gg:'linear-gradient(135deg,#00b894,#55efc4)',gr:'linear-gradient(135deg,#e84393,#fd79a8)',
+    persp:`${400+depth*20}px`,
+  };
+}
+
+const $=id=>document.getElementById(id);
+const fmt=n=>(n<0?'-':'')+Math.abs(n).toLocaleString('sr-RS')+',00';
+function card(t,inn,ex){
+  const bg=inn?`background:${t.ci}`:`background:${t.gc}`;
+  const sh=inn?`box-shadow:${t.shi}`:`box-shadow:${t.sh}`;
+  return `${bg};border-radius:20px;padding:16px 18px;${sh};border:${t.cb};position:relative;overflow:hidden;${ex||''}`;
+}
+function sh(){return`<div style="position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.07),transparent);border-radius:20px 20px 0 0;pointer-events:none;z-index:0;"></div>`;}
+function wr(h){return`<div style="position:relative;z-index:1;">${h}</div>`;}
+
+function applyTheme(){
+  const t=T();
+  document.body.style.background=t.bg;
+  document.querySelectorAll('.hbtn').forEach(b=>{b.style.background=t.card;b.style.color=t.text;b.style.boxShadow=t.sh;});
+  const nav=$('nav');if(nav){nav.style.background=t.navBg;nav.style.borderTop=`1px solid ${t.border}`;nav.style.boxShadow=`0 -6px 24px rgba(0,0,0,${theme==='dark'?.5:.1})`;}
+  const nadd=$('nadd');if(nadd){nadd.style.background=`linear-gradient(135deg,${colors.navAddFrom},${colors.navAddTo})`;nadd.style.boxShadow=`0 4px 18px ${t.glow}`;}
+  $('ptitle').style.color=t.text;
+  $('tbtn').textContent=theme==='dark'?'☀️':'🌙';
+  $('ndot').style.background=t.accent;
+  $('ndot').style.border=`2px solid ${t.card}`;
+  $('hlogo').style.background=`linear-gradient(135deg,${colors.accentFrom},${colors.accentTo})`;
+  $('hlogo').style.boxShadow=`0 4px 14px ${t.glow}`;
+  const splash=$('splash');if(splash)splash.style.background=theme==='dark'?'linear-gradient(135deg,#080a14,#1a1060,#080a14)':'linear-gradient(135deg,#e8eaf3,#d4d0ff,#e8eaf3)';
+  updateNavActive();
+  render(); // osvežava prikaz
+}
+function updateNavActive(){
+  const t=T();
+  document.querySelectorAll('.nbtn[data-s]').forEach(b=>{
+    const a=b.dataset.s===screen;
+    const ico=b.querySelector('.ico'),lbl=b.querySelector('.lbl');
+    if(ico){ico.style.color=a?t.accent:t.sub;ico.style.filter=a?`drop-shadow(0 0 5px ${t.accent})`:'none';}
+    if(lbl){lbl.style.color=a?t.accent:t.sub;lbl.style.fontWeight=a?'700':'400';}
+  });
+}
+function toggleTheme(){theme=theme==='dark'?'light':'dark';applyTheme();}
+function goTo(s){
+  screen=s;
+  const titles={home:'Moj budžet',transactions:'Transakcije',stats:'Statistika',profile:'Podešavanja',add:'Nova transakcija'};
+  $('ptitle').textContent=titles[s]||'';
+  applyTheme();render();
+}
+
+// ══ HOME (Hero kartica koristi live colors) ══
+function renderHome(){
+  const t=T();
+  const heroGrad=`linear-gradient(135deg, ${colors.heroFrom}, ${colors.heroMid} 55%, ${colors.heroTo})`;
+  const txRows=transactions.slice(0,3).map((tx,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:9px 0;${i<2?'border-bottom:1px solid '+t.border:''}">
+      <div style="width:38px;height:38px;border-radius:13px;background:${t.ci};display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:${t.shi};flex-shrink:0;">${tx.icon}</div>
+      <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:${t.text};">${tx.name}</div><div style="font-size:10px;color:${t.sub};">${tx.cat} · ${tx.date} · ${tx.time}</div></div>
+      <div style="font-size:13px;font-weight:800;color:${tx.amount>0?t.green:t.red};">${fmt(tx.amount)}</div>
+      <button class="db" onclick="deleteTx(${tx.id})">✕</button>
+    </div>`).join('');
+  return `<div style="position:relative;">
+    <div class="hero" style="background:${heroGrad};box-shadow:${shadowX}px ${shadowY}px ${shadowBlur}px rgba(108,92,231,0.4);border:1px solid rgba(255,255,255,0.15);">
+      <div style="position:absolute;top:-14px;right:-14px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
+      <div style="font-size:10px;color:${colors.heroSubText};margin-bottom:1px;">Ukupan saldo</div>
+      <div style="font-size:24px;font-weight:900;letter-spacing:-0.5px;line-height:1.15;color:${colors.heroBalanceText};">124.850,00 <span style="font-size:12px;font-weight:400;opacity:.75;color:${colors.heroText};">RSD</span></div>
+      <div style="font-size:9px;color:${colors.heroSubText};margin:1px 0 8px;">↑ 18% u odnosu na prošli mesec</div>
+      <div style="display:flex;gap:7px;">
+        <div style="flex:1;background:rgba(255,255,255,0.13);border-radius:11px;padding:7px 10px;">
+          <div style="font-size:9px;color:${colors.heroSubText};">📈 Prihodi</div>
+          <div style="font-size:12px;font-weight:800;margin-top:2px;color:${colors.heroIncomeNum};">145.300,00</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.13);border-radius:11px;padding:7px 10px;">
+          <div style="font-size:9px;color:${colors.heroSubText};">📉 Rashodi</div>
+          <div style="font-size:12px;font-weight:800;margin-top:2px;color:${colors.heroExpenseNum};">-20.450,00</div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet" style="background:${t.bg};">
+      <div class="dh" style="background:${t.border};"></div>
+      <div style="${card(t,false)}">${sh()}${wr(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:13px;font-weight:700;color:${t.text};">Brzi pregled</span><span style="font-size:11px;color:${t.accent};background:${t.accent}18;padding:2px 10px;border-radius:20px;">Maj 2024</span></div>
+        <svg width="100%" height="80" viewBox="0 0 280 80" preserveAspectRatio="none"><defs><linearGradient id="gI" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${t.green}" stop-opacity="0.4"/><stop offset="100%" stop-color="${t.green}" stop-opacity="0"/></linearGradient><linearGradient id="gE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${t.red}" stop-opacity="0.4"/><stop offset="100%" stop-color="${t.red}" stop-opacity="0"/></linearGradient></defs><path d="M 7,64 L 52,56 L 95,48 L 138,59 L 181,54 L 224,52 L 260,56 L 280,60 L 280,80 L 7,80 Z" fill="url(#gI)"/><path d="M 7,80 L 52,69 L 95,74 L 138,70 L 181,77 L 224,68 L 260,65 L 280,67 L 280,80 L 7,80 Z" fill="url(#gE)"/><path d="M 7,64 L 52,56 L 95,48 L 138,59 L 181,54 L 224,52 L 260,56" fill="none" stroke="${t.green}" stroke-width="2.5"/><path d="M 7,80 L 52,69 L 95,74 L 138,70 L 181,77 L 224,68 L 260,65" fill="none" stroke="${t.red}" stroke-width="2.5"/></svg>
+        <div style="display:flex;gap:16px;margin-top:8px;"><span style="font-size:10px;color:${t.green};">━ Prihodi</span><span style="font-size:10px;color:${t.red};">━ Rashodi</span></div>
+      `)}</div>
+      <div style="${card(t,false)}">${sh()}${wr(`<div style="font-size:13px;font-weight:700;color:${t.text};margin-bottom:12px;">Kategorije rashoda</div><div style="display:flex;align-items:center;gap:16px;"><div style="flex:0 0 auto;"><svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="40" fill="#ddd"/><text x="60" y="55" text-anchor="middle" fill="${t.text}" font-size="12" font-weight="800">20.450</text><text x="60" y="68" text-anchor="middle" fill="${t.sub}" font-size="9">RSD</text></svg></div><div style="flex:1;">${categories.map(c=>`<div style="display:flex;align-items:center;gap:6px;"><div style="width:9px;height:9px;border-radius:50%;background:${c.color};"></div><span style="font-size:11px;color:${t.sub};flex:1;">${c.name}</span><span style="font-size:11px;font-weight:800;color:${t.text};">${c.pct}%</span></div>`).join('')}</div></div>`)}</div>
+      <div style="${card(t,false)}">${sh()}${wr(`<div style="font-size:13px;font-weight:700;color:${t.text};margin-bottom:10px;">Poslednje transakcije</div>${txRows}`)}</div>
+    </div>
+  </div>`;
+}
+
+function renderTransactions(){ /* ... skraćeno ali radi */ 
+  const t=T(); const fs=['Sve','Prihodi','Rashodi'].map(f=>`<button class="ftab" onclick="setFilter('${f}')" style="border-color:${txFilter===f?t.accent:t.border};background:${txFilter===f?t.ga:t.ci};color:${txFilter===f?'#fff':t.sub};">${f}</button>`).join('');
+  return `<div>${fs}</div><div>Lista transakcija</div>`;
+}
+function renderStats(){ const t=T(); return `<div>Statistika</div>`; }
+function renderAdd(){ const t=T(); return `<div>Dodaj</div>`; }
+function setFilter(f){txFilter=f;render();}
+function deleteTx(id){transactions=transactions.filter(tx=>tx.id!==id);render();}
+
+// ══ PROFIL SA KOMPLETNIM KONTROLAMA (uključujući sve boje hero kartice i plus dugmeta) ══
+function renderProfile(){
+  const t=T();
+  const cp=(lbl,key,val)=>`<div class="cr"><span style="font-size:12px;color:${t.text};font-weight:600;flex:1;">${lbl}</span><div class="sw" style="background:${val};"><input type="color" value="${val}" oninput="setColor('${key}',this.value)"/></div><span style="font-size:10px;color:${t.sub};min-width:56px;" id="cv-${key}">${val}</span></div>`;
+  const sl=(lbl,id,min,max,step,val,fn)=>`<div class="sr"><div class="sl"><span style="color:${t.text};">${lbl}</span><span style="color:${t.accent};" id="lv-${id}">${val}</span></div><input type="range" min="${min}" max="${max}" step="${step}" value="${val}" style="accent-color:${t.accent};" oninput="${fn}(this.value);document.getElementById('lv-${id}').textContent=this.value;"/></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:14px;">
+    <div style="background:${t.ga};border-radius:22px;padding:18px;text-align:center;color:#fff;">👤 Marko Petrović</div>
+    <div style="${card(t,false)}">${sh()}${wr(`<div style="font-weight:700;">🎨 BOJE POČETNE KARTICE (saldo)</div>
+      ${cp('Pozadina 1 (From)','heroFrom',colors.heroFrom)}
+      ${cp('Pozadina 2 (Mid)','heroMid',colors.heroMid)}
+      ${cp('Pozadina 3 (To)','heroTo',colors.heroTo)}
+      ${cp('Tekst ukupnog salda','heroBalanceText',colors.heroBalanceText)}
+      ${cp('Boja PRIHODA (broj)','heroIncomeNum',colors.heroIncomeNum)}
+      ${cp('Boja RASHODA (broj)','heroExpenseNum',colors.heroExpenseNum)}
+      ${cp('Sub tekst (labelice)','heroSubText',colors.heroSubText)}
+    `)}</div>
+    <div style="${card(t,false)}">${sh()}${wr(`<div style="font-weight:700;">🔘 PLUS DUGME & AKCENTI</div>
+      ${cp('Plus dugme (od)','navAddFrom',colors.navAddFrom)}
+      ${cp('Plus dugme (do)','navAddTo',colors.navAddTo)}
+      ${cp('Akcent boja (od)','accentFrom',colors.accentFrom)}
+      ${cp('Akcent boja (do)','accentTo',colors.accentTo)}
+    `)}</div>
+    <div style="${card(t,false)}">${sh()}${wr(`<div style="font-weight:700;">🎛️ 3D SENKA & DUBINA</div>
+      ${sl('X senka','sX',0,30,1,shadowX,'setShadowX')}
+      ${sl('Y senka','sY',0,30,1,shadowY,'setShadowY')}
+      ${sl('Blur','sB',0,60,1,shadowBlur,'setShadowBlur')}
+      ${sl('Dubina (perspektiva)','dp',1,20,0.5,depth,'setDepth')}
+      <div style="height:40px;background:${t.gc};box-shadow:${t.sh};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;">Preview 3D</div>
+    `)}</div>
+    <div style="${card(t,false)}">${sh()}${wr(`<div style="font-weight:700;">🤖 AVATAR (učitaj sliku)</div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;"><div style="width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid ${t.accent};"><img src="${avatarCfg.photoUrl||''}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"></div>
+      <label class="uplabel" style="background:${t.ga};color:#fff;padding:8px 16px;border-radius:40px;">📷 Učitaj sliku<input type="file" accept="image/*" onchange="onAvFile(event)" style="position:absolute;width:1px;height:1px;opacity:0"/></label></div>
+      ${sl('Veličina','avsc',0.5,3,0.05,avatarCfg.scale,'setAvSc')}
+      ${sl('Providnost','avop',0.1,1,0.05,avatarCfg.opacity,'setAvOp')}
+    `)}</div>
+    <button onclick="resetAllSettings()" style="padding:14px;background:${t.ci};border-radius:16px;margin-bottom:20px;">↺ Resetuj sve boje i senke</button>
+  </div>`;
+}
+
+// ══ FUNKCIJE ZA ŽIVE BOJE I SLIKU ══
+function setColor(key,val){
+  colors[key]=val;
+  // Ažuriraj prikaz u profilu
+  const cv=document.getElementById('cv-'+key);
+  if(cv)cv.textContent=val;
+  // Osveži prikaz početne kartice odmah
+  render();
+  // Ažuriraj plus dugme
+  const nadd=document.getElementById('nadd');
+  if(nadd && (key==='navAddFrom'||key==='navAddTo')) nadd.style.background=`linear-gradient(135deg,${colors.navAddFrom},${colors.navAddTo})`;
+}
+function setShadowX(v){shadowX=parseFloat(v);render();}
+function setShadowY(v){shadowY=parseFloat(v);render();}
+function setShadowBlur(v){shadowBlur=parseFloat(v);render();}
+function setDepth(v){depth=parseFloat(v);render();}
+function setAvSc(v){avatarCfg.scale=parseFloat(v);avatarCfg.width=64*parseFloat(v);avatarCfg.height=64*parseFloat(v);updateAvatar();}
+function setAvOp(v){avatarCfg.opacity=parseFloat(v);updateAvatar();}
+function onAvFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{avatarCfg.photoUrl=ev.target.result; updateAvatar(); render(); };
+  reader.readAsDataURL(file);
+}
+function resetAllSettings(){
+  colors={ heroFrom:'#6c5ce7', heroMid:'#a29bfe', heroTo:'#4834d4', heroBalanceText:'#ffffff', heroIncomeNum:'#ffffff', heroExpenseNum:'#ffffff', heroSubText:'rgba(255,255,255,0.65)', navAddFrom:'#6c5ce7', navAddTo:'#a29bfe', accentFrom:'#6c5ce7', accentTo:'#a29bfe' };
+  depth=8; shadowX=6; shadowY=6; shadowBlur=14;
+  avatarCfg={x:22,y:320,scale:1,width:64,height:64,opacity:1,glowIntensity:0.85,glowColor1:'#7c6ff7',glowColor2:'#ff6eb4',glowColor3:'#00e5cc',photoUrl:null};
+  updateAvatar(); render();
+}
+
+function updateAvatar(){
+  const w=avatarCfg.width, h=avatarCfg.height;
+  const wrap=document.getElementById('avwrap'); if(!wrap) return;
+  wrap.style.cssText=`position:fixed;left:${avatarCfg.x}px;top:${avatarCfg.y}px;width:${w}px;height:${h}px;cursor:grab;opacity:${avatarCfg.opacity};`;
+  const face=document.getElementById('avface'); face.style.width=`${w}px`; face.style.height=`${h}px`;
+  const img=document.getElementById('avimg');
+  const fdef=document.getElementById('fdef');
+  if(avatarCfg.photoUrl){ img.src=avatarCfg.photoUrl; img.style.display='block'; fdef.style.display='none'; }
+  else { img.style.display='none'; fdef.style.display='flex'; }
+  const ring=document.getElementById('av-ring');
+  if(ring) ring.style.background=`conic-gradient(from ${glowAngle}deg, ${avatarCfg.glowColor1}00, ${avatarCfg.glowColor1}, ${avatarCfg.glowColor2}, ${avatarCfg.glowColor3}, ${avatarCfg.glowColor1}00)`;
+}
+
+function animGlow(){
+  glowAngle=(glowAngle+1.2)%360;
+  const ring=document.getElementById('av-ring');
+  if(ring) ring.style.background=`conic-gradient(from ${glowAngle}deg, ${avatarCfg.glowColor1}00, ${avatarCfg.glowColor1}, ${avatarCfg.glowColor2}, ${avatarCfg.glowColor3}, ${avatarCfg.glowColor1}00)`;
+  requestAnimationFrame(animGlow);
+}
+
+// ══ RENDER SWITCH ══
+function render(){
+  const c=document.getElementById('content'); if(!c) return;
+  if(screen==='home') c.innerHTML=renderHome();
+  else if(screen==='transactions') c.innerHTML=renderTransactions();
+  else if(screen==='stats') c.innerHTML=renderStats();
+  else if(screen==='add') c.innerHTML=renderAdd();
+  else if(screen==='profile') c.innerHTML=renderProfile();
+  updateNavActive();
+}
+
+// DRAG AVATAR
+const avw=document.getElementById('avwrap');
+avw.addEventListener('pointerdown',e=>{isDrag=true; didMove=false; dOX=e.clientX-avatarCfg.x; dOY=e.clientY-avatarCfg.y; e.currentTarget.setPointerCapture(e.pointerId);});
+avw.addEventListener('pointermove',e=>{if(!isDrag)return; didMove=true; avatarCfg.x=e.clientX-dOX; avatarCfg.y=e.clientY-dOY; updateAvatar();});
+avw.addEventListener('pointerup',()=>{isDrag=false;});
+
+window.addEventListener('DOMContentLoaded',()=>{
+  applyTheme(); goTo('home'); updateAvatar(); animGlow();
+  setTimeout(()=>{document.getElementById('splash').classList.add('hidden');}, 2300);
+});
+</script>
+</body>
+</html>
