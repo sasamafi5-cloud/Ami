@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Moj budžet | Premium Fintech</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: #eef1f7;
+      overflow-x: hidden;
+    }
+
+    /* Light Theme */
+    :root {
+      --bg-primary: #eef1f7;
+      --bg-card: rgba(255, 255, 255, 0.8);
+      --text-primary: #1a1f2e;
+      --text-secondary: #5b677b;
+      --shadow-sm: 12px 12px 24px #d0d3da, -8px -8px 18px #ffffff;
+      --shadow-md: 16px 16px 32px #d0d3da, -10px -10px 24px #ffffff;
+      --shadow-inset: inset 6px 6px 12px #d0d3da, inset -6px -6px 12px #ffffff;
+      --accent: #7c3aed;
+      --accent-grad: linear-gradient(135deg, #a855f7, #7c3aed);
+      --success: #10b981;
+      --danger: #ef4444;
+      --border-radius-xl: 32px;
+      --border-radius-lg: 24px;
+    }
+
+    body.dark {
+      --bg-primary: #0a0c12;
+      --bg-card: rgba(22, 24, 36, 0.85);
+      --text-primary: #f0f3fa;
+      --text-secondary: #9ca3af;
+      --shadow-sm: 12px 12px 24px #030408, -8px -8px 18px #181c26;
+      --shadow-md: 16px 16px 32px #030408, -10px -10px 24px #1e222e;
+      --shadow-inset: inset 6px 6px 12px #030408, inset -6px -6px 12px #1e222e;
+    }
+
+    /* Neumorphism */
+    .neumorph {
+      background: var(--bg-card);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--bg-card);
+      border: none;
+      box-shadow: var(--shadow-sm);
+      border-radius: 60px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    .app-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px 16px 100px;
+      min-height: 100vh;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 460px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 60px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 12px;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 40px;
+      gap: 4px;
+    }
+
+    .nav-btn.active {
+      background: var(--accent-grad);
+      color: white;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .fab-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 60px;
+      background: var(--accent-grad);
+      color: white;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 101;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(30px);
+      border-radius: 48px;
+      width: 100%;
+      max-width: 400px;
+      padding: 28px 24px;
+      box-shadow: var(--shadow-md);
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    input, select {
+      width: 100%;
+      padding: 16px 18px;
+      border: none;
+      background: var(--bg-primary);
+      border-radius: 32px;
+      font-size: 16px;
+      box-shadow: var(--shadow-inset);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .toggle-switch {
+      display: flex;
+      background: var(--bg-primary);
+      border-radius: 60px;
+      padding: 6px;
+      box-shadow: var(--shadow-inset);
+      margin-bottom: 20px;
+    }
+
+    .toggle-opt {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle-opt.active {
+      background: var(--accent-grad);
+      color: white;
+    }
+
+    .avatar-drag {
+      position: fixed;
+      bottom: 170px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      z-index: 99;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .avatar-circle {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #a855f7, #7c3aed);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: white;
+      box-shadow: 0 8px 25px rgba(124,58,237,0.4);
+      animation: floatAnim 3s ease-in-out infinite;
+    }
+
+    @keyframes floatAnim {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .ai-message {
+      position: fixed;
+      bottom: 260px;
+      right: 110px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 12px 18px;
+      max-width: 210px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      z-index: 98;
+      border-left: 4px solid #a855f7;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 12px;
+      background: var(--accent-grad);
+    }
+
+    .scroll-x {
+      overflow-x: auto;
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .category-pill {
+      background: var(--bg-card);
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 14px;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    canvas {
+      max-height: 200px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// ============================================
+// KOMPLETNA APLIKACIJA - RADI ODMAH
+// ============================================
+(function() {
+  // Učitaj React
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  Promise.all([
+    loadScript('https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js'),
+    loadScript('https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js'),
+    loadScript('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js')
+  ]).then(() => {
+    const { useState, useEffect, useRef } = React;
+
+    // Podaci
+    const STORAGE_KEY = 'moj_budzet_data';
+    const defaultData = {
+      transactions: [
+        { id: '1', amount: 45300, type: 'income', category: 'Plata', date: '2025-05-20', desc: 'Plata maj' },
+        { id: '2', amount: 1250, type: 'expense', category: 'Hrana', date: '2025-05-20', desc: 'Maxi' },
+        { id: '3', amount: 350, type: 'expense', category: 'Zabava', date: '2025-05-20', desc: 'Kafić' },
+        { id: '4', amount: 2200, type: 'expense', category: 'Gorivo', date: '2025-05-19', desc: 'NIS' },
+        { id: '5', amount: 620, type: 'expense', category: 'Zdravlje', date: '2025-05-19', desc: 'Apoteka' },
+        { id: '6', amount: 1890, type: 'expense', category: 'Kupovina', date: '2025-05-19', desc: 'Online' }
+      ],
+      budgets: { Hrana: 20000, Gorivo: 10000, Zabava: 8000, Kupovina: 12000, Zdravlje: 5000, Ostalo: 5000 }
+    };
+
+    const loadData = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : defaultData;
+    };
+    const saveData = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    // Glavna komponenta
+    const App = () => {
+      const [activeTab, setActiveTab] = useState('home');
+      const [data, setData] = useState(loadData());
+      const [showModal, setShowModal] = useState(false);
+      const [newTx, setNewTx] = useState({ amount: '', category: 'Hrana', date: new Date().toISOString().slice(0,10), desc: '', type: 'expense' });
+      const [hideBalance, setHideBalance] = useState(false);
+      const [theme, setTheme] = useState('light');
+      const [avatarImage, setAvatarImage] = useState(null);
+      const [avatarSize, setAvatarSize] = useState(80);
+      const [avatarOpacity, setAvatarOpacity] = useState(1);
+      const [showAIControls, setShowAIControls] = useState(false);
+      const [aiMessage, setAiMessage] = useState("👋 Zdravo! Pratite svoje finansije.");
+      const [weeklyChart, setWeeklyChart] = useState(null);
+
+      // Tema
+      useEffect(() => {
+        if (theme === 'dark') document.body.classList.add('dark');
+        else document.body.classList.remove('dark');
+      }, [theme]);
+
+      // Sačuvaj podatke
+      useEffect(() => {
+        saveData(data);
+      }, [data]);
+
+      // Učitaj sliku avatara
+      useEffect(() => {
+        const saved = localStorage.getItem('avatar_image');
+        if (saved) setAvatarImage(saved);
+      }, []);
+
+      const totalIncome = data.transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+      const totalExpense = data.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+      const balance = totalIncome - totalExpense;
+
+      const categorySpending = {};
+      data.transactions.filter(t => t.type === 'expense').forEach(t => {
+        categorySpending[t.category] = (categorySpending[t.category] || 0) + t.amount;
+      });
+
+      const addTransaction = () => {
+        const amt = parseFloat(newTx.amount);
+        if (isNaN(amt) || amt <= 0) return;
+        const tx = { ...newTx, amount: amt, id: Date.now().toString() };
+        setData(prev => ({ ...prev, transactions: [tx, ...prev.transactions] }));
+        setShowModal(false);
+        setNewTx({ amount: '', category: 'Hrana', date: new Date().toISOString().slice(0,10), desc: '', type: 'expense' });
+        if (navigator.vibrate) navigator.vibrate(50);
+        setAiMessage(amt > 3000 ? "⚠️ Veća potrošnja!" : "✅ Transakcija sačuvana!");
+        setTimeout(() => setAiMessage("💡 Savet: Postavite mesečne limite."), 3000);
+      };
+
+      // Upload slike
+      const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setAvatarImage(reader.result);
+            localStorage.setItem('avatar_image', reader.result);
+            setAiMessage("🖼️ Avatar ažuriran!");
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
+      // Grafik
+      useEffect(() => {
+        if (activeTab === 'home') {
+          const ctx = document.getElementById('weeklyChart');
+          if (ctx) {
+            if (weeklyChart) weeklyChart.destroy();
+            const newChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: ['Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub', 'Ned'],
+                datasets: [{
+                  label: 'Potrošnja (RSD)',
+                  data: [1250, 2200, 800, 3450, 1890, 620, 430],
+                  borderColor: '#a855f7',
+                  borderWidth: 3,
+                  tension: 0.3,
+                  fill: true,
+                  backgroundColor: 'rgba(168,85,247,0.1)'
+                }]
+              },
+              options: { responsive: true, maintainAspectRatio: true }
+            });
+            setWeeklyChart(newChart);
+          }
+        }
+        return () => { if (weeklyChart) weeklyChart?.destroy(); };
+      }, [activeTab]);
+
+      // Drag za avatara
+      const handleTouchMove = (e) => {
+        const touch = e.touches[0];
+        const avatar = document.getElementById('avatarDrag');
+        if (avatar) {
+          avatar.style.right = `${window.innerWidth - touch.clientX - avatarSize/2}px`;
+          avatar.style.bottom = `${window.innerHeight - touch.clientY - avatarSize/2}px`;
+          avatar.style.left = 'auto';
+          avatar.style.top = 'auto';
+        }
+      };
+
+      // Početna strana
+      const Dashboard = () => (
+        React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            React.createElement('div', null,
+              React.createElement('h2', { style: { fontSize: '26px', fontWeight: 700 } }, 'Pozdrav, 👋'),
+              React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: '13px' } }, new Date().toLocaleDateString('sr-RS'))
+            ),
+            React.createElement('button', { className: 'neumorph', style: { padding: 12, borderRadius: 60, fontSize: 18 }, onClick: () => setTheme(theme === 'light' ? 'dark' : 'light') }, 
+              React.createElement('i', { className: theme === 'light' ? '🌙' : '☀️' })
+            )
+          ),
+          // Glavna kartica
+          React.createElement('div', { className: 'neumorph', style: { padding: 28, textAlign: 'center', position: 'relative' } },
+            React.createElement('p', { style: { fontSize: 14, color: 'var(--text-secondary)' } }, 'UKUPAN SALDO'),
+            React.createElement('h1', { style: { fontSize: 48, fontWeight: 800, letterSpacing: -1 } }, hideBalance ? '••••••' : `${balance.toLocaleString()} RSD`),
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 20, gap: 15 } },
+              React.createElement('div', { style: { flex: 1, padding: 12, background: 'var(--bg-primary)', borderRadius: 24, boxShadow: 'var(--shadow-inset)' } },
+                React.createElement('span', { style: { color: '#10b981' } }, '↑ Prihodi'), React.createElement('br', null), React.createElement('strong', null, totalIncome.toLocaleString())
+              ),
+              React.createElement('div', { style: { flex: 1, padding: 12, background: 'var(--bg-primary)', borderRadius: 24, boxShadow: 'var(--shadow-inset)' } },
+                React.createElement('span', { style: { color: '#ef4444' } }, '↓ Rashodi'), React.createElement('br', null), React.createElement('strong', null, totalExpense.toLocaleString())
+              )
+            ),
+            React.createElement('button', { onClick: () => setHideBalance(!hideBalance), style: { position: 'absolute', right: 20, top: 20, background: 'transparent', boxShadow: 'none' } }, '👁️'),
+            React.createElement('div', { className: 'progress-bar', style: { marginTop: 20 } }, 
+              React.createElement('div', { className: 'progress-fill', style: { width: `${(totalExpense/(totalIncome||1))*100}%` } })
+            )
+          ),
+          // Grafik
+          React.createElement('div', { className: 'neumorph', style: { padding: 20 } },
+            React.createElement('h3', null, '📈 Nedeljni trend'),
+            React.createElement('canvas', { id: 'weeklyChart', style: { height: 180 } })
+          ),
+          // Transakcije
+          React.createElement('div', null,
+            React.createElement('h3', { style: { marginBottom: 12 } }, '📋 Nedavne transakcije'),
+            data.transactions.slice(0, 5).map(tx => 
+              React.createElement('div', { key: tx.id, className: 'neumorph', style: { padding: 16, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                React.createElement('div', null,
+                  React.createElement('strong', null, tx.category),
+                  React.createElement('br', null),
+                  React.createElement('span', { style: { fontSize: 11, color: 'var(--text-secondary)' } }, tx.date)
+                ),
+                React.createElement('div', { style: { color: tx.type === 'income' ? '#10b981' : '#ef4444', fontWeight: 700 } },
+                  `${tx.type === 'income' ? '+' : '-'}${tx.amount.toLocaleString()} RSD`
+                )
+              )
+            )
+          ),
+          React.createElement('div', { className: 'scroll-x' },
+            Object.entries(categorySpending).slice(0, 4).map(([cat, amt]) => 
+              React.createElement('div', { key: cat, className: 'category-pill' }, `${cat}: ${amt.toLocaleString()} RSD`)
+            )
+          )
+        )
+      );
+
+      // Statistika
+      const Stats = () => {
+        const pieRef = useRef();
+        useEffect(() => {
+          if (pieRef.current && Object.keys(categorySpending).length > 0) {
+            if (window.pieChart) window.pieChart.destroy();
+            window.pieChart = new Chart(pieRef.current, {
+              type: 'doughnut',
+              data: { labels: Object.keys(categorySpending), datasets: [{ data: Object.values(categorySpending), backgroundColor: ['#a855f7', '#f97316', '#10b981', '#ef4444', '#3b82f6'] }] }
+            });
+          }
+        }, [categorySpending]);
+        return React.createElement('div', { className: 'neumorph', style: { padding: 24 } },
+          React.createElement('h3', null, '📊 Statistika rashoda'),
+          React.createElement('canvas', { ref: pieRef, style: { height: 200, marginTop: 15 } }),
+          React.createElement('div', { style: { marginTop: 20, background: 'var(--accent-grad)', padding: 12, borderRadius: 24, color: 'white', textAlign: 'center' } },
+            '🤖 AI Savet: ', Object.keys(categorySpending)[0] ? `Najviše trošiš na ${Object.keys(categorySpending)[0]}.` : 'Dodaj transakcije za analizu.'
+          )
+        );
+      };
+
+      // Budžeti
+      const Budgets = () => (
+        React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
+          React.createElement('h3', null, '🎯 Mesečni budžeti'),
+          Object.entries(data.budgets).map(([cat, limit]) => {
+            const spent = categorySpending[cat] || 0;
+            const percent = (spent / limit) * 100;
+            return React.createElement('div', { key: cat, className: 'neumorph', style: { padding: 18 } },
+              React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: 10 } },
+                React.createElement('span', { style: { fontWeight: 600 } }, cat),
+                React.createElement('span', null, `${spent.toLocaleString()} / ${limit.toLocaleString()} RSD`)
+              ),
+              React.createElement('div', { className: 'progress-bar' }, 
+                React.createElement('div', { className: 'progress-fill', style: { width: `${Math.min(percent, 100)}%`, background: percent > 90 ? '#ef4444' : '#a855f7' } })
+              ),
+              percent > 90 && React.createElement('p', { style: { color: '#ef4444', fontSize: 12, marginTop: 8 } }, '⚠️ Limit blizu prekoračenja!')
+            );
+          })
+        )
+      );
+
+      // Podešavanja
+      const Settings = () => (
+        React.createElement('div', { className: 'neumorph', style: { padding: 24 } },
+          React.createElement('h3', { style: { marginBottom: 20 } }, '⚙️ Podešavanja'),
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 } },
+            React.createElement('span', null, '🌙 Tamna tema'),
+            React.createElement('button', { className: 'neumorph', style: { padding: '10px 20px' }, onClick: () => setTheme(theme === 'light' ? 'dark' : 'light') }, theme === 'light' ? 'Uključi' : 'Isključi')
+          ),
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 } },
+            React.createElement('span', null, '📸 Avatar slika'),
+            React.createElement('input', { type: 'file', accept: 'image/*', onChange: handleImageUpload, style: { display: 'none' }, id: 'avatarUpload' }),
+            React.createElement('button', { className: 'neumorph', style: { padding: '10px 20px' }, onClick: () => document.getElementById('avatarUpload').click() }, 'Izaberi sliku')
+          ),
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 } },
+            React.createElement('span', null, '📏 Veličina avatara'),
+            React.createElement('input', { type: 'range', min: '40', max: '150', value: avatarSize, onChange: e => setAvatarSize(parseInt(e.target.value)) })
+          ),
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 } },
+            React.createElement('span', null, '🔍 Providnost'),
+            React.createElement('input', { type: 'range', min: '0.2', max: '1', step: '0.01', value: avatarOpacity, onChange: e => setAvatarOpacity(parseFloat(e.target.value)) })
+          ),
+          React.createElement('button', { className: 'neumorph', style: { width: '100%', padding: 14, marginTop: 10, color: '#ef4444' }, onClick: () => { if(confirm('Reset svih podataka?')) { localStorage.clear(); window.location.reload(); } } }, 'Resetuj sve podatke')
+        )
+      );
+
+      const renderScreen = () => {
+        if (activeTab === 'home') return Dashboard();
+        if (activeTab === 'stats') return Stats();
+        if (activeTab === 'budget') return Budgets();
+        if (activeTab === 'settings') return Settings();
+        return Dashboard();
+      };
+
+      return React.createElement('div', { className: 'app-container' },
+        renderScreen(),
+        // Bottom navigacija
+        React.createElement('div', { className: 'bottom-nav' },
+          ['home', 'stats', 'budget', 'settings'].map(tab => {
+            const icons = { home: '🏠', stats: '📊', budget: '💰', settings: '⚙️' };
+            const labels = { home: 'Početna', stats: 'Statistika', budget: 'Budžet', settings: 'Podešavanja' };
+            return React.createElement('button', { key: tab, className: `nav-btn ${activeTab === tab ? 'active' : ''}`, onClick: () => setActiveTab(tab) },
+              React.createElement('span', { style: { fontSize: 18 } }, icons[tab]),
+              React.createElement('span', null, labels[tab])
+            );
+          })
+        ),
+        // FAB dugme
+        React.createElement('button', { className: 'fab-btn', onClick: () => setShowModal(true) }, '+'),
+        // Avatar
+        React.createElement('div', { id: 'avatarDrag', className: 'avatar-drag', style: { width: avatarSize, height: avatarSize, opacity: avatarOpacity }, onTouchMove: handleTouchMove, onTouchStart: (e) => e.preventDefault() },
+          avatarImage ?
+            React.createElement('img', { src: avatarImage, className: 'avatar-image', onClick: () => setShowAIControls(!showAIControls), draggable: false }) :
+            React.createElement('div', { className: 'avatar-circle', onClick: () => setShowAIControls(!showAIControls) }, '🤖')
+        ),
+        // AI poruka
+        aiMessage && React.createElement('div', { className: 'ai-message' }, aiMessage),
+        // AI kontrole
+        showAIControls && React.createElement('div', { className: 'modal-overlay', onClick: () => setShowAIControls(false) },
+          React.createElement('div', { className: 'modal-card', onClick: e => e.stopPropagation() },
+            React.createElement('h4', { style: { marginBottom: 16 } }, '🤖 AI Asistent'),
+            React.createElement('p', { style: { marginBottom: 16, padding: 12, background: 'var(--bg-primary)', borderRadius: 24 } }, '💬 ' + aiMessage),
+            React.createElement('button', { className: 'neumorph', style: { width: '100%', padding: 14, background: 'var(--accent-grad)', color: 'white', border: 'none' }, onClick: () => setAiMessage('📊 Savet: Mesečna štednja od 10% prihoda menja život!') }, 'Daj finansijski savet'),
+            React.createElement('button', { className: 'neumorph', style: { width: '100%', padding: 14, marginTop: 12 }, onClick: () => setShowAIControls(false) }, 'Zatvori')
+          )
+        ),
+        // Modal za transakciju
+        showModal && React.createElement('div', { className: 'modal-overlay', onClick: () => setShowModal(false) },
+          React.createElement('div', { className: 'modal-card', onClick: e => e.stopPropagation() },
+            React.createElement('h3', { style: { marginBottom: 16 } }, '➕ Nova transakcija'),
+            React.createElement('div', { className: 'toggle-switch' },
+              React.createElement('div', { className: `toggle-opt ${newTx.type === 'expense' ? 'active' : ''}`, onClick: () => setNewTx({...newTx, type: 'expense'}) }, '📉 Rashod'),
+              React.createElement('div', { className: `toggle-opt ${newTx.type === 'income' ? 'active' : ''}`, onClick: () => setNewTx({...newTx, type: 'income'}) }, '📈 Prihod')
+            ),
+            React.createElement('input', { type: 'number', placeholder: 'Iznos (RSD)', value: newTx.amount, onChange: e => setNewTx({...newTx, amount: e.target.value}), style: { marginBottom: 16 } }),
+            React.createElement('select', { value: newTx.category, onChange: e => setNewTx({...newTx, category: e.target.value}), style: { marginBottom: 16 } },
+              ['Hrana', 'Gorivo', 'Zabava', 'Kupovina', 'Zdravlje', 'Računi', 'Ostalo'].map(c => React.createElement('option', { key: c }, c))
+            ),
+            React.createElement('input', { type: 'date', value: newTx.date, onChange: e => setNewTx({...newTx, date: e.target.value}), style: { marginBottom: 16 } }),
+            React.createElement('input', { type: 'text', placeholder: 'Opis', value: newTx.desc, onChange: e => setNewTx({...newTx, desc: e.target.value}), style: { marginBottom: 16 } }),
+            React.createElement('button', { style: { width: '100%', padding: 16, background: 'var(--accent-grad)', color: 'white', border: 'none', borderRadius: 60, fontSize: 16, fontWeight: 600 }, onClick: addTransaction }, '💾 Sačuvaj')
+          )
+        )
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  }).catch(err => {
+    document.getElementById('root').innerHTML = '<div style="padding:50px;text-align:center">📱 Moj budžet<br><small>Učitavanje...</small></div>';
+    console.error(err);
+  });
+})();
+</script>
+</body>
+</html>
